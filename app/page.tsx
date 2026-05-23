@@ -1,10 +1,22 @@
+type Home = {
+  id: string;
+  title_vi: string;
+  title_zh: string;
+  price?: string;
+  city?: string;  
+  image?: string;
+  "phòngngủ"?: number;
+  "phòngtắm"?: number;
+  "diệntích"?: number;
+  link?: string; 
+};
 "use client";
 
 import { useEffect, useState } from "react";
 import { getProperties } from "../services/api";
-import PropertyCard from "c:/Users/Administrator/Desktop/taiwanhome/components/PropertyCard";
+import PropertyCard from "../components/PropertyCard";
 export default function TaiwanHomeWebsite() {
-  const [featuredHomes, setFeaturedHomes] = useState([]);
+  const [featuredHomes, setFeaturedHomes] = useState<Home[]>([]);
 
 useEffect(() => {
   getProperties().then((data) => {
