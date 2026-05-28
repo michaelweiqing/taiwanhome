@@ -1,0 +1,5 @@
+// services/api.ts
+export async function getProperties() {
+  const res = await fetch("/properties.json");
+  return res.json();
+}
