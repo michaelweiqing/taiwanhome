@@ -19,6 +19,8 @@ export interface Property {
   bathrooms: number
   floor: number
   totalFloors: number
+  parking:string
+  management_fee:number
   age: number             // Tuổi nhà (năm)
   facing: string          // Hướng nhà
   features: string[]      // Tiếng Trung

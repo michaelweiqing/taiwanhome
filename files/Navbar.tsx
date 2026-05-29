@@ -8,7 +8,7 @@ export default function Navbar() {
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-4">
         <Link href="/" className="font-bold text-red-600 text-lg shrink-0">
-          {lang === "zh" ? "台灣好房網" : "Nhà Đẹp ĐL"}
+          {lang === "zh" ? "台灣房地產" : "Bất Động Sản Đài Loan"}
         </Link>
         <nav className="hidden sm:flex text-sm">
           <Link href="/listings?type=buy" className="px-3 py-1 text-gray-600 hover:text-red-600 transition">{t.buy}</Link>
