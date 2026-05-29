@@ -13,7 +13,7 @@ export default function ListingsPage() {
 
   const filtered = useMemo(() => {
     let list = [...properties]
-    if (typeFilter !== "all") list = list.filter(p => p.listingType === typeFilter)
+    if (typeFilter !== "all") list = list.filter(p => p.listing_type === typeFilter)
     if (sortBy === "price_asc")  list.sort((a, b) => a.price - b.price)
     if (sortBy === "price_desc") list.sort((a, b) => b.price - a.price)
     if (sortBy === "newest")     list.sort((a, b) =>

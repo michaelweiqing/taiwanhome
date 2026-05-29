@@ -8,7 +8,7 @@ import PropertyCard from "@/components/PropertyCard"
 
 export default function HomePage() {
   const { lang, t } = useLang()
-  const featured = properties.filter(p => p.isFeatured).slice(0, 4)
+  const featured = properties.filter(p => p.is_featured).slice(0, 4)
   const newest   = [...properties].sort((a,b) =>
     new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime()
   ).slice(0, 4)

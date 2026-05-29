@@ -18,11 +18,11 @@ export default function PropertyCard({ property: p }: { property: Property }) {
   const { lang, t } = useLang()
   const [fav, setFav] = useState(false)
 
-  const title    = lang === "zh" ? p.titleZh    : p.titleVi
-  const district = lang === "zh" ? p.district   : p.districtVi
-  const city     = lang === "zh" ? p.city       : p.cityVi
-  const mrt      = lang === "zh" ? p.nearMRT    : p.nearMRTVi
-  const type     = lang === "zh" ? PROP_TYPE_ZH[p.propertyType] : PROP_TYPE_VI[p.propertyType]
+  const title    = lang === "zh" ? p.title_zh    : p.title_vi
+  const district = lang === "zh" ? p.district   : p.district_vi
+  const city     = lang === "zh" ? p.city       : p.city_vi
+  const mrt      = lang === "zh" ? p.near_mrt    : p.near_mrt_vi
+  const type     = lang === "zh" ? PROP_TYPE_ZH[p.property_type] : PROP_TYPE_VI[p.property_type]
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden
@@ -50,12 +50,12 @@ export default function PropertyCard({ property: p }: { property: Property }) {
 
           {/* Badges trái */}
           <div className="absolute top-2 left-2 flex flex-col gap-1">
-            {p.isNew && (
+            {p.is_new && (
               <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">
                 {t.new}
               </span>
             )}
-            {p.isFeatured && (
+            {p.is_featured && (
               <span className="bg-amber-400 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">
                 {t.featured}
               </span>
@@ -64,9 +64,9 @@ export default function PropertyCard({ property: p }: { property: Property }) {
 
           {/* Badge phải – rent / buy */}
           <span className={`absolute top-2 right-2 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow ${
-            p.listingType === "rent" ? "bg-blue-600" : "bg-green-600"
+            p.listing_type === "rent" ? "bg-blue-600" : "bg-green-600"
           }`}>
-            {p.listingType === "rent" ? t.forRent : t.forSale}
+            {p.listing_type === "rent" ? t.forRent : t.forSale}
           </span>
         </div>
       </Link>
@@ -80,9 +80,9 @@ export default function PropertyCard({ property: p }: { property: Property }) {
             <span className="text-red-600 font-bold text-lg leading-none">
               {formatPrice(p, lang)}
             </span>
-            {p.pricePerPing && (
+            {p.price_per_ping && (
               <span className="text-gray-400 text-[10px] ml-1.5">
-                {p.pricePerPing.toLocaleString()}萬/{t.pingUnit}
+                {p.price_per_ping.toLocaleString()}萬/{t.pingUnit}
               </span>
             )}
           </div>
@@ -116,8 +116,8 @@ export default function PropertyCard({ property: p }: { property: Property }) {
           {[
             { icon: "🛏", val: `${p.bedrooms}${t.bedrooms}` },
             { icon: "🚿", val: `${p.bathrooms}${t.bathrooms}` },
-            { icon: "📐", val: `${p.areaPing}${t.pingUnit}` },
-            { icon: "🏢", val: `${p.floor}/${p.totalFloors}F` },
+            { icon: "📐", val: `${p.area_ping}${t.pingUnit}` },
+            { icon: "🏢", val: `${p.floor}/${p.total_floors}F` },
           ].map(({ icon, val }) => (
             <div key={val} className="flex flex-col items-center">
               <span className="text-sm">{icon}</span>
@@ -129,7 +129,7 @@ export default function PropertyCard({ property: p }: { property: Property }) {
         {/* Dòng 5: MRT + tuổi nhà — đẩy xuống bottom */}
         <div className="mt-auto flex items-center justify-between text-[11px]">
           <span className="text-blue-600 font-medium">
-            🚇 {mrt} · {p.walkMinutes}{t.minuteWalk}
+            🚇 {mrt} · {p.walk_minutes}{t.minuteWalk}
           </span>
           <span className="text-gray-400">{p.age}{t.yearUnit}</span>
         </div>

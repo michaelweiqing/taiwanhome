@@ -173,7 +173,7 @@ export function getPropertyById(id: string): Property | undefined {
 }
 
 export function formatPrice(p: Property, lang: "zh" | "vi"): string {
-  if (p.listingType === "rent") {
+  if (p.listing_type === "rent") {
     return lang === "zh"
       ? `NT$${p.price.toLocaleString()}/月`
       : `NT$${p.price.toLocaleString()}/tháng`

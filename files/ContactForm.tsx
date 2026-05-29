@@ -27,12 +27,12 @@ export default function ContactForm({ property: p }: { property: Property }) {
       {/* Header — giá */}
       <div className="bg-gradient-to-br from-red-600 to-red-700 p-4 text-white">
         <p className="text-[11px] text-red-200 mb-0.5 uppercase tracking-wide">
-          {p.listingType === "rent" ? (lang === "zh" ? "月租金" : "Tiền thuê/tháng") : (lang === "zh" ? "售價" : "Giá bán")}
+          {p.listing_type === "rent" ? (lang === "zh" ? "月租金" : "Tiền thuê/tháng") : (lang === "zh" ? "售價" : "Giá bán")}
         </p>
         <p className="text-2xl font-bold leading-none">{formatPrice(p, lang)}</p>
-        {p.pricePerPing && (
+        {p.price_per_ping && (
           <p className="text-red-200 text-xs mt-1">
-            {lang === "zh" ? `每坪 ${p.pricePerPing.toLocaleString()}萬` : `${p.pricePerPing.toLocaleString()} vạn/ping`}
+            {lang === "zh" ? `每坪 ${p.price_per_ping.toLocaleString()}萬` : `${p.price_per_ping.toLocaleString()} vạn/ping`}
           </p>
         )}
       </div>
@@ -40,14 +40,14 @@ export default function ContactForm({ property: p }: { property: Property }) {
       {/* Nút hành động nhanh */}
       <div className="grid grid-cols-2 gap-2 p-3 border-b border-gray-100">
         <a
-          href={`tel:${p.agentPhone}`}
+          href={`tel:${p.agent_phone}`}
           className="flex items-center justify-center gap-1.5 bg-red-600 hover:bg-red-700
                      text-white py-2.5 rounded-xl text-sm font-semibold transition"
         >
           📞 {t.callNow}
         </a>
         <a
-          href={`https://line.me/ti/p/~${p.agentLine}`}
+          href={`https://line.me/ti/p/~${p.agent_line}`}
           target="_blank" rel="noopener noreferrer"
           className="flex items-center justify-center gap-1.5 bg-green-500 hover:bg-green-600
                      text-white py-2.5 rounded-xl text-sm font-semibold transition"
@@ -60,11 +60,11 @@ export default function ContactForm({ property: p }: { property: Property }) {
       <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
         <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 font-bold text-sm
                         flex items-center justify-center shrink-0">
-          {p.agentName.charAt(0)}
+          {p.agent_name.charAt(0)}
         </div>
         <div className="min-w-0">
-          <p className="font-semibold text-gray-900 text-sm truncate">{p.agentName}</p>
-          <p className="text-gray-400 text-xs">{p.agentPhone}</p>
+          <p className="font-semibold text-gray-900 text-sm truncate">{p.agent_name}</p>
+          <p className="text-gray-400 text-xs">{p.agent_phone}</p>
         </div>
         <button
           onClick={() => setStatus("idle")}

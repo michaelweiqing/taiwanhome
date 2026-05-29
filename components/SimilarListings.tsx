@@ -6,7 +6,7 @@ interface Props { currentId: string; listingType: "rent" | "buy" }
 
 export default function SimilarListings({ currentId, listingType }: Props) {
   const similar = properties
-    .filter(p => p.id !== currentId && p.listingType === listingType)
+    .filter(p => p.id !== currentId && p.listing_type === listingType)
     .slice(0, 3)
   if (!similar.length) return null
   return (

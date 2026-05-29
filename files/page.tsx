@@ -42,15 +42,15 @@ function DetailContent({ id }: { id: string }) {
   const p = getPropertyById(id)
   if (!p) notFound()
 
-  const title    = lang === "zh" ? p.titleZh        : p.titleVi
-  const address  = lang === "zh" ? p.address        : p.addressVi
-  const desc     = lang === "zh" ? p.descriptionZh  : p.descriptionVi
-  const mrt      = lang === "zh" ? p.nearMRT        : p.nearMRTVi
-  const features = lang === "zh" ? p.features       : p.featuresVi
+  const title    = lang === "zh" ? p.title_zh        : p.title_vi
+  const address  = lang === "zh" ? p.address        : p.address_vi
+  const desc     = lang === "zh" ? p.description_zh  : p.description_vi
+  const mrt      = lang === "zh" ? p.near_mrt        : p.near_mrt_vi
+  const features = lang === "zh" ? p.features       : p.features_vi
   const facing   = lang === "zh" ? p.facing         : (FACING_VI[p.facing] ?? p.facing)
-  const propType = lang === "zh" ? PROP_LABEL[p.propertyType].zh : PROP_LABEL[p.propertyType].vi
+  const propType = lang === "zh" ? PROP_LABEL[p.property_type].zh : PROP_LABEL[p.property_type].vi
 
-  const postedDate = new Date(p.postedAt).toLocaleDateString(
+  const postedDate = new Date(p.posted_at).toLocaleDateString(
     lang === "zh" ? "zh-TW" : "vi-VN",
     { year: "numeric", month: "long", day: "numeric" }
   )
@@ -64,19 +64,19 @@ function DetailContent({ id }: { id: string }) {
     },
     {
       label: t.totalArea,
-      value: `${p.areaPing} ${t.pingUnit}  (${pingToM2(p.areaPing)} ${t.m2Unit})`,
+      value: `${p.area_ping} ${t.pingUnit}  (${pingToM2(p.area_ping)} ${t.m2Unit})`,
     },
-    ...(p.pricePerPing ? [{
+    ...(p.price_per_ping ? [{
       label: t.pricePerPing,
       value: lang === "zh"
-        ? `${p.pricePerPing.toLocaleString()}萬/${t.pingUnit}`
-        : `${p.pricePerPing.toLocaleString()} vạn/${t.pingUnit}`,
+        ? `${p.price_per_ping.toLocaleString()}萬/${t.pingUnit}`
+        : `${p.price_per_ping.toLocaleString()} vạn/${t.pingUnit}`,
     }] : []),
     {
       label: lang === "zh" ? "格局" : "Phòng",
       value: `${p.bedrooms} ${t.bedrooms} / ${p.bathrooms} ${t.bathrooms}`,
     },
-    { label: t.floor,   value: `${p.floor} / ${p.totalFloors} F` },
+    { label: t.floor,   value: `${p.floor} / ${p.total_floors} F` },
     { label: t.age,     value: `${p.age} ${t.yearUnit}` },
     { label: t.facing,  value: facing },
     {
@@ -85,7 +85,7 @@ function DetailContent({ id }: { id: string }) {
     },
     {
       label: lang === "zh" ? "距捷運" : "Cách MRT",
-      value: `${mrt} · ${p.walkMinutes} ${t.minuteWalk}`,
+      value: `${mrt} · ${p.walk_minutes} ${t.minuteWalk}`,
     },
   ]
 
@@ -107,16 +107,16 @@ function DetailContent({ id }: { id: string }) {
           {/* Badges hàng */}
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <span className={`text-white text-xs font-bold px-3 py-1 rounded-full ${
-              p.listingType === "rent" ? "bg-blue-600" : "bg-green-600"
+              p.listing_type === "rent" ? "bg-blue-600" : "bg-green-600"
             }`}>
-              {p.listingType === "rent" ? t.forRent : t.forSale}
+              {p.listing_type === "rent" ? t.forRent : t.forSale}
             </span>
-            {p.isNew && (
+            {p.is_new && (
               <span className="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full">
                 {t.new}
               </span>
             )}
-            {p.isFeatured && (
+            {p.is_featured && (
               <span className="bg-amber-100 text-amber-600 text-xs font-bold px-3 py-1 rounded-full">
                 {t.featured}
               </span>
@@ -134,7 +134,7 @@ function DetailContent({ id }: { id: string }) {
             <span className="flex items-center gap-1">📍 {address}</span>
             <span className="text-gray-300">|</span>
             <span className="flex items-center gap-1 text-blue-600">
-              🚇 {mrt} · {p.walkMinutes} {t.minuteWalk}
+              🚇 {mrt} · {p.walk_minutes} {t.minuteWalk}
             </span>
           </div>
         </div>
@@ -247,7 +247,7 @@ function DetailContent({ id }: { id: string }) {
             <span className="w-1 h-6 bg-red-500 rounded-full inline-block" />
             {t.similarListings}
           </h2>
-          <SimilarListings currentId={p.id} listingType={p.listingType} />
+          <SimilarListings currentId={p.id} listingType={p.listing_type} />
         </div>
       </div>
     </div>
