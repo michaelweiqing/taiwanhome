@@ -21,7 +21,7 @@ type Props = {
 };
 
 export default async function HouseDetailPage({ params }: Props) {
-  const homes = await getProperties();
+  const homes: Home[] = await getProperties();
   const home = homes.find((h) => h.id === params.id);
 
   if (!home) {
