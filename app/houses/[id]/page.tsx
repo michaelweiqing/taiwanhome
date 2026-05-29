@@ -1,5 +1,18 @@
-import { getProperties, Home } from "@/services/api";
+import { getProperties } from "@/services/api";
 import Link from "next/link";
+
+// Định nghĩa kiểu dữ liệu cho 1 căn nhà
+type Home = {
+  id: string;
+  title_vi: string;
+  title_zh: string;
+  price: string;
+  city: string;
+  image: string;
+  bedrooms: number;
+  bathrooms: number;
+  area: string;
+};
 
 type Props = {
   params: {
