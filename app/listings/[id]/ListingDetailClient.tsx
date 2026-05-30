@@ -1,8 +1,6 @@
 "use client"
-// app/listings/[id]/ListingDetailClient.tsx
-// UI trang chi tiết — nhận data từ Server Component cha
-
 import Link from "next/link"
+import { useState } from "react"
 import type { Property } from "@/lib/data"
 import { formatPrice, pingToM2 } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
@@ -10,22 +8,20 @@ import ImageGallery from "@/components/ImageGallery"
 import ContactForm from "@/components/ContactForm"
 import PropertyCard from "@/components/PropertyCard"
 
-const FEATURE_ICONS: Record<string, string> = {
-  "電梯":"🛗","停車位":"🚗","管理員":"👮","陽台":"🌿","冷氣":"❄️",
-  "健身房":"💪","游泳池":"🏊","寵物友善":"🐾","網路":"📶","洗衣機":"🫧",
-  "近高鐵":"🚄","全新裝潢":"✨","近商圈":"🛍️","頂樓花園":"🌸","智慧門禁":"🔐",
+const FEAT_ICONS: Record<string,string> = {
+  "電梯":"🛗","停車位":"🚗","管理員":"👮","陽台":"🌿","冷氣":"❄️","健身房":"💪",
+  "游泳池":"🏊","寵物友善":"🐾","網路":"📶","洗衣機":"🫧","近高鐵":"🚄",
+  "全新裝潢":"✨","近商圈":"🛍️","頂樓花園":"🌸","智慧門禁":"🔐",
   "Thang máy":"🛗","Chỗ đậu xe":"🚗","Bảo vệ 24h":"👮","Ban công":"🌿",
   "Điều hoà":"❄️","Phòng gym":"💪","Hồ bơi":"🏊","Thú cưng OK":"🐾",
   "Wifi miễn phí":"📶","Máy giặt":"🫧","Gần HSR":"🚄","Nội thất mới":"✨",
   "Vườn sân thượng":"🌸","Cổng thông minh":"🔐","Wifi":"📶",
 }
-
-const FACING_VI: Record<string, string> = {
+const FACING_VI: Record<string,string> = {
   "東":"Đông","西":"Tây","南":"Nam","北":"Bắc",
   "東南":"Đông Nam","西南":"Tây Nam","東北":"Đông Bắc","西北":"Tây Bắc",
 }
-
-const PROP_LABEL: Record<string, {zh:string;vi:string}> = {
+const PROP_LABEL: Record<string,{zh:string;vi:string}> = {
   apartment:{zh:"公寓大廈",vi:"Chung cư"},
   house:    {zh:"透天厝",  vi:"Nhà phố"},
   studio:   {zh:"套房",    vi:"Studio"},
@@ -34,51 +30,42 @@ const PROP_LABEL: Record<string, {zh:string;vi:string}> = {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 mb-4">
       <span className="w-1 h-5 bg-red-500 rounded-full inline-block shrink-0" />
       <h2 className="font-bold text-gray-900">{children}</h2>
     </div>
   )
 }
 
-interface Props {
-  property: Property
-  similar: Property[]
-}
+interface Props { property: Property; similar: Property[] }
 
 export default function ListingDetailClient({ property: p, similar }: Props) {
   const { lang, t } = useLang()
+  const [shared, setShared] = useState(false)
 
-  const title    = lang === "zh" ? p.title_zh       : p.title_vi
-  const address  = lang === "zh" ? p.address        : p.address_vi
-  const desc     = lang === "zh" ? p.description_zh : p.description_vi
-  const mrt      = lang === "zh" ? p.near_mrt       : p.near_mrt_vi
-  const features = lang === "zh" ? p.features       : p.features_vi
-  const facing   = lang === "zh" ? p.facing         : (FACING_VI[p.facing] ?? p.facing)
-  const propType = lang === "zh"
-    ? PROP_LABEL[p.property_type]?.zh
-    : PROP_LABEL[p.property_type]?.vi
+  const title    = lang==="zh" ? p.title_zh       : p.title_vi
+  const address  = lang==="zh" ? p.address        : p.address_vi
+  const desc     = lang==="zh" ? p.description_zh : p.description_vi
+  const mrt      = lang==="zh" ? p.near_mrt       : p.near_mrt_vi
+  const features = lang==="zh" ? p.features       : p.features_vi
+  const facing   = lang==="zh" ? p.facing         : (FACING_VI[p.facing] ?? p.facing)
+  const propType = PROP_LABEL[p.property_type]?.[lang] ?? p.property_type
 
   const postedDate = new Date(p.posted_at).toLocaleDateString(
-    lang === "zh" ? "zh-TW" : "vi-VN",
+    lang==="zh" ? "zh-TW" : "vi-VN",
     { year:"numeric", month:"long", day:"numeric" }
   )
 
   const specs = [
-    { label: lang==="zh"?"總價":"Tổng giá",    value: formatPrice(p, lang), big: true },
-    { label: t.totalArea, value: `${p.area_ping}${t.pingUnit} (${pingToM2(p.area_ping)}${t.m2Unit})` },
-    ...(p.price_per_ping ? [{
-      label: t.pricePerPing,
-      value: lang==="zh"
-        ? `${p.price_per_ping.toLocaleString()}萬/${t.pingUnit}`
-        : `${p.price_per_ping.toLocaleString()} vạn/${t.pingUnit}`,
-    }] : []),
-    { label: lang==="zh"?"格局":"Phòng",       value: `${p.bedrooms}${t.bedrooms} / ${p.bathrooms}${t.bathrooms}` },
-    { label: t.floor,    value: `${p.floor} / ${p.total_floors} F` },
-    { label: t.age,      value: `${p.age}${t.yearUnit}` },
-    { label: t.facing,   value: facing },
+    { label: lang==="zh"?"總價":"Tổng giá", value: formatPrice(p, lang), big: true },
+    { label: t.totalArea, value: `${p.area_ping}${t.pingUnit} (${pingToM2(p.area_ping)}m²)` },
+    ...(p.price_per_ping ? [{ label: t.pricePerPing, value: `${p.price_per_ping.toLocaleString()}萬/${t.pingUnit}` }] : []),
+    { label: lang==="zh"?"格局":"Phòng", value: `${p.bedrooms}${t.bedrooms} / ${p.bathrooms}${t.bathrooms}` },
+    { label: t.floor, value: `${p.floor} / ${p.total_floors} F` },
+    { label: t.age, value: `${p.age}${t.yearUnit}` },
+    { label: t.facing, value: facing },
     { label: lang==="zh"?"物件類型":"Loại BĐS", value: propType },
-    { label: lang==="zh"?"距捷運":"Cách MRT",   value: `${mrt} · ${p.walk_minutes}${t.minuteWalk}` },
+    { label: lang==="zh"?"距捷運":"Cách MRT", value: `${mrt} · ${p.walk_minutes}${t.minuteWalk}` },
   ]
 
   return (
@@ -91,23 +78,27 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
           <span>/</span>
           <Link href="/listings" className="hover:text-red-600 transition">{t.listingPage}</Link>
           <span>/</span>
-          <span className="text-gray-700 truncate max-w-xs">{title}</span>
+          <span className="text-gray-700 truncate max-w-[200px]">{title}</span>
         </nav>
 
         {/* Tiêu đề */}
         <div className="mb-5">
           <div className="flex flex-wrap gap-2 mb-2">
-            <span className={`text-white text-xs font-bold px-3 py-1 rounded-full ${
-              p.listing_type === "rent" ? "bg-blue-600" : "bg-green-600"
-            }`}>
-              {p.listing_type === "rent" ? t.forRent : t.forSale}
+            <span className={`text-white text-xs font-bold px-3 py-1 rounded-full ${p.listing_type==="rent" ? "bg-blue-600" : "bg-emerald-600"}`}>
+              {p.listing_type==="rent" ? t.forRent : t.forSale}
             </span>
             {p.is_new && <span className="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full">{t.new}</span>}
-            {p.is_featured && <span className="bg-amber-100 text-amber-600 text-xs font-bold px-3 py-1 rounded-full">{t.featured}</span>}
+            {p.is_featured && <span className="bg-amber-100 text-amber-600 text-xs font-bold px-3 py-1 rounded-full">⭐ {t.featured}</span>}
             <span className="bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full">{propType}</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug mb-2">{title}</h1>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
+          <div className="flex items-start justify-between gap-3 flex-wrap">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
+            <button onClick={() => { navigator.clipboard?.writeText(window.location.href); setShared(true); setTimeout(()=>setShared(false),2000) }}
+              className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition shrink-0">
+              {shared ? "✅ Đã copy" : "🔗 " + t.share}
+            </button>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 mt-2 text-sm text-gray-500">
             <span>📍 {address}</span>
             <span className="text-gray-300">|</span>
             <span className="text-blue-600">🚇 {mrt} · {p.walk_minutes}{t.minuteWalk}</span>
@@ -119,16 +110,16 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
 
           {/* Cột trái */}
           <div className="flex-1 min-w-0 space-y-5">
-            <ImageGallery images={p.images} title={title} />
+            <ImageGallery images={p.images || []} title={title} />
 
             {/* Thông số */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-5">
+            <div className="bg-white rounded-2xl border border-gray-100 p-5">
               <SectionTitle>{t.propertyInfo}</SectionTitle>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-4 mt-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4">
                 {specs.map(s => (
                   <div key={s.label}>
                     <p className="text-xs text-gray-400 mb-0.5">{s.label}</p>
-                    <p className={`font-semibold ${s.big ? "text-red-600 text-lg" : "text-gray-900 text-sm"}`}>
+                    <p className={`font-semibold ${s.big ? "text-red-600 text-xl" : "text-gray-900 text-sm"}`}>
                       {s.value}
                     </p>
                   </div>
@@ -137,33 +128,31 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             </div>
 
             {/* Tiện ích */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-5">
+            <div className="bg-white rounded-2xl border border-gray-100 p-5">
               <SectionTitle>{t.features}</SectionTitle>
-              <div className="flex flex-wrap gap-2 mt-4">
-                {features.map(feat => (
-                  <span key={feat} className="flex items-center gap-1.5 bg-gray-50 border border-gray-200
-                                             text-gray-700 text-sm px-3 py-1.5 rounded-xl">
-                    {FEATURE_ICONS[feat] ?? "✔️"} {feat}
+              <div className="flex flex-wrap gap-2">
+                {(features || []).map(feat => (
+                  <span key={feat} className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 text-gray-700 text-sm px-3 py-1.5 rounded-xl">
+                    {FEAT_ICONS[feat] ?? "✔️"} {feat}
                   </span>
                 ))}
               </div>
             </div>
 
             {/* Mô tả */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-5">
+            <div className="bg-white rounded-2xl border border-gray-100 p-5">
               <SectionTitle>{t.description}</SectionTitle>
-              <p className="text-gray-700 text-sm leading-relaxed mt-4 whitespace-pre-line">{desc}</p>
+              <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">{desc}</p>
             </div>
 
             {/* Bản đồ */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-5">
+            <div className="bg-white rounded-2xl border border-gray-100 p-5">
               <SectionTitle>{t.location}</SectionTitle>
-              <p className="text-gray-500 text-sm mt-3 mb-3">📍 {address} · 🚇 {mrt}</p>
+              <p className="text-gray-500 text-sm mb-3">📍 {address} · 🚇 {mrt}</p>
               <a href={`https://www.google.com/maps?q=${p.lat},${p.lng}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex flex-col items-center justify-center gap-3 w-full aspect-[16/7]
-                           rounded-xl bg-blue-50 border border-blue-100 hover:border-blue-300 transition group">
-                <span className="text-5xl group-hover:scale-110 transition">🗺️</span>
+                className="flex flex-col items-center justify-center gap-3 w-full h-36 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 hover:border-blue-300 transition group">
+                <span className="text-4xl group-hover:scale-110 transition">🗺️</span>
                 <span className="text-sm text-blue-600 font-medium">{t.openMap}</span>
               </a>
             </div>
@@ -171,12 +160,12 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             {/* Meta */}
             <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-400 pb-2">
               <span>🕐 {t.postedAt}: {postedDate}</span>
-              <span>👁 {t.views}: {p.views?.toLocaleString()}</span>
+              <span>👁 {t.views}: {(p.views||0).toLocaleString()}</span>
               <span>🆔 {p.id}</span>
             </div>
           </div>
 
-          {/* Cột phải — Form liên hệ */}
+          {/* Cột phải */}
           <div className="w-full lg:w-[320px] shrink-0">
             <ContactForm property={p} />
           </div>
@@ -184,9 +173,9 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
 
         {/* Nhà tương tự */}
         {similar.length > 0 && (
-          <div className="mt-12">
-            <h2 className="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2">
-              <span className="w-1 h-6 bg-red-500 rounded-full" />
+          <div className="mt-10">
+            <h2 className="font-bold text-gray-900 text-lg mb-5 flex items-center gap-2">
+              <span className="w-1 h-6 bg-red-500 rounded-full inline-block" />
               {t.similarListings}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

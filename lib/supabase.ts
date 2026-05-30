@@ -1,12 +1,3 @@
-// ============================================================
-// lib/supabase.ts
-// Khởi tạo Supabase client – dùng chung toàn project
-// ============================================================
-// Cách dùng:
-//   import { supabase } from "@/lib/supabase"
-//   const { data } = await supabase.from("properties").select("*")
-// ============================================================
-
 import { createClient } from "@supabase/supabase-js"
 
 // Hai biến này lấy từ file .env.local (xem hướng dẫn bên dưới)

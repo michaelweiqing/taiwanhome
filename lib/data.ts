@@ -1,7 +1,3 @@
-// ============================================================
-// lib/data.ts  (phiên bản Supabase — thay data cứng)
-// ============================================================
-
 import { supabase } from "@/lib/supabase"
 
 export interface Property {

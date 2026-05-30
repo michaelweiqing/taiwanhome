@@ -7,7 +7,10 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .scrollbar-thin::-webkit-scrollbar { height: 4px; }
-  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
-  .scrollbar-thin::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 9999px; }
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
