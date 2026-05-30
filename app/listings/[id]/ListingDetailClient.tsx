@@ -56,6 +56,16 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     { year:"numeric", month:"long", day:"numeric" }
   )
 
+  // Format phí quản lý
+  const mgmtFeeDisplay = p.management_fee
+    ? (lang==="zh" ? `NT$${p.management_fee.toLocaleString()}/月` : `NT$${p.management_fee.toLocaleString()}/tháng`)
+    : (lang==="zh" ? "無" : "Không có")
+
+  // Format chỗ đậu xe
+  const parkingDisplay = p.parking
+    ? (lang==="zh" ? "✅ 有停車位" : "✅ Có chỗ đậu xe")
+    : (lang==="zh" ? "❌ 無停車位" : "❌ Không có")
+
   const specs = [
     { label: lang==="zh"?"總價":"Tổng giá", value: formatPrice(p, lang), big: true },
     { label: t.totalArea, value: `${p.area_ping}${t.pingUnit} (${pingToM2(p.area_ping)}m²)` },
@@ -66,6 +76,8 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     { label: t.facing, value: facing },
     { label: lang==="zh"?"物件類型":"Loại BĐS", value: propType },
     { label: lang==="zh"?"距捷運":"Cách MRT", value: `${mrt} · ${p.walk_minutes}${t.minuteWalk}` },
+    { label: lang==="zh"?"停車位":"Chỗ đậu xe", value: parkingDisplay },
+    { label: lang==="zh"?"管理費":"Phí quản lý", value: mgmtFeeDisplay },
   ]
 
   return (

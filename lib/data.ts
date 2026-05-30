@@ -32,6 +32,8 @@ export interface Property {
   agent_line: string
   is_new: boolean
   is_featured: boolean
+  parking: boolean
+  management_fee: number | null
   views: number
   posted_at: string
   lat: number
