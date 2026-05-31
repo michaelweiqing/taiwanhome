@@ -1,4 +1,5 @@
 // app/listings/page.tsx — Server Component, fetch từ Supabase
+export const revalidate = 0
 
 import { searchProperties } from "@/lib/data"
 import ListingsClient from "./ListingsClient"

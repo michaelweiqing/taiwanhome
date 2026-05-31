@@ -1,4 +1,5 @@
 // app/page.tsx — Trang chủ, Server Component fetch Supabase
+export const revalidate = 0
 
 import Link from "next/link"
 import { getFeaturedProperties, getAllProperties } from "@/lib/data"
