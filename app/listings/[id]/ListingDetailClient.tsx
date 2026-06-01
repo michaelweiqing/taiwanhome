@@ -8,6 +8,7 @@ import { useLang } from "@/context/LangContext"
 import ImageGallery from "@/components/ImageGallery"
 import ContactForm from "@/components/ContactForm"
 import PropertyCard from "@/components/PropertyCard"
+import MortgageCalculator from "@/components/MortgageCalculator"
 
 const FEAT_ICONS: Record<string,string> = {
   "電梯":"🛗","停車位":"🚗","管理員":"👮","陽台":"🌿","冷氣":"❄️","健身房":"💪",
@@ -170,6 +171,10 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
   </a>
 </div>
 
+{/* Máy tính vay vốn - chỉ hiện cho căn bán */}
+{p.listing_type === "buy" && (
+  <MortgageCalculator propertyPrice={p.price} />
+)}
             {/* Meta */}
             <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-400 pb-2">
               <span>🕐 {t.postedAt}: {postedDate}</span>
