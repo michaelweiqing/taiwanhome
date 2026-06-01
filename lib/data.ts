@@ -30,6 +30,8 @@ export interface Property {
   agent_name: string
   agent_phone: string
   agent_line: string
+  agent_name_vi: string       // ← thêm
+  agent_avatar: string | null // ← thêm
   is_new: boolean
   is_featured: boolean
   parking: boolean
