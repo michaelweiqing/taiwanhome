@@ -64,9 +64,9 @@ export default function ContactForm({ property: p }: Props) {
       <div className="flex items-center gap-3 py-1">
         {avatar ? (
           <img src={avatar} alt={agentName}
-            className="w-12 h-12 rounded-full object-cover border-2 border-red-100 shrink-0" />
+            className="w-20 h-20 rounded-full object-cover border-2 border-red-100 shrink-0" />
         ) : (
-          <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-lg shrink-0">
+          <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-lg shrink-0">
             {agentName.charAt(0)}
           </div>
         )}
