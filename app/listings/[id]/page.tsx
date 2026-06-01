@@ -1,22 +1,20 @@
-// app/listings/[id]/page.tsx — Server Component, fetch từ Supabase
+// app/listings/[id]/page.tsx
 
 import { notFound } from "next/navigation"
-import { getPropertyById, getSimilarProperties, pingToM2, formatPrice } from "@/lib/data"
+import { getPropertyById, getSimilarProperties } from "@/lib/data"
 import ListingDetailClient from "./ListingDetailClient"
 
 export default async function ListingDetailPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>   // ← Next.js 15+ params là Promise
 }) {
-  const [property, similar] = await Promise.all([
-    getPropertyById(params.id),
-    getSimilarProperties(params.id, "rent"), // tạm dùng rent, sẽ override trong client
-  ])
+  const { id } = await params       // ← phải await
 
+  const property = await getPropertyById(id)
   if (!property) notFound()
 
-  const similarFinal = await getSimilarProperties(params.id, property.listing_type)
+  const similar = await getSimilarProperties(id, property.listing_type)
 
-  return <ListingDetailClient property={property} similar={similarFinal} />
+  return <ListingDetailClient property={property} similar={similar} />
 }
