@@ -1,4 +1,5 @@
 "use client"
+import PropertyMap from "@/components/PropertyMap"
 import Link from "next/link"
 import { useState } from "react"
 import type { Property } from "@/lib/data"
@@ -158,16 +159,16 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             </div>
 
             {/* Bản đồ */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
-              <SectionTitle>{t.location}</SectionTitle>
-              <p className="text-gray-500 text-sm mb-3">📍 {address} · 🚇 {mrt}</p>
-              <a href={`https://www.google.com/maps?q=${p.lat},${p.lng}`}
-                target="_blank" rel="noopener noreferrer"
-                className="flex flex-col items-center justify-center gap-3 w-full h-36 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 hover:border-blue-300 transition group">
-                <span className="text-4xl group-hover:scale-110 transition">🗺️</span>
-                <span className="text-sm text-blue-600 font-medium">{t.openMap}</span>
-              </a>
-            </div>
+<div className="bg-white rounded-2xl border border-gray-100 p-5">
+  <SectionTitle>{t.location}</SectionTitle>
+  <p className="text-gray-500 text-sm mb-3">📍 {address} · 🚇 {mrt}</p>
+  <PropertyMap lat={p.lat} lng={p.lng} title={title} />
+  <a href={`https://www.google.com/maps?q=${p.lat},${p.lng}`}
+    target="_blank" rel="noopener noreferrer"
+    className="mt-3 flex items-center justify-center gap-2 text-sm text-blue-600 hover:underline">
+    🗺️ {t.openMap}
+  </a>
+</div>
 
             {/* Meta */}
             <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-400 pb-2">
