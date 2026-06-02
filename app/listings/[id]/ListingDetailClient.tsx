@@ -85,10 +85,10 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="max-w-6xl mx-auto px-4 py-5">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
 
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-4 flex-wrap">
+        <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-3 flex-wrap"></div>
           <Link href="/" className="hover:text-red-600 transition">{t.homePage}</Link>
           <span>/</span>
           <Link href="/listings" className="hover:text-red-600 transition">{t.listingPage}</Link>
@@ -107,8 +107,8 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             <span className="bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full">{propType}</span>
           </div>
           // THAY BẰNG:
-<div className="flex items-start justify-between gap-3 flex-wrap">
-  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
+<div className="flex items-start justify-between gap-2 flex-wrap">
+  <h1 className="text-lg sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
   <div className="flex items-center gap-2 shrink-0">
   <FavoriteButton propertyId={p.id} size="lg" />
   <button
@@ -130,7 +130,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
         </div>
 
         {/* Layout 2 cột */}
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start">
 
           {/* Cột trái */}
           <div className="flex-1 min-w-0 space-y-5">

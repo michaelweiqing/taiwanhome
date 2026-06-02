@@ -23,7 +23,7 @@ export default function ImageGallery({ images, title }: Props) {
   return (
     <div className="space-y-2">
       {/* ── Ảnh chính ── */}
-      <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-gray-100 group">
+      <div className="relative w-full h-[240px] sm:h-[360px] lg:h-[460px] rounded-2xl overflow-hidden bg-gray-100 group">
         <img
           key={active}
           src={images[active]}
