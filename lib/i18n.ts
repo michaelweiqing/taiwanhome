@@ -2,7 +2,7 @@ export type Lang = "zh" | "vi"
 
 export const translations = {
   zh: {
-    siteName: "台灣好房網",
+    siteName: "台灣找房網",
     buy: "買屋", rent: "租屋",
     backToList: "← 返回列表",
     share: "分享", favorite: "收藏",
@@ -14,7 +14,7 @@ export const translations = {
     location: "地點與交通",
     similarListings: "相似物件",
     pricePerPing: "每坪單價",
-    totalArea: "建坪",
+    totalArea: "建物總坪",
     floor: "樓層", age: "屋齡", facing: "朝向",
     bedrooms: "房", bathrooms: "衛",
     postedAt: "刊登日期", views: "瀏覽",
@@ -37,7 +37,7 @@ export const translations = {
     homePage: "首頁", listingPage: "物件列表",
   },
   vi: {
-    siteName: "Nhà Đẹp Đài Loan",
+    siteName: "Bất Động Sản Đài Loan",
     buy: "Mua nhà", rent: "Thuê nhà",
     backToList: "← Danh sách",
     share: "Chia sẻ", favorite: "Yêu thích",
@@ -49,13 +49,13 @@ export const translations = {
     location: "Vị trí & di chuyển",
     similarListings: "Nhà tương tự",
     pricePerPing: "Giá/ping",
-    totalArea: "Diện tích",
+    totalArea: "Tổng diện tích",
     floor: "Tầng", age: "Tuổi nhà", facing: "Hướng",
     bedrooms: "phòng ngủ", bathrooms: "WC",
     postedAt: "Ngày đăng", views: "Lượt xem",
     pingUnit: "ping", m2Unit: "m²", yearUnit: "năm",
     minuteWalk: "phút đi bộ",
-    forRent: "Thuê", forSale: "Mua",
+    forRent: "Thuê", forSale: "Bán",
     new: "Mới đăng", featured: "Nổi bật",
     perMonth: "/tháng",
     contactForm: "Gửi yêu cầu tư vấn",
