@@ -48,6 +48,7 @@ export interface Property {
   agent_line: string
   agent_name_vi: string
   agent_avatar: string | null
+  agent_is_professional: boolean  // true = môi giới có công ty, false = chủ nhà tự đăng
   is_new: boolean
   is_featured: boolean
   parking: boolean

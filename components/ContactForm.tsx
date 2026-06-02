@@ -22,7 +22,6 @@ export default function ContactForm({ property: p }: Props) {
 
   function handleSubmit() {
     if (!form.name || !form.phone) return
-    // TODO: gửi về Supabase hoặc email
     setSent(true)
     setTimeout(() => setSent(false), 3000)
     setForm({ name: "", phone: "", message: "" })
@@ -39,7 +38,7 @@ export default function ContactForm({ property: p }: Props) {
         <p className="text-2xl font-black">
           {p.listing_type === "rent"
             ? `NT$${p.price.toLocaleString()}${lang === "zh" ? "/月" : "/tháng"}`
-            : `${p.price.toLocaleString()}${lang === "zh" ? "萬" : " vạn NTD"}`}
+            : `${p.price.toLocaleString()}${lang === "zh" ? "萬" : " vạn Đài tệ"}`}
         </p>
         {p.price_per_ping && (
           <p className="text-xs opacity-80 mt-0.5">
@@ -64,9 +63,9 @@ export default function ContactForm({ property: p }: Props) {
       <div className="flex items-center gap-3 py-1">
         {avatar ? (
           <img src={avatar} alt={agentName}
-          className="w-30 h-30 rounded-full object-cover object-top border-2 border-red-100 shrink-0" />
+            className="w-14 h-14 rounded-full object-cover object-top border-2 border-red-100 shrink-0" />
         ) : (
-          <div className="w-30 h-30 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-lg shrink-0">
+          <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-lg shrink-0">
             {agentName.charAt(0)}
           </div>
         )}
@@ -75,6 +74,22 @@ export default function ContactForm({ property: p }: Props) {
           <p className="text-sm text-gray-500">{p.agent_phone}</p>
         </div>
       </div>
+
+      {/* Thông tin công ty môi giới — chỉ hiện nếu là môi giới chuyên nghiệp */}
+      {p.agent_is_professional && (
+        <div className="bg-gray-50 rounded-xl px-4 py-3 space-y-0.5 text-xs text-gray-600 border border-gray-100">
+          <p className="font-bold text-gray-800 text-sm">
+            {lang === "zh" ? "永慶不動產" : "Công ty môi giới Vĩnh Khánh (永慶不動產)"}
+          </p>
+          <p>好市多德聚仁加盟店</p>
+          <p className="mt-1">
+            {lang === "zh"
+              ? "營業員執照：(113)登字第456212號"
+              : "Giấy phép hành nghề số: (113) 登字第456212號"}
+          </p>
+          <p>經紀人員：陳秀貞（104）中市經紀字第01633號</p>
+        </div>
+      )}
 
       <hr className="border-gray-100" />
 
