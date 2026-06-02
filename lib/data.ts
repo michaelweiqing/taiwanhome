@@ -30,8 +30,8 @@ export interface Property {
   agent_name: string
   agent_phone: string
   agent_line: string
-  agent_name_vi: string       // ← thêm
-  agent_avatar: string | null // ← thêm
+  agent_name_vi: string       
+  agent_avatar: string | null 
   is_new: boolean
   is_featured: boolean
   parking: boolean
@@ -124,7 +124,7 @@ export function formatPrice(p: Property, lang: "zh" | "vi"): string {
   }
   return lang === "zh"
     ? `${p.price.toLocaleString()}萬`
-    : `${p.price.toLocaleString()} vạn NTD`
+    : `${p.price.toLocaleString()} vạn Đài tệ`
 }
 
 export function pingToM2(ping: number): number {
