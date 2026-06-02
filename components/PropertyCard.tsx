@@ -12,7 +12,7 @@ const TYPE_VI: Record<string,string> = { apartment:"Chung cư", house:"Nhà ph�
 export default function PropertyCard({ property: p }: { property: Property }) {
   const { lang, t } = useLang()
   const { toggle, isFavorite } = useFavorites()
-const fav = isFavorite(p.id)
+  const fav = isFavorite(p.id)
   const [imgErr, setImgErr] = useState(false)
 
   const title    = lang==="zh" ? p.title_zh  : p.title_vi
@@ -22,6 +22,15 @@ const fav = isFavorite(p.id)
   const ptype    = lang==="zh" ? TYPE_ZH[p.property_type] : TYPE_VI[p.property_type]
 
   const img = (!imgErr && p.images?.[0]) ? p.images[0] : null
+
+  // Hiển thị tầng: nếu là số thì "X/YF", nếu là chữ thì hiển thị thẳng
+  const floorLabel = (() => {
+    const num = Number(p.floor)
+    if (!isNaN(num) && String(p.floor).trim() !== "") {
+      return `${p.floor}/${p.total_floors}F`
+    }
+    return String(p.floor) // chữ như "整棟", "全層", "Toàn bộ"
+  })()
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-200 flex flex-col group">
@@ -112,7 +121,7 @@ const fav = isFavorite(p.id)
             { icon: "🛏", val: `${p.bedrooms}${t.bedrooms}` },
             { icon: "🚿", val: `${p.bathrooms}${t.bathrooms}` },
             { icon: "📐", val: `${p.area_ping}${t.pingUnit}` },
-            { icon: "🏢", val: `${p.floor}/${p.total_floors}F` },
+            { icon: "🏢", val: floorLabel },
           ].map(({ icon, val }) => (
             <div key={val} className="bg-gray-50 rounded-lg py-1.5 flex flex-col items-center gap-0.5">
               <span className="text-sm leading-none">{icon}</span>

@@ -17,7 +17,7 @@ export interface Property {
   area_ping: number
   bedrooms: number
   bathrooms: number
-  floor: number
+  floor: string          // ← đổi từ number sang string
   total_floors: number
   age: number
   facing: string
@@ -30,8 +30,8 @@ export interface Property {
   agent_name: string
   agent_phone: string
   agent_line: string
-  agent_name_vi: string       
-  agent_avatar: string | null 
+  agent_name_vi: string
+  agent_avatar: string | null
   is_new: boolean
   is_featured: boolean
   parking: boolean
@@ -70,7 +70,6 @@ export async function getPropertyById(id: string): Promise<Property | null> {
     .eq("id", id)
     .single()
   if (error) { console.error("Supabase:", error.message); return null }
-  // Tăng view count ngầm
   supabase.from("properties").update({ views: (data.views || 0) + 1 }).eq("id", id)
   return data as Property
 }
@@ -125,6 +124,18 @@ export function formatPrice(p: Property, lang: "zh" | "vi"): string {
   return lang === "zh"
     ? `${p.price.toLocaleString()}萬`
     : `${p.price.toLocaleString()} vạn Đài tệ`
+}
+
+/** Hiển thị tầng — floor giờ là string nên dùng trực tiếp */
+export function formatFloor(floor: string, totalFloors: number, lang: "zh" | "vi"): string {
+  const floorStr = floor.trim()
+  // Nếu là số thuần
+  const num = Number(floorStr)
+  if (!isNaN(num) && floorStr !== "") {
+    return `${floorStr}/${totalFloors}F`
+  }
+  // Nếu là chữ (整棟, 全層, Toàn bộ, ...) — hiển thị thẳng
+  return `${floorStr}/${totalFloors}F`
 }
 
 export function pingToM2(ping: number): number {
