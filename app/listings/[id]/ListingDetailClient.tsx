@@ -209,7 +209,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             {/* Bản đồ */}
             <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5">
               <SectionTitle>{t.location}</SectionTitle>
-              <p className="text-gray-500 text-sm mb-3">📍 {address} · 🚇 {mrt}</p>
+              <p className="text-gray-500 text-sm mb-3">📍 {address}</p>
               <PropertyMap lat={p.lat} lng={p.lng} title={title} />
               <a href={`https://www.google.com/maps?q=${p.lat},${p.lng}`}
                 target="_blank" rel="noopener noreferrer"
