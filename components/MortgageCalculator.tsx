@@ -12,7 +12,7 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
   const defaultLoan = Math.round(propertyPrice * 0.7)
   const [loanAmount, setLoanAmount] = useState(defaultLoan)
   const [years, setYears]           = useState(20)
-  const [rate, setRate]             = useState("8.5")
+  const [rate, setRate]             = useState("2.5")
 
   const monthly = useMemo(() => {
     const principal = loanAmount * 10000

@@ -4,13 +4,15 @@ import { useState } from "react"
 import type { Property } from "@/lib/data"
 import { formatPrice, pingToM2 } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
+import { useFavorites } from "@/hooks/useFavorites"
 
 const TYPE_ZH: Record<string,string> = { apartment:"公寓", house:"透天厝", studio:"套房", villa:"豪宅" }
 const TYPE_VI: Record<string,string> = { apartment:"Chung cư", house:"Nhà phố", studio:"Studio", villa:"Biệt thự" }
 
 export default function PropertyCard({ property: p }: { property: Property }) {
   const { lang, t } = useLang()
-  const [fav, setFav] = useState(false)
+  const { toggle, isFavorite } = useFavorites()
+const fav = isFavorite(p.id)
   const [imgErr, setImgErr] = useState(false)
 
   const title    = lang==="zh" ? p.title_zh  : p.title_vi
@@ -83,7 +85,7 @@ export default function PropertyCard({ property: p }: { property: Property }) {
               </span>
             )}
           </div>
-          <button onClick={e => { e.preventDefault(); setFav(f=>!f) }}
+          <button onClick={e => { e.preventDefault(); e.stopPropagation(); toggle(p.id) }}
             className="shrink-0 text-base leading-none mt-0.5 hover:scale-110 transition">
             {fav ? "❤️" : "🤍"}
           </button>
