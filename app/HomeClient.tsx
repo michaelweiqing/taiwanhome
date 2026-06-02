@@ -115,10 +115,10 @@ export default function HomeClient({ featured, newest }: Props) {
 
   const PRICE_RANGES = tab === "rent"
     ? [
-        { val:"0-20000",    zh:"2萬以下/月",       vi:"Dưới 20.000 NTD/tháng" },
-        { val:"20000-30000",zh:"2-3萬/月",          vi:"20.000 - 30.000 NTD/tháng" },
-        { val:"30000-50000",zh:"3-5萬/月",          vi:"30.000 - 50.000 NTD/tháng" },
-        { val:"50000-0",    zh:"5萬以上/月",        vi:"Trên 50.000 NTD/tháng" },
+        { val:"0-20000",    zh:"2萬以下/月",       vi:"Dưới 20.000 Đài tệ/tháng" },
+        { val:"20000-30000",zh:"2-3萬/月",          vi:"20.000 - 30.000 Đài tệ/tháng" },
+        { val:"30000-50000",zh:"3-5萬/月",          vi:"30.000 - 50.000 Đài tệ/tháng" },
+        { val:"50000-0",    zh:"5萬以上/月",        vi:"Trên 50.000 Đài tệ/tháng" },
       ]
     : [
         { val:"0-750",      zh:"750萬以下",         vi:"Dưới 750 vạn Đài tệ" },
