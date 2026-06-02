@@ -10,13 +10,13 @@ interface LangCtx {
 }
 
 const LangContext = createContext<LangCtx>({
-  lang: "zh",
+  lang: "vi",
   setLang: () => {},
   t: translations.zh,
 })
 
 export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>("zh")
+  const [lang, setLang] = useState<Lang>("vi")
   const t = translations[lang] as T   // ← ép kiểu để TypeScript không lỗi
   return (
     <LangContext.Provider value={{ lang, setLang, t }}>
