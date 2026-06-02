@@ -134,7 +134,9 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
 
           {/* Cột trái */}
           <div className="flex-1 min-w-0 space-y-5">
-            <ImageGallery images={p.images || []} title={title} />
+            <div className="rounded-2xl overflow-hidden">
+  <ImageGallery images={p.images || []} title={title} />
+</div>
 
             {/* Thông số */}
             <div className="bg-white rounded-2xl border border-gray-100 p-5">
@@ -194,9 +196,9 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
           </div>
 
           {/* Cột phải */}
-          <div className="w-full lg:w-[320px] shrink-0">
-            <ContactForm property={p} />
-          </div>
+          <div className="hidden lg:block w-full lg:w-[320px] shrink-0">
+  <ContactForm property={p} />
+</div>
         </div>
 
         {/* Nhà tương tự */}

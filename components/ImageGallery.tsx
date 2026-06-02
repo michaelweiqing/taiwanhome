@@ -28,7 +28,7 @@ export default function ImageGallery({ images, title }: Props) {
           key={active}
           src={images[active]}
           alt={`${title} ${active + 1}`}
-          className="w-full h-full object-cover"
+          className="w-full h-[260px] sm:h-[400px] object-cover"
         />
 
         {/* Dim overlay khi hover để nút nổi hơn */}
