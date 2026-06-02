@@ -33,7 +33,7 @@ export default function ImageGallery({ images, title }: Props) {
     <div className="space-y-2">
       {/* Ảnh chính */}
       <div
-        className="relative w-full h-[240px] sm:h-[380px] lg:h-[460px] rounded-2xl overflow-hidden bg-gray-100"
+        className="relative w-full h-[320px] sm:h-[460px] lg:h-[560px] rounded-2xl overflow-hidden bg-gray-100"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
