@@ -68,7 +68,11 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
 
   const specs = [
     { label: lang==="zh"?"總價":"Tổng giá", value: formatPrice(p, lang), big: true },
-    { label: t.totalArea, value: `${p.area_ping}${t.pingUnit} (${pingToM2(p.area_ping)}m²)` },
+    { label: lang==="zh"?"建物總坪":"Tổng diện tích", value: `${p.area_ping}${t.pingUnit} (${pingToM2(p.area_ping)}m²)` },
+    ...(p.area_main_ping ? [{ label: lang==="zh"?"主建物":"Diện tích sử dụng riêng", value: `${p.area_main_ping}${t.pingUnit}` }] : []),
+    ...(p.area_balcony_ping ? [{ label: lang==="zh"?"附屬建物":"Ban công & công trình phụ", value: `${p.area_balcony_ping}${t.pingUnit}` }] : []),
+    ...(p.area_common_ping ? [{ label: lang==="zh"?"共同使用":"Diện tích sở hữu chung", value: `${p.area_common_ping}${t.pingUnit}` }] : []),
+    ...(p.area_land_ping ? [{ label: lang==="zh"?"土地坪數":"Diện tích đất", value: `${p.area_land_ping}${t.pingUnit}` }] : []),
     ...(p.price_per_ping ? [{ label: t.pricePerPing, value: `${p.price_per_ping.toLocaleString()}萬/${t.pingUnit}` }] : []),
     { label: lang==="zh"?"格局":"Bố cục", value: `${p.bedrooms}${t.bedrooms} / ${p.bathrooms}${t.bathrooms}` },
     { label: lang==="zh"?"樓層":"Tầng/Tổng số tầng", value: (() => {
