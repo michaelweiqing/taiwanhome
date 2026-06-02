@@ -59,12 +59,10 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     { year:"numeric", month:"long", day:"numeric" }
   )
 
-  // Format phí quản lý
   const mgmtFeeDisplay = p.management_fee
     ? (lang==="zh" ? `NT$${p.management_fee.toLocaleString()}/月` : `NT$${p.management_fee.toLocaleString()}/tháng`)
     : (lang==="zh" ? "無" : "Không có")
 
-  // Format chỗ đậu xe
   const parkingDisplay = p.parking
     ? (lang==="zh" ? "✅ 有停車位" : "✅ Có chỗ đậu xe")
     : (lang==="zh" ? "❌ 無停車位" : "❌ Không có")
@@ -85,19 +83,19 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 sm:py-6 space-y-4">
 
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 text-xs text-gray-400 mb-3 flex-wrap">
-  <Link href="/" className="hover:text-red-600 transition">{t.homePage}</Link>
-  <span>/</span>
-  <Link href="/listings" className="hover:text-red-600 transition">{t.listingPage}</Link>
-  <span>/</span>
-  <span className="text-gray-700 truncate max-w-[200px]">{title}</span>
-</nav>
+        <nav className="flex items-center gap-1.5 text-xs text-gray-400 flex-wrap">
+          <Link href="/" className="hover:text-red-600 transition">{t.homePage}</Link>
+          <span>/</span>
+          <Link href="/listings" className="hover:text-red-600 transition">{t.listingPage}</Link>
+          <span>/</span>
+          <span className="text-gray-700 truncate max-w-[200px]">{title}</span>
+        </nav>
 
         {/* Tiêu đề */}
-        <div className="mb-5">
+        <div>
           <div className="flex flex-wrap gap-2 mb-2">
             <span className={`text-white text-xs font-bold px-3 py-1 rounded-full ${p.listing_type==="rent" ? "bg-blue-600" : "bg-emerald-600"}`}>
               {p.listing_type==="rent" ? t.forRent : t.forSale}
@@ -106,22 +104,23 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             {p.is_featured && <span className="bg-amber-100 text-amber-600 text-xs font-bold px-3 py-1 rounded-full">⭐ {t.featured}</span>}
             <span className="bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full">{propType}</span>
           </div>
-          // THAY BẰNG:
-<div className="flex items-start justify-between gap-2 flex-wrap">
-  <h1 className="text-lg sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
-  <div className="flex items-center gap-2 shrink-0">
-  <FavoriteButton propertyId={p.id} size="lg" />
-  <button
-    onClick={() => {
-      navigator.clipboard?.writeText(window.location.href)
-      setShared(true)
-      setTimeout(() => setShared(false), 2000)
-    }}
-    className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition shrink-0">
-    {shared ? "✅ Đã copy" : "🔗 " + t.share}
-  </button>
-</div>
+
+          <div className="flex items-start justify-between gap-2 flex-wrap">
+            <h1 className="text-base sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
+            <div className="flex items-center gap-2 shrink-0">
+              <FavoriteButton propertyId={p.id} size="lg" />
+              <button
+                onClick={() => {
+                  navigator.clipboard?.writeText(window.location.href)
+                  setShared(true)
+                  setTimeout(() => setShared(false), 2000)
+                }}
+                className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition shrink-0">
+                {shared ? "✅ Đã copy" : "🔗 " + t.share}
+              </button>
+            </div>
           </div>
+
           <div className="flex flex-wrap items-center gap-2 mt-2 text-sm text-gray-500">
             <span>📍 {address}</span>
             <span className="text-gray-300">|</span>
@@ -133,15 +132,17 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start">
 
           {/* Cột trái */}
-          <div className="flex-1 min-w-0 space-y-5">
+          <div className="flex-1 min-w-0 space-y-4">
+
+            {/* Gallery ảnh */}
             <div className="rounded-2xl overflow-hidden">
-  <ImageGallery images={p.images || []} title={title} />
-</div>
+              <ImageGallery images={p.images || []} title={title} />
+            </div>
 
             {/* Thông số */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
+            <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5">
               <SectionTitle>{t.propertyInfo}</SectionTitle>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-4">
                 {specs.map(s => (
                   <div key={s.label}>
                     <p className="text-xs text-gray-400 mb-0.5">{s.label}</p>
@@ -154,7 +155,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             </div>
 
             {/* Tiện ích */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
+            <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5">
               <SectionTitle>{t.features}</SectionTitle>
               <div className="flex flex-wrap gap-2">
                 {(features || []).map(feat => (
@@ -166,27 +167,28 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             </div>
 
             {/* Mô tả */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
+            <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5">
               <SectionTitle>{t.description}</SectionTitle>
               <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">{desc}</p>
             </div>
 
             {/* Bản đồ */}
-<div className="bg-white rounded-2xl border border-gray-100 p-5">
-  <SectionTitle>{t.location}</SectionTitle>
-  <p className="text-gray-500 text-sm mb-3">📍 {address} · 🚇 {mrt}</p>
-  <PropertyMap lat={p.lat} lng={p.lng} title={title} />
-  <a href={`https://www.google.com/maps?q=${p.lat},${p.lng}`}
-    target="_blank" rel="noopener noreferrer"
-    className="mt-3 flex items-center justify-center gap-2 text-sm text-blue-600 hover:underline">
-    🗺️ {t.openMap}
-  </a>
-</div>
+            <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5">
+              <SectionTitle>{t.location}</SectionTitle>
+              <p className="text-gray-500 text-sm mb-3">📍 {address} · 🚇 {mrt}</p>
+              <PropertyMap lat={p.lat} lng={p.lng} title={title} />
+              <a href={`https://www.google.com/maps?q=${p.lat},${p.lng}`}
+                target="_blank" rel="noopener noreferrer"
+                className="mt-3 flex items-center justify-center gap-2 text-sm text-blue-600 hover:underline">
+                🗺️ {t.openMap}
+              </a>
+            </div>
 
-{/* Máy tính vay vốn - chỉ hiện cho căn bán */}
-{p.listing_type === "buy" && (
-  <MortgageCalculator propertyPrice={p.price} />
-)}
+            {/* Máy tính vay vốn - chỉ hiện cho căn bán */}
+            {p.listing_type === "buy" && (
+              <MortgageCalculator propertyPrice={p.price} />
+            )}
+
             {/* Meta */}
             <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-400 pb-2">
               <span>🕐 {t.postedAt}: {postedDate}</span>
@@ -195,16 +197,16 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             </div>
           </div>
 
-          {/* Cột phải */}
+          {/* Cột phải - chỉ hiện trên desktop */}
           <div className="hidden lg:block w-full lg:w-[320px] shrink-0">
-  <ContactForm property={p} />
-</div>
+            <ContactForm property={p} />
+          </div>
         </div>
 
         {/* Nhà tương tự */}
         {similar.length > 0 && (
-          <div className="mt-10">
-            <h2 className="font-bold text-gray-900 text-lg mb-5 flex items-center gap-2">
+          <div className="mt-8">
+            <h2 className="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2">
               <span className="w-1 h-6 bg-red-500 rounded-full inline-block" />
               {t.similarListings}
             </h2>
@@ -214,20 +216,22 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
           </div>
         )}
       </div>
-      {/* ── Sticky CTA mobile ── */}
-<div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 p-3 grid grid-cols-2 gap-2 lg:hidden">
-  <a href={`tel:${p.agent_phone}`}
-    className="flex items-center justify-center gap-2 bg-red-600 text-white font-bold py-3 rounded-xl text-sm transition active:scale-95">
-    📞 {t.callNow}
-  </a>
-  <a href={`https://line.me/ti/p/~${p.agent_line}`} target="_blank" rel="noopener noreferrer"
-    className="flex items-center justify-center gap-2 bg-[#06C755] text-white font-bold py-3 rounded-xl text-sm transition active:scale-95">
-    💬 LINE
-  </a>
-</div>
 
-{/* Padding bottom để content không bị che bởi sticky CTA */}
-<div className="h-20 lg:hidden" />
+      {/* Sticky CTA mobile */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
+        <div className="bg-white border-t border-gray-100 shadow-2xl px-4 py-3 grid grid-cols-2 gap-3">
+          <a href={`tel:${p.agent_phone}`}
+            className="flex items-center justify-center gap-2 bg-red-600 text-white font-bold py-3.5 rounded-xl text-sm active:scale-95 transition">
+            📞 {t.callNow}
+          </a>
+          <a href={`https://line.me/ti/p/~${p.agent_line}`}
+            target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 bg-[#06C755] text-white font-bold py-3.5 rounded-xl text-sm active:scale-95 transition">
+            💬 LINE
+          </a>
+        </div>
+      </div>
+      <div className="h-20 lg:hidden" />
     </div>
   )
 }
