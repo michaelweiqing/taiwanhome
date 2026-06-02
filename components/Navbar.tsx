@@ -9,19 +9,44 @@ export default function Navbar() {
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-4">
+      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center gap-4">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <div className="w-7 h-7 bg-red-600 rounded-lg flex items-center justify-center">
-            <span className="text-white text-xs font-bold">台</span>
+        <Link href="/" className="flex items-center gap-3 shrink-0">
+          {/* Emblem */}
+          <div
+            className="w-11 h-11 rounded-xl flex flex-col items-center justify-center shrink-0 relative overflow-hidden"
+            style={{
+              background: "linear-gradient(145deg, #c8102e, #8b0a1e)",
+              boxShadow: "0 2px 10px rgba(200,16,46,.35), inset 0 1px 0 rgba(255,255,255,.15)",
+            }}
+          >
+            {/* Shine overlay */}
+            <div className="absolute inset-x-0 top-0 h-1/2 bg-white/[0.07] rounded-t-xl" />
+            <span
+              className="relative text-white font-bold leading-none tracking-wide text-[13px]"
+              style={{ fontFamily: "'Georgia', serif" }}
+            >
+              8386
+            </span>
+            <span className="relative text-[7px] font-semibold tracking-[1.5px] mt-0.5" style={{ color: "rgba(255,215,100,.85)" }}>
+              找房網
+            </span>
           </div>
-          <div>
-            <div className="text-red-600 font-bold text-sm leading-none">
-              {lang === "zh" ? "台灣好房網" : "Nhà Đẹp ĐL"}
+
+          {/* Text */}
+          <div
+            className="flex flex-col justify-center leading-snug pl-3"
+            style={{ borderLeft: "1.5px solid #e0c080" }}
+          >
+            <div className="text-[13.5px] font-semibold text-gray-900 whitespace-nowrap" style={{ fontFamily: "'Georgia', serif", letterSpacing: ".3px" }}>
+              {lang === "zh"
+                ? <><span style={{ color: "#c8102e" }}>台灣</span>好房網</>
+                : <>Bất Động Sản <span style={{ color: "#c8102e" }}>Đài Loan</span></>
+              }
             </div>
-            <div className="text-gray-400 text-[10px] leading-none mt-0.5">
-              {lang === "zh" ? "Nhà Đẹp Đài Loan" : "台灣好房網"}
+            <div className="text-[10px] font-medium tracking-[2px] uppercase" style={{ color: "#a07030" }}>
+              {lang === "zh" ? "Taiwan Real Estate" : "台灣好房網"}
             </div>
           </div>
         </Link>
@@ -54,9 +79,9 @@ export default function Navbar() {
 
           {/* Chuyển ngôn ngữ */}
           <div className="flex bg-gray-100 rounded-lg p-0.5 text-xs font-medium">
-            {(["zh","vi"] as const).map(l => (
+            {(["zh", "vi"] as const).map(l => (
               <button key={l} onClick={() => setLang(l)}
-                className={`px-2.5 py-1 rounded-md transition ${lang===l ? "bg-white shadow-sm text-gray-900 font-semibold" : "text-gray-500"}`}>
+                className={`px-2.5 py-1 rounded-md transition ${lang === l ? "bg-white shadow-sm text-gray-900 font-semibold" : "text-gray-500"}`}>
                 {l === "zh" ? "中文" : "Việt"}
               </button>
             ))}
