@@ -12,41 +12,45 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center gap-4">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 shrink-0">
-          {/* Emblem */}
+        <Link href="/" className="flex items-center gap-2.5 shrink-0">
+          {/* Red emblem */}
           <div
-            className="w-11 h-11 rounded-xl flex flex-col items-center justify-center shrink-0 relative overflow-hidden"
+            className="flex flex-col items-center justify-center shrink-0"
             style={{
-              background: "linear-gradient(145deg, #c8102e, #8b0a1e)",
-              boxShadow: "0 2px 10px rgba(200,16,46,.35), inset 0 1px 0 rgba(255,255,255,.15)",
+              background: "#c8102e",
+              borderRadius: 8,
+              width: 52,
+              height: 48,
             }}
           >
-            {/* Shine overlay */}
-            <div className="absolute inset-x-0 top-0 h-1/2 bg-white/[0.07] rounded-t-xl" />
-            <span
-              className="relative text-white font-bold leading-none tracking-wide text-[13px]"
-              style={{ fontFamily: "'Georgia', serif" }}
-            >
+            <span style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 19, fontWeight: 700, color: "#fff", letterSpacing: 1, lineHeight: 1 }}>
               8386
             </span>
-            <span className="relative text-[7px] font-semibold tracking-[1.5px] mt-0.5" style={{ color: "rgba(255,215,100,.85)" }}>
+            <span style={{ fontSize: 8, fontWeight: 600, letterSpacing: 1.5, color: "#f5c518", marginTop: 3, lineHeight: 1 }}>
               找房網
             </span>
           </div>
 
+          {/* Gold divider */}
+          <div style={{ width: 2, height: 40, background: "#e8b800", borderRadius: 2, flexShrink: 0 }} />
+
           {/* Text */}
-          <div
-            className="flex flex-col justify-center leading-snug pl-3"
-            style={{ borderLeft: "1.5px solid #e0c080" }}
-          >
-            <div className="text-[13.5px] font-semibold text-gray-900 whitespace-nowrap" style={{ fontFamily: "'Georgia', serif", letterSpacing: ".3px" }}>
-              {lang === "zh"
-                ? <><span style={{ color: "#c8102e" }}>台灣</span>好房網</>
-                : <>Bất Động Sản <span style={{ color: "#c8102e" }}>Đài Loan</span></>
-              }
+          <div className="flex flex-col justify-center" style={{ gap: 3 }}>
+            <div style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
+              {lang === "zh" ? (
+                <>
+                  <span style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 16, fontWeight: 700, color: "#1a1a1a" }}>台灣</span>
+                  <span style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 16, fontWeight: 700, color: "#e05a00" }}>好房網</span>
+                </>
+              ) : (
+                <>
+                  <span style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 15, fontWeight: 700, color: "#1a1a1a" }}>Bất Động Sản </span>
+                  <span style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 15, fontWeight: 700, color: "#e05a00" }}>Đài Loan</span>
+                </>
+              )}
             </div>
-            <div className="text-[10px] font-medium tracking-[2px] uppercase" style={{ color: "#a07030" }}>
-              {lang === "zh" ? "Taiwan Real Estate" : "台灣好房網"}
+            <div style={{ fontSize: 9, color: "#888", letterSpacing: 2.5, textTransform: "uppercase", whiteSpace: "nowrap", fontWeight: 500 }}>
+              Taiwan Real Estate
             </div>
           </div>
         </Link>
