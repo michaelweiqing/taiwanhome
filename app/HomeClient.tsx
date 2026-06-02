@@ -339,10 +339,19 @@ export default function HomeClient({ featured, newest }: Props) {
             <p className="text-red-100 text-sm mb-5">
               {lang==="zh" ? "專業刊登，快速媒合買家與租客" : "Đăng tin chuyên nghiệp, kết nối người mua nhanh chóng"}
             </p>
-            <a href="https://line.me/ti/p/QRGpkXLga6" target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-white text-green-600 font-bold px-6 py-3 rounded-xl text-sm hover:bg-green-50 transition shadow-lg">
-              💬 {lang==="zh" ? "LINE 聯絡我們" : "Liên hệ qua LINE"}
-            </a>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <a href="https://line.me/ti/p/QRGpkXLga6" target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-white text-green-600 font-bold px-6 py-3 rounded-xl text-sm hover:bg-green-50 transition shadow-lg">
+                💬 {lang==="zh" ? "LINE 聯絡我們" : "Liên hệ qua LINE"}
+              </a>
+              <a href="https://www.facebook.com/MichaelTranDuyKhanh/" target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-white text-blue-600 font-bold px-6 py-3 rounded-xl text-sm hover:bg-blue-50 transition shadow-lg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
+                </svg>
+                {lang==="zh" ? "Facebook 聯絡" : "Liên hệ Facebook"}
+              </a>
+            </div>
           </div>
         </section>
       </div>
