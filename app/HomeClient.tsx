@@ -339,7 +339,7 @@ export default function HomeClient({ featured, newest }: Props) {
             <p className="text-red-100 text-sm mb-5">
               {lang==="zh" ? "專業刊登，快速媒合買家與租客" : "Đăng tin chuyên nghiệp, kết nối người mua nhanh chóng"}
             </p>
-            <a href="https://line.me" target="_blank" rel="noopener noreferrer"
+            <a href="https://line.me/ti/p/QRGpkXLga6" target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-white text-green-600 font-bold px-6 py-3 rounded-xl text-sm hover:bg-green-50 transition shadow-lg">
               💬 {lang==="zh" ? "LINE 聯絡我們" : "Liên hệ qua LINE"}
             </a>

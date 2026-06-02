@@ -76,7 +76,7 @@ export default function Navbar() {
           </Link>
 
           {/* LINE */}
-          <a href="https://line.me" target="_blank" rel="noopener noreferrer"
+          <a href="https://line.me/ti/p/QRGpkXLga6" target="_blank" rel="noopener noreferrer"
             className="hidden sm:flex items-center gap-1.5 text-xs text-green-600 border border-green-200 rounded-lg px-3 py-1.5 hover:bg-green-50 transition">
             💬 LINE
           </a>
@@ -120,7 +120,7 @@ export default function Navbar() {
             className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
             ❤️ {lang === "zh" ? "我的收藏" : "Nhà yêu thích"}
           </Link>
-          <a href="https://line.me" target="_blank" rel="noopener noreferrer"
+          <a href="https://line.me/ti/p/QRGpkXLga6" target="_blank" rel="noopener noreferrer"
             onClick={() => setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-green-50 text-green-600 transition">
             💬 LINE {lang === "zh" ? "聯絡" : "liên hệ"}
