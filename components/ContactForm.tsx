@@ -60,18 +60,18 @@ export default function ContactForm({ property: p }: Props) {
       </div>
 
       {/* Thông tin đại lý */}
-      <div className="flex items-center gap-3 py-1">
+      <div className="flex items-center gap-4 py-1">
         {avatar ? (
           <img src={avatar} alt={agentName}
-            className="w-14 h-14 rounded-full object-cover object-top border-2 border-red-100 shrink-0" />
+            className="w-20 h-20 rounded-full object-cover object-top border-2 border-red-100 shrink-0" />
         ) : (
-          <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-lg shrink-0">
+          <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-2xl shrink-0">
             {agentName.charAt(0)}
           </div>
         )}
         <div>
-          <p className="font-bold text-gray-900">{agentName}</p>
-          <p className="text-sm text-gray-500">{p.agent_phone}</p>
+          <p className="font-bold text-gray-900 text-lg">{agentName}</p>
+          <p className="text-base text-gray-500 mt-0.5">{p.agent_phone}</p>
         </div>
       </div>
 
