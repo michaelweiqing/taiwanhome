@@ -88,13 +88,13 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
 
         {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-3 flex-wrap"></div>
-          <Link href="/" className="hover:text-red-600 transition">{t.homePage}</Link>
-          <span>/</span>
-          <Link href="/listings" className="hover:text-red-600 transition">{t.listingPage}</Link>
-          <span>/</span>
-          <span className="text-gray-700 truncate max-w-[200px]">{title}</span>
-        </nav>
+        <nav className="flex items-center gap-1.5 text-xs text-gray-400 mb-3 flex-wrap">
+  <Link href="/" className="hover:text-red-600 transition">{t.homePage}</Link>
+  <span>/</span>
+  <Link href="/listings" className="hover:text-red-600 transition">{t.listingPage}</Link>
+  <span>/</span>
+  <span className="text-gray-700 truncate max-w-[200px]">{title}</span>
+</nav>
 
         {/* Tiêu đề */}
         <div className="mb-5">
