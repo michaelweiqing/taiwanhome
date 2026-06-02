@@ -125,6 +125,10 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             <span>📍 {address}</span>
             <span className="text-gray-300">|</span>
             <span className="text-blue-600">🚇 {mrt} · {p.walk_minutes}{t.minuteWalk}</span>
+            <span className="text-gray-300">|</span>
+            <span className="flex items-center gap-1 text-xs bg-gray-100 text-gray-500 font-mono px-2 py-0.5 rounded-md">
+              🆔 {p.id}
+            </span>
           </div>
         </div>
 
@@ -193,7 +197,6 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-400 pb-2">
               <span>🕐 {t.postedAt}: {postedDate}</span>
               <span>👁 {t.views}: {(p.views||0).toLocaleString()}</span>
-              <span>🆔 {p.id}</span>
             </div>
           </div>
 

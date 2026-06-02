@@ -94,10 +94,13 @@ export default function PropertyCard({ property: p }: { property: Property }) {
               </span>
             )}
           </div>
-          <button onClick={e => { e.preventDefault(); e.stopPropagation(); toggle(p.id) }}
-            className="shrink-0 text-base leading-none mt-0.5 hover:scale-110 transition">
-            {fav ? "❤️" : "🤍"}
-          </button>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="text-[10px] text-gray-300 font-mono leading-none mt-0.5">{p.id}</span>
+            <button onClick={e => { e.preventDefault(); e.stopPropagation(); toggle(p.id) }}
+              className="text-base leading-none mt-0.5 hover:scale-110 transition">
+              {fav ? "❤️" : "🤍"}
+            </button>
+          </div>
         </div>
 
         {/* Tiêu đề */}
