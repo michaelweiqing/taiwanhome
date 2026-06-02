@@ -15,13 +15,6 @@ const CITIES = [
   { zh:"台南市", vi:"Đài Nam",   emoji:"🏯", n:1482, slug:"台南市" },
 ]
 
-const QUICK_TAGS = [
-  { zh:"近捷運", vi:"Gần MRT",      icon:"🚇" },
-  { zh:"寵物友善", vi:"Thú cưng OK", icon:"🐾" },
-  { zh:"含停車", vi:"Có chỗ đỗ",    icon:"🚗" },
-  { zh:"含網路", vi:"Có Wifi",       icon:"📶" },
-]
-
 export default function HomeClient({ featured, newest }: Props) {
   const { lang, t } = useLang()
   const router = useRouter()
@@ -77,18 +70,6 @@ export default function HomeClient({ featured, newest }: Props) {
                 {lang==="zh" ? "搜尋" : "Tìm kiếm"}
               </button>
             </div>
-          </div>
-
-          {/* Quick tags */}
-          <div className="flex flex-wrap justify-center gap-2 mt-5">
-            {QUICK_TAGS.map(tag => (
-              <button key={tag.zh}
-                onClick={() => router.push(`/listings?q=${encodeURIComponent(tag.zh)}`)}
-                className="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white text-xs px-3 py-1.5 rounded-full transition">
-                <span>{tag.icon}</span>
-                <span>{lang==="zh" ? tag.zh : tag.vi}</span>
-              </button>
-            ))}
           </div>
         </div>
       </div>
@@ -191,7 +172,7 @@ export default function HomeClient({ featured, newest }: Props) {
         {[
           { icon:"🏠", zh:"首頁", vi:"Trang chủ", href:"/" },
           { icon:"🔍", zh:"搜尋", vi:"Tìm kiếm", href:"/listings" },
-          { icon:"❤️", zh:"收藏", vi:"Yêu thích", href:"/" },
+          { icon:"❤️", zh:"收藏", vi:"Yêu thích", href:"/favorites" },
           { icon:"👤", zh:"我的", vi:"Cá nhân", href:"/" },
         ].map(item => (
           <Link key={item.href+item.zh} href={item.href}
