@@ -1,15 +1,5 @@
 "use client"
 import { useEffect, useRef } from "react"
-import L from "leaflet"
-import "leaflet/dist/leaflet.css"
-
-// Fix icon mặc định của Leaflet bị lỗi trong Next.js
-delete (L.Icon.Default.prototype as any)._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-})
 
 interface Props {
   lat: number
@@ -18,37 +8,51 @@ interface Props {
 }
 
 export default function LeafletMap({ lat, lng, title }: Props) {
-  const mapRef = useRef<L.Map | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const mapRef = useRef<any>(null)
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
 
-    const map = L.map(containerRef.current, {
-      center: [lat, lng],
-      zoom: 16,
-      zoomControl: true,
-      scrollWheelZoom: false,
+    // Import Leaflet chỉ ở client
+    import("leaflet").then(L => {
+      import("leaflet/dist/leaflet.css")
+
+      // Fix icon
+      const DefaultIcon = L.default.icon({
+        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+        iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+      })
+
+      const map = L.default.map(containerRef.current!, {
+        center: [lat, lng],
+        zoom: 16,
+        scrollWheelZoom: false,
+        zoomControl: true,
+      })
+
+      L.default.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap",
+      }).addTo(map)
+
+      L.default.marker([lat, lng], { icon: DefaultIcon })
+        .addTo(map)
+        .bindPopup(title)
+        .openPopup()
+
+      mapRef.current = map
     })
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '© <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
-    }).addTo(map)
-
-    L.marker([lat, lng])
-      .addTo(map)
-      .bindPopup(`<b>${title}</b>`)
-      .openPopup()
-
-    mapRef.current = map
-
     return () => {
-      map.remove()
-      mapRef.current = null
+      if (mapRef.current) {
+        mapRef.current.remove()
+        mapRef.current = null
+      }
     }
   }, [lat, lng, title])
 
-  return (
-    <div ref={containerRef} className="w-full h-48 rounded-xl z-0" />
-  )
+  return <div ref={containerRef} className="w-full h-full" />
 }
