@@ -72,7 +72,10 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     { label: t.totalArea, value: `${p.area_ping}${t.pingUnit} (${pingToM2(p.area_ping)}m²)` },
     ...(p.price_per_ping ? [{ label: t.pricePerPing, value: `${p.price_per_ping.toLocaleString()}萬/${t.pingUnit}` }] : []),
     { label: lang==="zh"?"格局":"Bố cục", value: `${p.bedrooms}${t.bedrooms} / ${p.bathrooms}${t.bathrooms}` },
-    { label: lang==="zh"?"樓層":"Tầng/Tổng số tầng", value: `${p.floor} / ${p.total_floors} F` },
+    { label: lang==="zh"?"樓層":"Tầng/Tổng số tầng", value: (() => {
+        const floorDisplay = (lang==="vi" && p.floor==="整棟") ? "Cả căn" : p.floor
+        return `${floorDisplay} / ${p.total_floors} F`
+      })() },
     { label: t.age, value: `${p.age}${t.yearUnit}` },
     { label: t.facing, value: facing },
     { label: lang==="zh"?"物件類型":"Loại BĐS", value: propType },

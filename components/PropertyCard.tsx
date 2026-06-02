@@ -23,13 +23,15 @@ export default function PropertyCard({ property: p }: { property: Property }) {
 
   const img = (!imgErr && p.images?.[0]) ? p.images[0] : null
 
-  // Hiển thị tầng: nếu là số thì "X/YF", nếu là chữ thì hiển thị thẳng
+  // Hiển thị tầng: nếu là số thì "X/YF", nếu là chữ thì dịch sang VI nếu cần
+  const FLOOR_VI: Record<string, string> = { "整棟": "Cả căn", "全層": "Toàn tầng" }
   const floorLabel = (() => {
     const num = Number(p.floor)
     if (!isNaN(num) && String(p.floor).trim() !== "") {
       return `${p.floor}/${p.total_floors}F`
     }
-    return String(p.floor) // chữ như "整棟", "全層", "Toàn bộ"
+    const display = (lang==="vi" && FLOOR_VI[p.floor]) ? FLOOR_VI[p.floor] : p.floor
+    return `${display}/${p.total_floors}F`
   })()
 
   return (
