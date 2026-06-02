@@ -49,7 +49,6 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
   const title    = lang==="zh" ? p.title_zh       : p.title_vi
   const address  = lang==="zh" ? p.address        : p.address_vi
   const desc     = lang==="zh" ? p.description_zh : p.description_vi
-  const mrt      = lang==="zh" ? p.near_mrt       : p.near_mrt_vi
   const features = lang==="zh" ? p.features       : p.features_vi
   const facing   = lang==="zh" ? p.facing         : (FACING_VI[p.facing] ?? p.facing)
   const propType = PROP_LABEL[p.property_type]?.[lang] ?? p.property_type
@@ -79,7 +78,6 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     { label: t.age, value: `${p.age}${t.yearUnit}` },
     { label: t.facing, value: facing },
     { label: lang==="zh"?"物件類型":"Loại BĐS", value: propType },
-    { label: lang==="zh"?"距捷運":"Cách MRT/trạm ga", value: `${mrt} · ${p.walk_minutes}${t.minuteWalk}` },
     { label: lang==="zh"?"停車位":"Chỗ đậu xe", value: parkingDisplay },
     { label: lang==="zh"?"管理費":"Phí quản lý", value: mgmtFeeDisplay },
   ]
@@ -126,7 +124,6 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
 
           <div className="flex flex-wrap items-center gap-2 mt-2 text-sm text-gray-500">
             <span>📍 {address}</span>
-            <span className="text-gray-300">|</span>
             <span className="text-gray-300">|</span>
             <span className="flex items-center gap-1 text-xs bg-gray-100 text-gray-500 font-mono px-2 py-0.5 rounded-md">
               🆔 {p.id}

@@ -18,7 +18,6 @@ export default function PropertyCard({ property: p }: { property: Property }) {
   const title    = lang==="zh" ? p.title_zh  : p.title_vi
   const district = lang==="zh" ? p.district  : p.district_vi
   const city     = lang==="zh" ? p.city      : p.city_vi
-  const mrt      = lang==="zh" ? p.near_mrt  : p.near_mrt_vi
   const ptype    = lang==="zh" ? TYPE_ZH[p.property_type] : TYPE_VI[p.property_type]
 
   const img = (!imgErr && p.images?.[0]) ? p.images[0] : null
@@ -135,11 +134,8 @@ export default function PropertyCard({ property: p }: { property: Property }) {
           ))}
         </div>
 
-        {/* MRT + tuổi nhà */}
-        <div className="mt-auto flex items-center justify-between">
-          <span className="text-[11px] text-blue-600 font-medium flex items-center gap-1">
-            🚇 {mrt} · {p.walk_minutes}{t.minuteWalk}
-          </span>
+        {/* Tuổi nhà */}
+        <div className="mt-auto flex items-center justify-end">
           <span className="text-[11px] text-gray-400">{p.age}{t.yearUnit}</span>
         </div>
       </div>

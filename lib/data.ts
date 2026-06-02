@@ -34,6 +34,9 @@ export interface Property {
   facing: string
   features: string[]
   features_vi: string[]
+  near_mrt: string
+  near_mrt_vi: string
+  walk_minutes: number
   nearby: NearbyPlaces | null   // ← mới
   images: string[]
   agent_name: string
