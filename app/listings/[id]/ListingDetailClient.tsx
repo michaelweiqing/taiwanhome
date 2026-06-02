@@ -110,14 +110,17 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
 <div className="flex items-start justify-between gap-3 flex-wrap">
   <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
   <div className="flex items-center gap-2 shrink-0">
-    {/* Nút yêu thích */}
-    <FavoriteButton propertyId={p.id} size="lg" />
-    {/* Nút chia sẻ - giữ nguyên */}
-    <button onClick={() => { navigator.clipboard?.writeText(window.location.href); setShared(true); setTimeout(()=>setShared(false),2000) }}
-      className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition">
-      {shared ?
-            </button>
-            </div>
+  <FavoriteButton propertyId={p.id} size="lg" />
+  <button
+    onClick={() => {
+      navigator.clipboard?.writeText(window.location.href)
+      setShared(true)
+      setTimeout(() => setShared(false), 2000)
+    }}
+    className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition shrink-0">
+    {shared ? "✅ Đã copy" : "🔗 " + t.share}
+  </button>
+</div>
           </div>
           <div className="flex flex-wrap items-center gap-2 mt-2 text-sm text-gray-500">
             <span>📍 {address}</span>
