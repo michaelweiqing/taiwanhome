@@ -90,6 +90,8 @@ export default function HomeClient({ featured, newest }: Props) {
   const [q, setQ] = useState("")
   const [selectedCity, setSelectedCity] = useState("")
   const [selectedDistrict, setSelectedDistrict] = useState("")
+  const [selectedType, setSelectedType] = useState("")
+  const [selectedPrice, setSelectedPrice] = useState("")
 
   function handleSearch() {
     const params = new URLSearchParams()
@@ -97,10 +99,35 @@ export default function HomeClient({ featured, newest }: Props) {
     if (q) params.set("q", q)
     if (selectedCity) params.set("city", selectedCity)
     if (selectedDistrict) params.set("district", selectedDistrict)
+    if (selectedType) params.set("property_type", selectedType)
+    if (selectedPrice) params.set("price", selectedPrice)
     router.push(`/listings?${params.toString()}`)
   }
 
   const districts = selectedCity ? DISTRICTS[selectedCity] ?? [] : []
+
+  const PROPERTY_TYPES = [
+    { val:"apartment_walkup", zh:"公寓(無電梯)",    vi:"Chung cư thang bộ" },
+    { val:"apartment",        zh:"電梯大樓",         vi:"Chung cư thang máy" },
+    { val:"house",            zh:"透天厝",           vi:"Nhà cả căn" },
+    { val:"villa",            zh:"別墅",             vi:"Biệt thự" },
+  ]
+
+  const PRICE_RANGES = tab === "rent"
+    ? [
+        { val:"0-20000",    zh:"2萬以下/月",       vi:"Dưới 20.000 NTD/tháng" },
+        { val:"20000-30000",zh:"2-3萬/月",          vi:"20.000 - 30.000 NTD/tháng" },
+        { val:"30000-50000",zh:"3-5萬/月",          vi:"30.000 - 50.000 NTD/tháng" },
+        { val:"50000-0",    zh:"5萬以上/月",        vi:"Trên 50.000 NTD/tháng" },
+      ]
+    : [
+        { val:"0-750",      zh:"750萬以下",         vi:"Dưới 750 vạn Đài tệ" },
+        { val:"750-1000",   zh:"750~1000萬",        vi:"750 - 1.000 vạn Đài tệ" },
+        { val:"1000-1500",  zh:"1000~1500萬",       vi:"1.000 - 1.500 vạn Đài tệ" },
+        { val:"1500-2000",  zh:"1500~2000萬",       vi:"1.500 - 2.000 vạn Đài tệ" },
+        { val:"2000-3000",  zh:"2000~3000萬",       vi:"2.000 - 3.000 vạn Đài tệ" },
+        { val:"3000-0",     zh:"3000萬以上",        vi:"Trên 3.000 vạn Đài tệ" },
+      ]
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -185,6 +212,43 @@ export default function HomeClient({ featured, newest }: Props) {
                 className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl text-sm font-semibold transition shrink-0">
                 {lang==="zh" ? "搜尋" : "Tìm kiếm"}
               </button>
+            </div>
+
+            {/* Property type + Price row */}
+            <div className="flex items-center gap-2 px-3 pb-3">
+              {/* Loại nhà */}
+              <div className="relative flex-1">
+                <select
+                  value={selectedType}
+                  onChange={e => setSelectedType(e.target.value)}
+                  className="w-full appearance-none bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none focus:border-red-400 cursor-pointer pr-8"
+                >
+                  <option value="">{lang==="zh" ? "形態（不限）" : "Loại nhà (Tất cả)"}</option>
+                  {PROPERTY_TYPES.map(pt => (
+                    <option key={pt.val} value={pt.val}>
+                      {lang==="zh" ? pt.zh : pt.vi}
+                    </option>
+                  ))}
+                </select>
+                <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
+              </div>
+
+              {/* Giá */}
+              <div className="relative flex-1">
+                <select
+                  value={selectedPrice}
+                  onChange={e => setSelectedPrice(e.target.value)}
+                  className="w-full appearance-none bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none focus:border-red-400 cursor-pointer pr-8"
+                >
+                  <option value="">{lang==="zh" ? "售價（不限）" : "Giá (Tất cả)"}</option>
+                  {PRICE_RANGES.map(pr => (
+                    <option key={pr.val} value={pr.val}>
+                      {lang==="zh" ? pr.zh : pr.vi}
+                    </option>
+                  ))}
+                </select>
+                <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
+              </div>
             </div>
           </div>
         </div>
