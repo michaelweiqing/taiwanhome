@@ -40,7 +40,7 @@ export default function Navbar() {
               {lang === "zh" ? (
                 <>
                   <span style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 16, fontWeight: 700, color: "#1a1a1a" }}>台灣</span>
-                  <span style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 16, fontWeight: 700, color: "#e05a00" }}>好房網</span>
+                  <span style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 16, fontWeight: 700, color: "#e05a00" }}>找房網</span>
                 </>
               ) : (
                 <>
