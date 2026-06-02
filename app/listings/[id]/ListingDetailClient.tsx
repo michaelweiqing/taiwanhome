@@ -127,7 +127,6 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
           <div className="flex flex-wrap items-center gap-2 mt-2 text-sm text-gray-500">
             <span>📍 {address}</span>
             <span className="text-gray-300">|</span>
-            <span className="text-blue-600">🚇 {mrt} · {p.walk_minutes}{t.minuteWalk}</span>
             <span className="text-gray-300">|</span>
             <span className="flex items-center gap-1 text-xs bg-gray-100 text-gray-500 font-mono px-2 py-0.5 rounded-md">
               🆔 {p.id}
@@ -172,6 +171,37 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                 ))}
               </div>
             </div>
+
+            {/* Tiện ích xung quanh */}
+            {p.nearby && Object.values(p.nearby).some(Boolean) && (
+              <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5">
+                <SectionTitle>{lang==="zh" ? "周邊生活機能" : "Tiện ích xung quanh"}</SectionTitle>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {([
+                    { key:"convenience", icon:"🏪", zh:"便利商店", vi:"Cửa hàng tiện lợi" },
+                    { key:"supermarket",  icon:"🛒", zh:"超市",     vi:"Siêu thị" },
+                    { key:"market",       icon:"🧺", zh:"傳統市場", vi:"Chợ truyền thống" },
+                    { key:"mall",         icon:"🏬", zh:"百貨公司", vi:"Trung tâm thương mại" },
+                    { key:"park",         icon:"🌳", zh:"公園綠地", vi:"Công viên" },
+                    { key:"school",       icon:"🏫", zh:"學校",     vi:"Trường học" },
+                    { key:"hospital",     icon:"🏥", zh:"醫療機構", vi:"Bệnh viện / Y tế" },
+                    { key:"nightmarket",  icon:"🍢", zh:"夜市",     vi:"Chợ đêm" },
+                  ] as const).filter(item => p.nearby?.[item.key]).map(item => (
+                    <div key={item.key} className="flex items-start gap-3 bg-gray-50 rounded-xl px-3 py-2.5">
+                      <span className="text-xl shrink-0 mt-0.5">{item.icon}</span>
+                      <div className="min-w-0">
+                        <div className="text-[11px] text-gray-400 font-medium">
+                          {lang==="zh" ? item.zh : item.vi}
+                        </div>
+                        <div className="text-sm text-gray-800 font-medium leading-snug">
+                          {p.nearby![item.key]}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Mô tả */}
             <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5">

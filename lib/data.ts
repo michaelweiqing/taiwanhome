@@ -1,5 +1,16 @@
 import { supabase } from "@/lib/supabase"
 
+export interface NearbyPlaces {
+  convenience?: string   // 近便利商店
+  supermarket?: string   // 近超市
+  market?: string        // 近傳統市場
+  mall?: string          // 近百貨公司
+  park?: string          // 近公園綠地
+  school?: string        // 近學校
+  hospital?: string      // 近醫療機構
+  nightmarket?: string   // 近夜市
+}
+
 export interface Property {
   id: string
   title_zh: string
@@ -17,15 +28,13 @@ export interface Property {
   area_ping: number
   bedrooms: number
   bathrooms: number
-  floor: string          // ← đổi từ number sang string
+  floor: string
   total_floors: number
   age: number
   facing: string
   features: string[]
   features_vi: string[]
-  near_mrt: string
-  near_mrt_vi: string
-  walk_minutes: number
+  nearby: NearbyPlaces | null   // ← mới
   images: string[]
   agent_name: string
   agent_phone: string
