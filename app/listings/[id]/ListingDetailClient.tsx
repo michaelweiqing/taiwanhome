@@ -9,6 +9,7 @@ import ImageGallery from "@/components/ImageGallery"
 import ContactForm from "@/components/ContactForm"
 import PropertyCard from "@/components/PropertyCard"
 import MortgageCalculator from "@/components/MortgageCalculator"
+import FavoriteButton from "@/components/FavoriteButton"
 
 const FEAT_ICONS: Record<string,string> = {
   "電梯":"🛗","停車位":"🚗","管理員":"👮","陽台":"🌿","冷氣":"❄️","健身房":"💪",
@@ -105,12 +106,18 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             {p.is_featured && <span className="bg-amber-100 text-amber-600 text-xs font-bold px-3 py-1 rounded-full">⭐ {t.featured}</span>}
             <span className="bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full">{propType}</span>
           </div>
-          <div className="flex items-start justify-between gap-3 flex-wrap">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
-            <button onClick={() => { navigator.clipboard?.writeText(window.location.href); setShared(true); setTimeout(()=>setShared(false),2000) }}
-              className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition shrink-0">
-              {shared ? "✅ Đã copy" : "🔗 " + t.share}
+          // THAY BẰNG:
+<div className="flex items-start justify-between gap-3 flex-wrap">
+  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
+  <div className="flex items-center gap-2 shrink-0">
+    {/* Nút yêu thích */}
+    <FavoriteButton propertyId={p.id} size="lg" />
+    {/* Nút chia sẻ - giữ nguyên */}
+    <button onClick={() => { navigator.clipboard?.writeText(window.location.href); setShared(true); setTimeout(()=>setShared(false),2000) }}
+      className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition">
+      {shared ?
             </button>
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 mt-2 text-sm text-gray-500">
             <span>📍 {address}</span>
@@ -202,6 +209,20 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
           </div>
         )}
       </div>
+      {/* ── Sticky CTA mobile ── */}
+<div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 p-3 grid grid-cols-2 gap-2 lg:hidden">
+  <a href={`tel:${p.agent_phone}`}
+    className="flex items-center justify-center gap-2 bg-red-600 text-white font-bold py-3 rounded-xl text-sm transition active:scale-95">
+    📞 {t.callNow}
+  </a>
+  <a href={`https://line.me/ti/p/~${p.agent_line}`} target="_blank" rel="noopener noreferrer"
+    className="flex items-center justify-center gap-2 bg-[#06C755] text-white font-bold py-3 rounded-xl text-sm transition active:scale-95">
+    💬 LINE
+  </a>
+</div>
+
+{/* Padding bottom để content không bị che bởi sticky CTA */}
+<div className="h-20 lg:hidden" />
     </div>
   )
 }
