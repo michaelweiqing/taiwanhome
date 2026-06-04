@@ -19,3 +19,13 @@ html, body {
   overflow-x: hidden;
   max-width: 100vw;
 }
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Fix text tràn trên mobile */
+p, span, h1, h2, h3 {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}

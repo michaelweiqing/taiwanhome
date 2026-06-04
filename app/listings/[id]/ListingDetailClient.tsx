@@ -90,8 +90,8 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
   ]
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="max-w-6xl mx-auto px-4 py-5">
+    <div className="bg-gray-50 min-h-screen overflow-x-hidden">
+  <div className="max-w-6xl mx-auto px-4 py-5">
 
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-4 flex-wrap">
