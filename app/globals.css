@@ -1,5 +1,32 @@
 @import "tailwindcss";
 
+/* ── Reset overflow mobile ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* ── Fix text tràn ── */
+p, span, div, h1, h2, h3, h4, li {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  min-width: 0;
+}
+
+/* ── Fix flex items không shrink ── */
+.flex > * {
+  min-width: 0;
+}
+
+/* ── Utilities ── */
 @layer utilities {
   .line-clamp-2 {
     display: -webkit-box;
@@ -13,19 +40,4 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
-}
-html, body {
-  overflow-x: hidden;
-  max-width: 100vw;
-}
-html, body {
-  overflow-x: hidden;
-  max-width: 100vw;
-}
-
-/* Fix text tràn trên mobile */
-p, span, h1, h2, h3 {
-  overflow-wrap: break-word;
-  word-break: break-word;
 }
