@@ -184,11 +184,19 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             <div style={{ background:"#fff", borderRadius:16, border:"1px solid #f3f4f6", padding:16, marginBottom:16 }}>
               <SectionTitle>{t.location}</SectionTitle>
               <p style={{ fontSize:13, color:"#6b7280", marginBottom:12, wordBreak:"break-word" }}>📍 {address} · 🚇 {mrt}</p>
+              {/* Nhúng OpenStreetMap - miễn phí, không cần API key */}
+              <div style={{ width:"100%", borderRadius:12, overflow:"hidden", border:"1px solid #e5e7eb" }}>
+                <iframe
+                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${p.lng-0.003},${p.lat-0.002},${p.lng+0.003},${p.lat+0.002}&layer=mapnik&marker=${p.lat},${p.lng}`}
+                  style={{ width:"100%", height:240, border:"none", display:"block" }}
+                  loading="lazy"
+                  title="Bản đồ vị trí"
+                />
+              </div>
               <a href={`https://www.google.com/maps?q=${p.lat},${p.lng}`}
                 target="_blank" rel="noopener noreferrer"
-                style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:12, width:"100%", height:120, borderRadius:12, background:"linear-gradient(135deg,#eff6ff,#eef2ff)", border:"1px solid #bfdbfe", textDecoration:"none" }}>
-                <span style={{ fontSize:36 }}>🗺️</span>
-                <span style={{ fontSize:13, color:"#2563eb", fontWeight:500 }}>{t.openMap}</span>
+                style={{ display:"inline-flex", alignItems:"center", gap:6, marginTop:8, fontSize:13, color:"#2563eb", fontWeight:500, textDecoration:"none" }}>
+                🗺️ {t.openMap} ↗
               </a>
             </div>
 
