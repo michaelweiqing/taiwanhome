@@ -135,9 +135,9 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             <ImageGallery images={p.images || []} title={title} />
 
             {/* Thông số */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
+            <div className="bg-white rounded-2xl border border-gray-100 p-4 overflow-hidden">
               <SectionTitle>{t.propertyInfo}</SectionTitle>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
                 {specs.map(s => (
                   <div key={s.label}>
                     <p className="text-xs text-gray-400 mb-0.5">{s.label}</p>
@@ -152,7 +152,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             {/* Tiện ích */}
             <div className="bg-white rounded-2xl border border-gray-100 p-5">
               <SectionTitle>{t.features}</SectionTitle>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 overflow-hidden">
                 {(features || []).map(feat => (
                   <span key={feat} className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 text-gray-700 text-sm px-3 py-1.5 rounded-xl">
                     {FEAT_ICONS[feat] ?? "✔️"} {feat}
