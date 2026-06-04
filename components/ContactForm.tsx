@@ -85,10 +85,10 @@ export default function ContactForm({ property: p }: Props) {
           <p>好市多德聚仁加盟店</p>
           <p className="mt-1">
             {lang === "zh"
-              ? "營業員執照：(113)登字第456212號"
-              : "Giấy phép hành nghề số: (113) 登字第456212號"}
+              ? "營業員證號(113)登字第456212號"
+              : "Giấy phép hành nghề số (113) 登字第456212號"}
           </p>
-          <p>經紀人員：陳秀貞（104）中市經紀字第01633號</p>
+          <p>經紀人證號：陳秀貞（104）中市經紀字第01633號</p>
         </div>
       )}
 
