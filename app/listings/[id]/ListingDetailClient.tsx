@@ -90,8 +90,8 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
   ]
 
   return (
-    <div className="bg-gray-50 min-h-screen overflow-x-hidden">
-  <div className="max-w-6xl mx-auto px-4 py-5">
+    <div className="bg-gray-50 min-h-screen w-full overflow-x-hidden">
+      <div className="max-w-6xl mx-auto px-4 py-5">
 
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-4 flex-wrap">
@@ -135,9 +135,9 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             <ImageGallery images={p.images || []} title={title} />
 
             {/* Thông số */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-4 overflow-hidden">
+            <div className="bg-white rounded-2xl border border-gray-100 p-5">
               <SectionTitle>{t.propertyInfo}</SectionTitle>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {specs.map(s => (
                   <div key={s.label}>
                     <p className="text-xs text-gray-400 mb-0.5">{s.label}</p>
@@ -152,7 +152,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             {/* Tiện ích */}
             <div className="bg-white rounded-2xl border border-gray-100 p-5">
               <SectionTitle>{t.features}</SectionTitle>
-              <div className="flex flex-wrap gap-2 overflow-hidden">
+              <div className="flex flex-wrap gap-2 w-full">
                 {(features || []).map(feat => (
                   <span key={feat} className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 text-gray-700 text-sm px-3 py-1.5 rounded-xl">
                     {FEAT_ICONS[feat] ?? "✔️"} {feat}
@@ -164,7 +164,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             {/* Mô tả */}
             <div className="bg-white rounded-2xl border border-gray-100 p-5">
               <SectionTitle>{t.description}</SectionTitle>
-              <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">{desc}</p>
+              <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line break-words w-full">{desc}</p>
             </div>
 
             {/* Tiện ích xung quanh */}
