@@ -2,7 +2,7 @@
 import Link from "next/link"
 import { useState } from "react"
 import type { Property } from "@/lib/data"
-import { formatPrice, formatFloor, pingToM2 } from "@/lib/data"
+import { formatPrice, pingToM2 } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
 import ImageGallery from "@/components/ImageGallery"
 import ContactForm from "@/components/ContactForm"
@@ -11,14 +11,11 @@ import PropertyCard from "@/components/PropertyCard"
 const FEAT_ICONS: Record<string,string> = {
   "電梯":"🛗","停車位":"🚗","管理員":"👮","陽台":"🌿","冷氣":"❄️","健身房":"💪",
   "游泳池":"🏊","寵物友善":"🐾","網路":"📶","洗衣機":"🫧","近高鐵":"🚄",
-  "全新裝潢":"✨","近商圈":"🛍️","頂樓花園":"🌸","智慧門禁":"🔐","室內電梯":"🛗",
-  "無尾巷":"🏘️","優質學區":"🏫","間間套房":"🚪","近火車站":"🚉","近Costco":"🛒",
-  "Thang máy":"🛗","Thang máy trong nhà":"🛗","Chỗ đậu xe":"🚗","Chỗ đậu xe sân":"🚗",
-  "Bảo vệ 24h":"👮","Ban công":"🌿","Điều hoà":"❄️","Phòng gym":"💪",
-  "Hồ bơi":"🏊","Thú cưng OK":"🐾","Wifi miễn phí":"📶","Máy giặt":"🫧",
-  "Gần HSR":"🚄","Nội thất mới":"✨","Vườn sân thượng":"🌸","Cổng thông minh":"🔐",
-  "Wifi":"📶","Mới hoàn toàn":"✨","Hẻm cụt an toàn":"🏘️","Khu học tốt":"🏫",
-  "Mỗi phòng có WC riêng":"🚪","Gần ga tàu":"🚉","Gần Costco":"🛒",
+  "全新裝潢":"✨","近商圈":"🛍️","頂樓花園":"🌸","智慧門禁":"🔐",
+  "Thang máy":"🛗","Chỗ đậu xe":"🚗","Bảo vệ 24h":"👮","Ban công":"🌿",
+  "Điều hoà":"❄️","Phòng gym":"💪","Hồ bơi":"🏊","Thú cưng OK":"🐾",
+  "Wifi miễn phí":"📶","Máy giặt":"🫧","Gần HSR":"🚄","Nội thất mới":"✨",
+  "Vườn sân thượng":"🌸","Cổng thông minh":"🔐","Wifi":"📶",
 }
 const FACING_VI: Record<string,string> = {
   "東":"Đông","西":"Tây","南":"Nam","北":"Bắc",
@@ -35,7 +32,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2 mb-4">
       <span className="w-1 h-5 bg-red-500 rounded-full inline-block shrink-0" />
-      <h2 className="font-bold text-gray-900 text-base">{children}</h2>
+      <h2 className="font-bold text-gray-900">{children}</h2>
     </div>
   )
 }
@@ -54,174 +51,146 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
   const facing   = lang==="zh" ? p.facing         : (FACING_VI[p.facing] ?? p.facing)
   const propType = PROP_LABEL[p.property_type]?.[lang] ?? p.property_type
 
-  const floorDisplay = formatFloor(p.floor, p.total_floors, lang)
   const postedDate = new Date(p.posted_at).toLocaleDateString(
     lang==="zh" ? "zh-TW" : "vi-VN",
     { year:"numeric", month:"long", day:"numeric" }
   )
-  const mgmtFee = p.management_fee
+
+  const mgmtFeeDisplay = p.management_fee
     ? (lang==="zh" ? `NT$${p.management_fee.toLocaleString()}/月` : `NT$${p.management_fee.toLocaleString()}/tháng`)
     : (lang==="zh" ? "無" : "Không có")
-  const parking = p.parking
-    ? (lang==="zh" ? "✅ 有" : "✅ Có")
-    : (lang==="zh" ? "❌ 無" : "❌ Không")
+
+  const parkingDisplay = p.parking
+    ? (lang==="zh" ? "✅ 有停車位" : "✅ Có chỗ đậu xe")
+    : (lang==="zh" ? "❌ 無停車位" : "❌ Không có")
+
+  // Format tầng — thay thế formatFloor đã bị xoá
+  const floorDisplay = `${p.floor}/${p.total_floors}F`
 
   const specs = [
-    { label: lang==="zh"?"總價":"Tổng giá",       value: formatPrice(p, lang), big: true },
-    { label: t.totalArea,                          value: `${p.area_ping}${t.pingUnit} (${pingToM2(p.area_ping)}m²)` },
-    ...(p.price_per_ping ? [{ label: t.pricePerPing, value: `${p.price_per_ping}萬/${t.pingUnit}` }] : []),
-    { label: lang==="zh"?"格局":"Phòng",           value: `${p.bedrooms}${t.bedrooms}/${p.bathrooms}${t.bathrooms}` },
-    { label: t.floor,                              value: floorDisplay },
-    { label: t.age,                                value: `${p.age}${t.yearUnit}` },
-    { label: t.facing,                             value: facing },
-    { label: lang==="zh"?"類型":"Loại",            value: propType },
-    { label: lang==="zh"?"停車":"Xe",              value: parking },
-    { label: lang==="zh"?"管理費":"Phí QL",        value: mgmtFee },
-    ...(p.area_main_ping ? [{ label: lang==="zh"?"主建物":"Nhà chính", value: `${p.area_main_ping}${t.pingUnit}` }] : []),
-    ...(p.area_land_ping ? [{ label: lang==="zh"?"土地":"Đất",         value: `${p.area_land_ping}${t.pingUnit}` }] : []),
+    { label: lang==="zh"?"總價":"Tổng giá", value: formatPrice(p, lang), big: true },
+    { label: t.totalArea, value: `${p.area_ping}${t.pingUnit} (${pingToM2(p.area_ping)}m²)` },
+    ...(p.price_per_ping ? [{ label: t.pricePerPing, value: `${p.price_per_ping.toLocaleString()}萬/${t.pingUnit}` }] : []),
+    { label: lang==="zh"?"格局":"Phòng", value: `${p.bedrooms}${t.bedrooms} / ${p.bathrooms}${t.bathrooms}` },
+    { label: t.floor, value: floorDisplay },
+    { label: t.age, value: `${p.age}${t.yearUnit}` },
+    { label: t.facing, value: facing },
+    { label: lang==="zh"?"物件類型":"Loại BĐS", value: propType },
+    { label: lang==="zh"?"距捷運":"Cách MRT", value: `${mrt} · ${p.walk_minutes}${t.minuteWalk}` },
+    { label: lang==="zh"?"停車位":"Chỗ đậu xe", value: parkingDisplay },
+    { label: lang==="zh"?"管理費":"Phí quản lý", value: mgmtFeeDisplay },
   ]
 
   return (
-    <div style={{ width:"100%", maxWidth:"100vw", overflowX:"hidden", background:"#f9fafb", minHeight:"100vh" }}>
-      <div style={{ maxWidth:1152, margin:"0 auto", padding:"16px 12px" }}>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="max-w-6xl mx-auto px-4 py-5">
 
         {/* Breadcrumb */}
-        <nav style={{ display:"flex", alignItems:"center", gap:6, fontSize:13, color:"#9ca3af", marginBottom:16, flexWrap:"wrap" }}>
-          <Link href="/" style={{ color:"inherit", textDecoration:"none" }}>{t.homePage}</Link>
+        <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-4 flex-wrap">
+          <Link href="/" className="hover:text-red-600 transition">{t.homePage}</Link>
           <span>/</span>
-          <Link href="/listings" style={{ color:"inherit", textDecoration:"none" }}>{t.listingPage}</Link>
+          <Link href="/listings" className="hover:text-red-600 transition">{t.listingPage}</Link>
           <span>/</span>
-          <span style={{ color:"#374151", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:180 }}>{title}</span>
+          <span className="text-gray-700 truncate max-w-[200px]">{title}</span>
         </nav>
 
         {/* Tiêu đề */}
-        <div style={{ marginBottom:20 }}>
-          <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:8 }}>
-            <span style={{ background: p.listing_type==="rent"?"#2563eb":"#059669", color:"#fff", fontSize:11, fontWeight:700, padding:"3px 12px", borderRadius:999 }}>
+        <div className="mb-5">
+          <div className="flex flex-wrap gap-2 mb-2">
+            <span className={`text-white text-xs font-bold px-3 py-1 rounded-full ${p.listing_type==="rent" ? "bg-blue-600" : "bg-emerald-600"}`}>
               {p.listing_type==="rent" ? t.forRent : t.forSale}
             </span>
-            {p.is_new && <span style={{ background:"#fee2e2", color:"#dc2626", fontSize:11, fontWeight:700, padding:"3px 12px", borderRadius:999 }}>{t.new}</span>}
-            {p.is_featured && <span style={{ background:"#fef3c7", color:"#d97706", fontSize:11, fontWeight:700, padding:"3px 12px", borderRadius:999 }}>⭐ {t.featured}</span>}
-            <span style={{ background:"#f3f4f6", color:"#6b7280", fontSize:11, padding:"3px 12px", borderRadius:999 }}>{propType}</span>
+            {p.is_new && <span className="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full">{t.new}</span>}
+            {p.is_featured && <span className="bg-amber-100 text-amber-600 text-xs font-bold px-3 py-1 rounded-full">⭐ {t.featured}</span>}
+            <span className="bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full">{propType}</span>
           </div>
-
-          <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:8, flexWrap:"wrap" }}>
-            <h1 style={{ fontSize:20, fontWeight:700, color:"#111827", lineHeight:1.4, flex:1, minWidth:0, wordBreak:"break-word" }}>{title}</h1>
+          <div className="flex items-start justify-between gap-3 flex-wrap">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
             <button
               onClick={() => { navigator.clipboard?.writeText(window.location.href); setShared(true); setTimeout(()=>setShared(false),2000) }}
-              style={{ display:"flex", alignItems:"center", gap:6, fontSize:13, color:"#6b7280", border:"1px solid #e5e7eb", borderRadius:12, padding:"6px 12px", background:"#fff", cursor:"pointer", whiteSpace:"nowrap", flexShrink:0 }}>
-              {shared ? "✅ Đã copy" : "🔗 " + t.share}
+              className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition shrink-0">
+              {shared ? "✅ Đã copy" : "🔗 Chia sẻ"}
             </button>
           </div>
-
-          <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center", gap:8, marginTop:8, fontSize:13, color:"#6b7280" }}>
-            <span style={{ wordBreak:"break-word" }}>📍 {address}</span>
-            <span style={{ color:"#2563eb" }}>🚇 {mrt} · {p.walk_minutes}{t.minuteWalk}</span>
-          </div>
-          <div style={{ marginTop:6, fontSize:11, color:"#9ca3af" }}>🆔 {p.id}</div>
+          <p className="text-gray-400 text-sm mt-1.5 flex items-center gap-1">
+            📍 {address}
+          </p>
         </div>
 
-        {/* Layout */}
-        <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
+        {/* Gallery */}
+        <div className="mb-6">
+          <ImageGallery images={p.images} title={title} />
+        </div>
 
-          {/* Cột trái */}
-          <div style={{ width:"100%", minWidth:0 }}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            {/* Gallery */}
-            <div style={{ width:"100%", marginBottom:20 }}>
-              <ImageGallery images={p.images || []} title={title} />
-            </div>
+          {/* ── Cột trái ── */}
+          <div className="lg:col-span-2 space-y-6">
 
             {/* Thông số */}
-            <div style={{ background:"#fff", borderRadius:16, border:"1px solid #f3f4f6", padding:16, marginBottom:16 }}>
-              <SectionTitle>{t.propertyInfo}</SectionTitle>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+            <div className="bg-white rounded-2xl p-5 border border-gray-100">
+              <SectionTitle>{lang==="zh" ? "物件資訊" : "Thông tin BĐS"}</SectionTitle>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {specs.map(s => (
-                  <div key={s.label} style={{ minWidth:0 }}>
-                    <div style={{ fontSize:11, color:"#9ca3af", marginBottom:2 }}>{s.label}</div>
-                    <div style={{ fontSize: s.big ? 18 : 13, fontWeight:600, color: s.big ? "#dc2626" : "#111827", wordBreak:"break-word" }}>
-                      {s.value}
-                    </div>
+                  <div key={s.label} className={`rounded-xl p-3 ${s.big ? "bg-red-50 col-span-2 sm:col-span-3" : "bg-gray-50"}`}>
+                    <div className="text-xs text-gray-400 mb-0.5">{s.label}</div>
+                    <div className={`font-bold ${s.big ? "text-red-600 text-xl" : "text-gray-900 text-sm"}`}>{s.value}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Tiện ích */}
-            <div style={{ background:"#fff", borderRadius:16, border:"1px solid #f3f4f6", padding:16, marginBottom:16 }}>
-              <SectionTitle>{t.features}</SectionTitle>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
-                {(features||[]).map(feat => (
-                  <span key={feat} style={{ display:"flex", alignItems:"center", gap:6, background:"#f9fafb", border:"1px solid #e5e7eb", color:"#374151", fontSize:13, padding:"6px 12px", borderRadius:12, wordBreak:"break-word" }}>
-                    {FEAT_ICONS[feat]??"✔️"} {feat}
-                  </span>
-                ))}
-              </div>
-            </div>
-
             {/* Mô tả */}
-            <div style={{ background:"#fff", borderRadius:16, border:"1px solid #f3f4f6", padding:16, marginBottom:16 }}>
-              <SectionTitle>{t.description}</SectionTitle>
-              <p style={{ fontSize:14, color:"#374151", lineHeight:1.7, whiteSpace:"pre-line", wordBreak:"break-word", margin:0 }}>{desc}</p>
-            </div>
+            {desc && (
+              <div className="bg-white rounded-2xl p-5 border border-gray-100">
+                <SectionTitle>{lang==="zh" ? "物件描述" : "Mô tả"}</SectionTitle>
+                <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{desc}</p>
+              </div>
+            )}
 
-            {/* Tiện ích xung quanh */}
-            {p.nearby && Object.keys(p.nearby).length > 0 && (
-              <div style={{ background:"#fff", borderRadius:16, border:"1px solid #f3f4f6", padding:16, marginBottom:16 }}>
-                <SectionTitle>{lang==="zh"?"周邊生活機能":"Tiện ích xung quanh"}</SectionTitle>
-                <div style={{ display:"grid", gridTemplateColumns:"1fr", gap:8 }}>
-                  {Object.entries(p.nearby).map(([key, val]) => val ? (
-                    <div key={key} style={{ display:"flex", alignItems:"flex-start", gap:8, fontSize:14, color:"#374151" }}>
-                      <span style={{ color:"#16a34a", flexShrink:0 }}>✅</span>
-                      <span style={{ wordBreak:"break-word" }}>{val}</span>
-                    </div>
-                  ) : null)}
+            {/* Tiện ích */}
+            {features && features.length > 0 && (
+              <div className="bg-white rounded-2xl p-5 border border-gray-100">
+                <SectionTitle>{lang==="zh" ? "設施與特色" : "Tiện ích"}</SectionTitle>
+                <div className="flex flex-wrap gap-2">
+                  {features.map(f => (
+                    <span key={f} className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-full">
+                      <span>{FEAT_ICONS[f] ?? "✔️"}</span>
+                      <span>{f}</span>
+                    </span>
+                  ))}
                 </div>
               </div>
             )}
 
-            {/* Bản đồ */}
-            <div style={{ background:"#fff", borderRadius:16, border:"1px solid #f3f4f6", padding:16, marginBottom:16 }}>
-              <SectionTitle>{t.location}</SectionTitle>
-              <p style={{ fontSize:13, color:"#6b7280", marginBottom:12, wordBreak:"break-word" }}>📍 {address} · 🚇 {mrt}</p>
-              {/* Nhúng OpenStreetMap - miễn phí, không cần API key */}
-              <div style={{ width:"100%", borderRadius:12, overflow:"hidden", border:"1px solid #e5e7eb" }}>
-                <iframe
-                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${p.lng-0.003},${p.lat-0.002},${p.lng+0.003},${p.lat+0.002}&layer=mapnik&marker=${p.lat},${p.lng}`}
-                  style={{ width:"100%", height:240, border:"none", display:"block" }}
-                  loading="lazy"
-                  title="Bản đồ vị trí"
-                />
-              </div>
-              <a href={`https://www.google.com/maps?q=${p.lat},${p.lng}`}
-                target="_blank" rel="noopener noreferrer"
-                style={{ display:"inline-flex", alignItems:"center", gap:6, marginTop:8, fontSize:13, color:"#2563eb", fontWeight:500, textDecoration:"none" }}>
-                🗺️ {t.openMap} ↗
-              </a>
-            </div>
-
-            {/* Meta */}
-            <div style={{ display:"flex", flexWrap:"wrap", gap:16, fontSize:12, color:"#9ca3af", paddingBottom:8 }}>
-              <span>🕐 {t.postedAt}: {postedDate}</span>
-              <span>👁 {t.views}: {(p.views||0).toLocaleString()}</span>
-            </div>
+            {/* Ngày đăng */}
+            <p className="text-xs text-gray-400 px-1">
+              {lang==="zh" ? "刊登日期：" : "Ngày đăng: "}{postedDate}
+              {" · "}
+              {lang==="zh" ? `瀏覽 ${p.views} 次` : `${p.views} lượt xem`}
+            </p>
           </div>
 
-          {/* Form liên hệ */}
-          <div style={{ width:"100%" }}>
-            <ContactForm property={p} />
+          {/* ── Cột phải — Liên hệ ── */}
+          <div className="space-y-4">
+            <div className="bg-white rounded-2xl p-5 border border-gray-100 sticky top-20">
+              <SectionTitle>{lang==="zh" ? "聯絡仲介" : "Liên hệ môi giới"}</SectionTitle>
+              <ContactForm
+                agentName={p.agent_name}
+                agentPhone={p.agent_phone}
+                agentLine={p.agent_line}
+                propertyTitle={title}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Nhà tương tự */}
+        {/* Similar */}
         {similar.length > 0 && (
-          <div style={{ marginTop:40 }}>
-            <h2 style={{ fontSize:17, fontWeight:700, color:"#111827", marginBottom:20, display:"flex", alignItems:"center", gap:8 }}>
-              <span style={{ width:4, height:24, background:"#ef4444", borderRadius:999, display:"inline-block" }} />
-              {t.similarListings}
-            </h2>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
-              {similar.map(sp => <PropertyCard key={sp.id} property={sp} />)}
+          <div className="mt-10">
+            <SectionTitle>{lang==="zh" ? "相似物件" : "BĐS tương tự"}</SectionTitle>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {similar.map(s => <PropertyCard key={s.id} property={s} />)}
             </div>
           </div>
         )}
