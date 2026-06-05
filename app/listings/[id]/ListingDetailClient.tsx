@@ -175,12 +175,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
           <div className="space-y-4">
             <div className="bg-white rounded-2xl p-5 border border-gray-100 sticky top-20">
               <SectionTitle>{lang==="zh" ? "聯絡仲介" : "Liên hệ môi giới"}</SectionTitle>
-              <ContactForm
-                agentName={p.agent_name}
-                agentPhone={p.agent_phone}
-                agentLine={p.agent_line}
-                propertyTitle={title}
-              />
+              <ContactForm property={p} />
             </div>
           </div>
         </div>
