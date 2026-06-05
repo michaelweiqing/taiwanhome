@@ -32,7 +32,7 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <span style={{ fontFamily:"Georgia,serif", fontSize:12, fontWeight:700, color:"#1a1a1a" }}>BĐS </span>
+                  <span style={{ fontFamily:"Georgia,serif", fontSize:12, fontWeight:700, color:"#1a1a1a" }}>Bất Động Sản </span>
                   <span style={{ fontFamily:"Georgia,serif", fontSize:12, fontWeight:700, color:"#e05a00" }}>Đài Loan</span>
                 </>
               )}
