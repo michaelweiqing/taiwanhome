@@ -10,8 +10,8 @@ export default function ContactForm({ property: p }: Props) {
   const [form, setForm] = useState({ name: "", phone: "", message: "" })
   const [sent, setSent] = useState(false)
 
-  const agentName = p.agent_name
-  const avatar: string | null = null
+  const agentName = p.agent_name                  // ✅ bỏ agent_name_vi
+  const avatar: string | null = null              // ✅ bỏ agent_avatar
 
   const lineUrl = `https://line.me/R/ti/p/${p.agent_line}`
   const telUrl  = `tel:${p.agent_phone}`
@@ -63,7 +63,8 @@ export default function ContactForm({ property: p }: Props) {
       <div className="flex flex-col items-center gap-3 py-2">
         {avatar ? (
           <img src={avatar} alt={agentName}
-            className="w-28 h-28 rounded-full object-cover object-top border-2 border-red-100 shrink-0" />
+            className="w-28 h-28 rounded-full object-cover object-top border-2 border-red-100 shrink-0"
+            style={{ imageRendering: "auto", width: 112, height: 112 }} />
         ) : (
           <div className="w-28 h-28 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-3xl shrink-0">
             {agentName.charAt(0)}
@@ -74,6 +75,8 @@ export default function ContactForm({ property: p }: Props) {
           <p className="text-base text-gray-500 mt-0.5">{p.agent_phone}</p>
         </div>
       </div>
+
+      {/* ✅ bỏ block agent_is_professional */}
 
       <hr className="border-gray-100" />
 
