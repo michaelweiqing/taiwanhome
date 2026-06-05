@@ -10,10 +10,8 @@ export default function ContactForm({ property: p }: Props) {
   const [form, setForm] = useState({ name: "", phone: "", message: "" })
   const [sent, setSent] = useState(false)
 
-  // ✅ Đúng — chỉ dùng agent_name
-const agentName = p.agent_name
-  // ✅ Xoá luôn, dùng chữ cái đầu agent_name thay avatar
-const avatar: string | null = null  // Property không có agent_avatar
+  const agentName = p.agent_name
+  const avatar: string | null = null
 
   const lineUrl = `https://line.me/R/ti/p/${p.agent_line}`
   const telUrl  = `tel:${p.agent_phone}`
@@ -65,8 +63,7 @@ const avatar: string | null = null  // Property không có agent_avatar
       <div className="flex flex-col items-center gap-3 py-2">
         {avatar ? (
           <img src={avatar} alt={agentName}
-            className="w-28 h-28 rounded-full object-cover object-top border-2 border-red-100 shrink-0"
-            style={{ imageRendering: "auto", width: 112, height: 112 }} />
+            className="w-28 h-28 rounded-full object-cover object-top border-2 border-red-100 shrink-0" />
         ) : (
           <div className="w-28 h-28 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-3xl shrink-0">
             {agentName.charAt(0)}
@@ -77,22 +74,6 @@ const avatar: string | null = null  // Property không có agent_avatar
           <p className="text-base text-gray-500 mt-0.5">{p.agent_phone}</p>
         </div>
       </div>
-
-      {/* Thông tin công ty môi giới — chỉ hiện nếu là môi giới chuyên nghiệp */}
-      {p.agent_is_professional && (
-        <div className="bg-gray-50 rounded-xl px-4 py-3 space-y-0.5 text-xs text-gray-600 border border-gray-100">
-          <p className="font-bold text-gray-800 text-sm">
-            {lang === "zh" ? "永慶不動產" : "Công ty môi giới Vĩnh Khánh (永慶不動產)"}
-          </p>
-          <p>好市多德聚仁加盟店</p>
-          <p className="mt-1">
-            {lang === "zh"
-              ? "營業員證號(113)登字第456212號"
-              : "Giấy phép hành nghề số (113) 登字第456212號"}
-          </p>
-          <p>經紀人證號：陳秀貞（104）中市經紀字第01633號</p>
-        </div>
-      )}
 
       <hr className="border-gray-100" />
 
