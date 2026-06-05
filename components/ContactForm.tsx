@@ -12,7 +12,8 @@ export default function ContactForm({ property: p }: Props) {
 
   // ✅ Đúng — chỉ dùng agent_name
 const agentName = p.agent_name
-  const avatar    = p.agent_avatar || null
+  // ✅ Xoá luôn, dùng chữ cái đầu agent_name thay avatar
+const avatar: string | null = null  // Property không có agent_avatar
 
   const lineUrl = `https://line.me/R/ti/p/${p.agent_line}`
   const telUrl  = `tel:${p.agent_phone}`
