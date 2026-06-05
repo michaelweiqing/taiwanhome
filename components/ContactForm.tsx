@@ -10,7 +10,8 @@ export default function ContactForm({ property: p }: Props) {
   const [form, setForm] = useState({ name: "", phone: "", message: "" })
   const [sent, setSent] = useState(false)
 
-  const agentName = lang === "zh" ? p.agent_name : (p.agent_name_vi || p.agent_name)
+  // ✅ Đúng — chỉ dùng agent_name
+const agentName = p.agent_name
   const avatar    = p.agent_avatar || null
 
   const lineUrl = `https://line.me/R/ti/p/${p.agent_line}`
