@@ -11,27 +11,32 @@ export interface Property {
   city: string
   city_vi: string
   listing_type: "rent" | "buy"
-  property_type: "apartment" | "house" | "studio" | "villa"
+  property_type: "apartment" | "apartment_walkup" | "house" | "studio" | "villa"
   price: number
   price_per_ping: number | null
   area_ping: number
+  area_main_ping: number | null       // 主建物
+  area_balcony_ping: number | null    // 附屬建物
+  area_common_ping: number | null     // 共同使用
+  area_land_ping: number | null       // 土地坪數
   bedrooms: number
   bathrooms: number
-  floor: number
+  floor: string                       // text (可填整棟、全層或數字)
   total_floors: number
   age: number
   facing: string
   features: string[]
   features_vi: string[]
-  near_mrt: string
-  near_mrt_vi: string
-  walk_minutes: number
+  near_mrt?: string
+  near_mrt_vi?: string
+  walk_minutes?: number
+  nearby?: Record<string, string> | null
   images: string[]
   agent_name: string
   agent_name_vi?: string
   agent_phone: string
   agent_line: string
-  agent_avatar?: string
+  agent_avatar?: string | null
   agent_is_professional?: boolean
   is_new: boolean
   is_featured: boolean
@@ -93,8 +98,8 @@ export async function getSimilarProperties(
 export interface FilterOptions {
   listingType?: "rent" | "buy"
   city?: string
-  district?: string                                               // ← MỚI
-  propertyType?: "apartment" | "house" | "studio" | "villa"      // ← MỚI
+  district?: string
+  propertyType?: string
   minPrice?: number
   maxPrice?: number
   minArea?: number
@@ -105,14 +110,14 @@ export interface FilterOptions {
 export async function searchProperties(filters: FilterOptions): Promise<Property[]> {
   let query = supabase.from("properties").select("*")
 
-  if (filters.listingType)  query = query.eq("listing_type",   filters.listingType)
-  if (filters.city)         query = query.eq("city",           filters.city)
-  if (filters.district)     query = query.eq("district",       filters.district)     // ← MỚI
-  if (filters.propertyType) query = query.eq("property_type",  filters.propertyType) // ← MỚI
-  if (filters.minPrice)     query = query.gte("price",         filters.minPrice)
-  if (filters.maxPrice)     query = query.lte("price",         filters.maxPrice)
-  if (filters.minArea)      query = query.gte("area_ping",     filters.minArea)
-  if (filters.bedrooms)     query = query.eq("bedrooms",       filters.bedrooms)
+  if (filters.listingType)  query = query.eq("listing_type",  filters.listingType)
+  if (filters.city)         query = query.eq("city",          filters.city)
+  if (filters.district)     query = query.eq("district",      filters.district)
+  if (filters.propertyType) query = query.eq("property_type", filters.propertyType)
+  if (filters.minPrice)     query = query.gte("price",        filters.minPrice)
+  if (filters.maxPrice)     query = query.lte("price",        filters.maxPrice)
+  if (filters.minArea)      query = query.gte("area_ping",    filters.minArea)
+  if (filters.bedrooms)     query = query.eq("bedrooms",      filters.bedrooms)
 
   if (filters.sortBy === "price_asc")
     query = query.order("price", { ascending: true })
@@ -134,7 +139,7 @@ export function formatPrice(p: Property, lang: "zh" | "vi"): string {
   }
   return lang === "zh"
     ? `${p.price.toLocaleString()}萬`
-    : `${p.price.toLocaleString()} vạn đài tệ`
+    : `${p.price.toLocaleString()} vạn Đài tệ`
 }
 
 export function pingToM2(ping: number): number {
