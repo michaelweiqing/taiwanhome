@@ -28,8 +28,11 @@ export interface Property {
   walk_minutes: number
   images: string[]
   agent_name: string
+  agent_name_vi?: string
   agent_phone: string
   agent_line: string
+  agent_avatar?: string
+  agent_is_professional?: boolean
   is_new: boolean
   is_featured: boolean
   parking: boolean
@@ -131,7 +134,7 @@ export function formatPrice(p: Property, lang: "zh" | "vi"): string {
   }
   return lang === "zh"
     ? `${p.price.toLocaleString()}萬`
-    : `${p.price.toLocaleString()} vạn NTD`
+    : `${p.price.toLocaleString()} vạn đài tệ`
 }
 
 export function pingToM2(ping: number): number {
