@@ -64,7 +64,6 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ? (lang==="zh" ? "✅ 有停車位" : "✅ Có chỗ đậu xe")
     : (lang==="zh" ? "❌ 無停車位" : "❌ Không có")
 
-  // Format tầng — thay thế formatFloor đã bị xoá
   const floorDisplay = `${p.floor}/${p.total_floors}F`
 
   const specs = [
@@ -175,7 +174,12 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
           <div className="space-y-4">
             <div className="bg-white rounded-2xl p-5 border border-gray-100 sticky top-20">
               <SectionTitle>{lang==="zh" ? "聯絡仲介" : "Liên hệ môi giới"}</SectionTitle>
-              <ContactForm property={p} />
+              <ContactForm
+                agentName={p.agent_name}
+                agentPhone={p.agent_phone}
+                agentLine={p.agent_line}
+                propertyTitle={title}
+              />
             </div>
           </div>
         </div>

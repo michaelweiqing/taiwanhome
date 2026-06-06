@@ -1,20 +1,21 @@
 "use client"
 import { useState } from "react"
-import type { Property } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
 
-interface Props { property: Property }
+interface Props {
+  agentName: string
+  agentPhone: string
+  agentLine: string
+  propertyTitle: string
+}
 
-export default function ContactForm({ property: p }: Props) {
+export default function ContactForm({ agentName, agentPhone, agentLine, propertyTitle }: Props) {
   const { lang } = useLang()
   const [form, setForm] = useState({ name: "", phone: "", message: "" })
   const [sent, setSent] = useState(false)
 
-  const agentName = p.agent_name                  // ✅ bỏ agent_name_vi
-  const avatar: string | null = null              // ✅ bỏ agent_avatar
-
-  const lineUrl = `https://line.me/R/ti/p/${p.agent_line}`
-  const telUrl  = `tel:${p.agent_phone}`
+  const lineUrl = `https://line.me/R/ti/p/${agentLine}`
+  const telUrl  = `tel:${agentPhone}`
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }))
@@ -28,24 +29,7 @@ export default function ContactForm({ property: p }: Props) {
   }
 
   return (
-    <div className="sticky top-4 bg-white rounded-2xl border border-gray-100 p-5 shadow-sm space-y-4">
-
-      {/* Giá */}
-      <div className="bg-red-600 text-white rounded-xl p-4">
-        <p className="text-xs font-medium opacity-80 mb-1">
-          {lang === "zh" ? (p.listing_type === "rent" ? "月租金" : "售價") : (p.listing_type === "rent" ? "GIÁ THUÊ" : "GIÁ BÁN")}
-        </p>
-        <p className="text-2xl font-black">
-          {p.listing_type === "rent"
-            ? `NT$${p.price.toLocaleString()}${lang === "zh" ? "/月" : "/tháng"}`
-            : `${p.price.toLocaleString()}${lang === "zh" ? "萬" : " vạn Đài tệ"}`}
-        </p>
-        {p.price_per_ping && (
-          <p className="text-xs opacity-80 mt-0.5">
-            {p.price_per_ping.toLocaleString()}{lang === "zh" ? "萬/ping" : " vạn/ping"}
-          </p>
-        )}
-      </div>
+    <div className="space-y-4">
 
       {/* Nút liên hệ */}
       <div className="grid grid-cols-2 gap-2">
@@ -61,22 +45,14 @@ export default function ContactForm({ property: p }: Props) {
 
       {/* Thông tin đại lý */}
       <div className="flex flex-col items-center gap-3 py-2">
-        {avatar ? (
-          <img src={avatar} alt={agentName}
-            className="w-28 h-28 rounded-full object-cover object-top border-2 border-red-100 shrink-0"
-            style={{ imageRendering: "auto", width: 112, height: 112 }} />
-        ) : (
-          <div className="w-28 h-28 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-3xl shrink-0">
-            {agentName.charAt(0)}
-          </div>
-        )}
+        <div className="w-28 h-28 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-3xl shrink-0">
+          {agentName.charAt(0)}
+        </div>
         <div className="text-center">
           <p className="font-bold text-gray-900 text-lg">{agentName}</p>
-          <p className="text-base text-gray-500 mt-0.5">{p.agent_phone}</p>
+          <p className="text-base text-gray-500 mt-0.5">{agentPhone}</p>
         </div>
       </div>
-
-      {/* ✅ bỏ block agent_is_professional */}
 
       <hr className="border-gray-100" />
 
@@ -94,7 +70,7 @@ export default function ContactForm({ property: p }: Props) {
             className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400 transition" />
           <textarea name="message" value={form.message} onChange={handleChange}
             rows={3}
-            placeholder={lang === "zh" ? "留言..." : "Ví dụ: Tôi muốn đặt lịch xem nhà, ngày nào tiện?"}
+            placeholder={lang === "zh" ? `詢問：${propertyTitle}` : `Hỏi về: ${propertyTitle}`}
             className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400 transition resize-none" />
           <button onClick={handleSubmit}
             className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl transition text-sm">
