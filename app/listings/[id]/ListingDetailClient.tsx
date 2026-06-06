@@ -175,7 +175,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             {/* Tiện ích */}
             {features && features.length > 0 && (
               <div className="bg-white rounded-2xl p-5 border border-gray-100">
-                <SectionTitle>{lang==="zh" ? "設施與特色" : "Tiện ích"}</SectionTitle>
+                <SectionTitle>{lang==="zh" ? "物件特色" : "Đặc điểm nổi bật"}</SectionTitle>
                 <div className="flex flex-wrap gap-2">
                   {features.map(f => (
                     <span key={f} className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-full">
