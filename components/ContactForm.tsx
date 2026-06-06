@@ -7,9 +7,11 @@ interface Props {
   agentPhone: string
   agentLine: string
   propertyTitle: string
+  agentAvatar?: string | null
+  agentIsProfessional?: boolean
 }
 
-export default function ContactForm({ agentName, agentPhone, agentLine, propertyTitle }: Props) {
+export default function ContactForm({ agentName, agentPhone, agentLine, propertyTitle, agentAvatar, agentIsProfessional = false }: Props) {
   const { lang } = useLang()
   const [form, setForm] = useState({ name: "", phone: "", message: "" })
   const [sent, setSent] = useState(false)
@@ -45,14 +47,40 @@ export default function ContactForm({ agentName, agentPhone, agentLine, property
 
       {/* Thông tin đại lý */}
       <div className="flex flex-col items-center gap-3 py-2">
-        <div className="w-28 h-28 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-3xl shrink-0">
-          {agentName.charAt(0)}
-        </div>
+        {agentAvatar ? (
+          <img
+            src={agentAvatar}
+            alt={agentName}
+            className="rounded-full object-cover object-top border-2 border-red-100 shrink-0"
+            style={{ width: 112, height: 112 }}
+          />
+        ) : (
+          <div className="rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-3xl shrink-0"
+            style={{ width: 112, height: 112 }}>
+            {agentName.charAt(0)}
+          </div>
+        )}
         <div className="text-center">
           <p className="font-bold text-gray-900 text-lg">{agentName}</p>
           <p className="text-base text-gray-500 mt-0.5">{agentPhone}</p>
         </div>
       </div>
+
+      {/* Thông tin công ty — chỉ hiện nếu là môi giới chuyên nghiệp */}
+      {agentIsProfessional && (
+        <div className="bg-gray-50 rounded-xl px-4 py-3 space-y-1 text-xs text-gray-600 border border-gray-100">
+          <p className="font-bold text-gray-800 text-sm">
+            {lang === "zh" ? "永慶不動產" : "Công ty môi giới Vĩnh Khánh (永慶不動產)"}
+          </p>
+          <p>好市多德聚仁加盟店</p>
+          <p className="pt-1">
+            {lang === "zh"
+              ? "營業員證號：(113)登字第456212號"
+              : "Giấy phép hành nghề số (113) 登字第456212號"}
+          </p>
+          <p>經紀人證號：陳秀貞（104）中市經紀字第01633號</p>
+        </div>
+      )}
 
       <hr className="border-gray-100" />
 
