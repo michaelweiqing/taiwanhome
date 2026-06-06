@@ -22,23 +22,22 @@ const FACING_VI: Record<string,string> = {
   "東南":"Đông Nam","西南":"Tây Nam","東北":"Đông Bắc","西北":"Tây Bắc",
 }
 const PROP_LABEL: Record<string,{zh:string;vi:string}> = {
-  apartment:     {zh:"公寓大廈",   vi:"Chung cư thang máy"},
-  apartment_walkup:{zh:"公寓(無電梯)",vi:"Chung cư thang bộ"},
-  house:         {zh:"透天厝",     vi:"Nhà cả căn"},
-  studio:        {zh:"套房",       vi:"Studio"},
-  villa:         {zh:"別墅",       vi:"Biệt thự"},
+  apartment:       {zh:"公寓大廈",     vi:"Chung cư thang máy"},
+  apartment_walkup:{zh:"公寓(無電梯)", vi:"Chung cư thang bộ"},
+  house:           {zh:"透天厝",       vi:"Nhà cả căn"},
+  studio:          {zh:"套房",         vi:"Studio"},
+  villa:           {zh:"別墅",         vi:"Biệt thự"},
 }
 
-// Tiện ích xung quanh (Nearby)
 const NEARBY_ITEMS = [
-  { icon:"🚇", zh:"捷運站",    vi:"Ga MRT" },
-  { icon:"🏫", zh:"學校",      vi:"Trường học" },
-  { icon:"🏥", zh:"醫院",      vi:"Bệnh viện" },
-  { icon:"🛒", zh:"超市",      vi:"Siêu thị" },
-  { icon:"🍜", zh:"餐廳",      vi:"Nhà hàng" },
-  { icon:"🏦", zh:"銀行",      vi:"Ngân hàng" },
-  { icon:"🌳", zh:"公園",      vi:"Công viên" },
-  { icon:"⛽", zh:"加油站",    vi:"Trạm xăng" },
+  { icon:"🚇", zh:"捷運站",  vi:"Ga MRT" },
+  { icon:"🏫", zh:"學校",    vi:"Trường học" },
+  { icon:"🏥", zh:"醫院",    vi:"Bệnh viện" },
+  { icon:"🛒", zh:"超市",    vi:"Siêu thị" },
+  { icon:"🍜", zh:"餐廳",    vi:"Nhà hàng" },
+  { icon:"🏦", zh:"銀行",    vi:"Ngân hàng" },
+  { icon:"🌳", zh:"公園",    vi:"Công viên" },
+  { icon:"⛽", zh:"加油站",  vi:"Trạm xăng" },
 ]
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -59,7 +58,6 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
   const title    = lang==="zh" ? p.title_zh       : p.title_vi
   const address  = lang==="zh" ? p.address        : p.address_vi
   const desc     = lang==="zh" ? p.description_zh : p.description_vi
-  const mrt      = lang==="zh" ? p.near_mrt       : p.near_mrt_vi
   const features = lang==="zh" ? p.features       : p.features_vi
   const facing   = lang==="zh" ? p.facing         : (FACING_VI[p.facing] ?? p.facing)
   const propType = PROP_LABEL[p.property_type]?.[lang] ?? p.property_type
@@ -77,20 +75,30 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ? (lang==="zh" ? "✅ 有停車位" : "✅ Có chỗ đậu xe")
     : (lang==="zh" ? "❌ 無停車位" : "❌ Không có")
 
-  const floorDisplay = `${p.floor}/${p.total_floors}F`
+  // floor: translate 整棟 if VI
+  const FLOOR_VI: Record<string,string> = { "整棟":"Cả căn", "全層":"Toàn tầng" }
+  const floorLabel = (() => {
+    const num = Number(p.floor)
+    if (!isNaN(num) && String(p.floor).trim() !== "") return `${p.floor}/${p.total_floors}F`
+    const display = (lang==="vi" && FLOOR_VI[p.floor]) ? FLOOR_VI[p.floor] : p.floor
+    return `${display}/${p.total_floors}F`
+  })()
 
   const specs = [
-    { label: lang==="zh"?"總價":"Tổng giá", value: formatPrice(p, lang), big: true },
-    { label: t.totalArea, value: `${p.area_ping}${t.pingUnit} (${pingToM2(p.area_ping)}m²)` },
-    ...(p.price_per_ping ? [{ label: t.pricePerPing, value: `${p.price_per_ping.toLocaleString()}萬/${t.pingUnit}` }] : []),
-    { label: lang==="zh"?"格局":"Phòng", value: `${p.bedrooms}${t.bedrooms} / ${p.bathrooms}${t.bathrooms}` },
-    { label: t.floor, value: floorDisplay },
-    { label: t.age, value: `${p.age}${t.yearUnit}` },
-    { label: t.facing, value: facing },
-    { label: lang==="zh"?"物件類型":"Loại BĐS", value: propType },
-    { label: lang==="zh"?"距捷運":"Cách MRT", value: `${mrt} · ${p.walk_minutes}${t.minuteWalk}` },
-    { label: lang==="zh"?"停車位":"Chỗ đậu xe", value: parkingDisplay },
-    { label: lang==="zh"?"管理費":"Phí quản lý", value: mgmtFeeDisplay },
+    { label: lang==="zh"?"總價":"Tổng giá",           value: formatPrice(p, lang), big: true },
+    { label: lang==="zh"?"建物總坪":"Tổng diện tích",  value: `${p.area_ping}${t.pingUnit} (${pingToM2(p.area_ping)}m²)` },
+    ...(p.area_main_ping    ? [{ label: lang==="zh"?"主建物":"Diện tích sử dụng riêng",       value: `${p.area_main_ping}${t.pingUnit}` }] : []),
+    ...(p.area_balcony_ping ? [{ label: lang==="zh"?"附屬建物":"Ban công & công trình phụ",   value: `${p.area_balcony_ping}${t.pingUnit}` }] : []),
+    ...(p.area_common_ping  ? [{ label: lang==="zh"?"共同使用":"Diện tích sở hữu chung",      value: `${p.area_common_ping}${t.pingUnit}` }] : []),
+    ...(p.area_land_ping    ? [{ label: lang==="zh"?"土地坪數":"Diện tích đất",               value: `${p.area_land_ping}${t.pingUnit}` }] : []),
+    ...(p.price_per_ping    ? [{ label: t.pricePerPing, value: `${p.price_per_ping.toLocaleString()}萬/${t.pingUnit}` }] : []),
+    { label: lang==="zh"?"格局":"Bố cục",              value: `${p.bedrooms}${t.bedrooms} / ${p.bathrooms}${t.bathrooms}` },
+    { label: lang==="zh"?"樓層":"Tầng/Tổng số tầng",  value: floorLabel },
+    { label: t.age,                                    value: `${p.age}${t.yearUnit}` },
+    { label: t.facing,                                 value: facing },
+    { label: lang==="zh"?"物件類型":"Loại BĐS",        value: propType },
+    { label: lang==="zh"?"停車位":"Chỗ đậu xe",        value: parkingDisplay },
+    { label: lang==="zh"?"管理費":"Phí quản lý",       value: mgmtFeeDisplay },
   ]
 
   return (
@@ -115,10 +123,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             {p.is_new && <span className="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full">{t.new}</span>}
             {p.is_featured && <span className="bg-amber-100 text-amber-600 text-xs font-bold px-3 py-1 rounded-full">⭐ {t.featured}</span>}
             <span className="bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full">{propType}</span>
-            {/* ── ID nhà ── */}
-            <span className="bg-gray-100 text-gray-400 text-xs px-3 py-1 rounded-full font-mono">
-              ID: {p.id}
-            </span>
+            <span className="bg-gray-100 text-gray-400 text-xs px-3 py-1 rounded-full font-mono">ID: {p.id}</span>
           </div>
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
@@ -128,9 +133,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
               {shared ? "✅ Đã copy" : "🔗 Chia sẻ"}
             </button>
           </div>
-          <p className="text-gray-400 text-sm mt-1.5 flex items-center gap-1">
-            📍 {address}
-          </p>
+          <p className="text-gray-400 text-sm mt-1.5">📍 {address}</p>
         </div>
 
         {/* Gallery */}
@@ -140,7 +143,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* ── Cột trái ── */}
+          {/* Cột trái */}
           <div className="lg:col-span-2 space-y-6">
 
             {/* Thông số */}
@@ -179,18 +182,15 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
               </div>
             )}
 
-            {/* ── Nearby — Tiện ích xung quanh ── */}
+            {/* Tiện ích xung quanh */}
             <div className="bg-white rounded-2xl p-5 border border-gray-100">
               <SectionTitle>{lang==="zh" ? "周邊設施" : "Tiện ích xung quanh"}</SectionTitle>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {NEARBY_ITEMS.map(item => (
-                  <a
-                    key={item.zh}
+                  <a key={item.zh}
                     href={`https://www.google.com/maps/search/${encodeURIComponent(item.zh)}/@${p.lat},${p.lng},15z`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex flex-col items-center gap-1.5 bg-gray-50 hover:bg-red-50 hover:border-red-200 border border-gray-100 rounded-xl py-3 px-2 transition group"
-                  >
+                    target="_blank" rel="noopener noreferrer"
+                    className="flex flex-col items-center gap-1.5 bg-gray-50 hover:bg-red-50 hover:border-red-200 border border-gray-100 rounded-xl py-3 px-2 transition group">
                     <span className="text-2xl group-hover:scale-110 transition">{item.icon}</span>
                     <span className="text-xs text-gray-600 font-medium text-center">
                       {lang==="zh" ? item.zh : item.vi}
@@ -198,16 +198,10 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                   </a>
                 ))}
               </div>
-              {/* Google Maps embed nhỏ */}
               <div className="mt-4 rounded-xl overflow-hidden border border-gray-100 h-48">
-                <iframe
-                  title="map"
-                  width="100%"
-                  height="100%"
-                  loading="lazy"
+                <iframe title="map" width="100%" height="100%" loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  src={`https://www.google.com/maps?q=${p.lat},${p.lng}&z=15&output=embed`}
-                />
+                  src={`https://www.google.com/maps?q=${p.lat},${p.lng}&z=15&output=embed`} />
               </div>
             </div>
 
@@ -219,18 +213,18 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             </p>
           </div>
 
-          {/* ── Cột phải — Liên hệ ── */}
+          {/* Cột phải */}
           <div className="space-y-4">
             <div className="bg-white rounded-2xl p-5 border border-gray-100 sticky top-20">
               <SectionTitle>{lang==="zh" ? "聯絡仲介" : "Liên hệ môi giới"}</SectionTitle>
               <ContactForm
-  agentName={lang === "zh" ? p.agent_name : (p.agent_name_vi || p.agent_name)}
-  agentPhone={p.agent_phone}
-  agentLine={p.agent_line}
-  propertyTitle={title}
-  agentAvatar={p.agent_avatar}
-  agentIsProfessional={p.agent_is_professional}
-/>
+                agentName={lang === "zh" ? p.agent_name : (p.agent_name_vi || p.agent_name)}
+                agentPhone={p.agent_phone}
+                agentLine={p.agent_line}
+                propertyTitle={title}
+                agentAvatar={p.agent_avatar}
+                agentIsProfessional={p.agent_is_professional}
+              />
             </div>
           </div>
         </div>
