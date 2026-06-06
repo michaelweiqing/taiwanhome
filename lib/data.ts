@@ -48,6 +48,10 @@ export interface Property {
   lng: number
   description_zh: string
   description_vi: string
+  community_name?: string | null      // 社區名稱
+  total_units?: number | null         // 總戶數
+  units_per_floor?: number | null     // 同層戶數
+  elevator_count?: number | null      // 電梯數
 }
 
 export async function getAllProperties(): Promise<Property[]> {

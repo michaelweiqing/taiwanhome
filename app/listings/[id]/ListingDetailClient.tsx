@@ -86,6 +86,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
 
   const specs = [
     { label: lang==="zh"?"總價":"Tổng giá",           value: formatPrice(p, lang), big: true },
+    ...(p.community_name  ? [{ label: lang==="zh"?"社區名稱":"Tên chung cư",          value: p.community_name }] : []),
     { label: lang==="zh"?"建物總坪":"Tổng diện tích",  value: `${p.area_ping}${t.pingUnit} (${pingToM2(p.area_ping)}m²)` },
     ...(p.area_main_ping    ? [{ label: lang==="zh"?"主建物":"Diện tích sử dụng riêng",       value: `${p.area_main_ping}${t.pingUnit}` }] : []),
     ...(p.area_balcony_ping ? [{ label: lang==="zh"?"附屬建物":"Ban công & công trình phụ",   value: `${p.area_balcony_ping}${t.pingUnit}` }] : []),
@@ -97,6 +98,9 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     { label: t.age,                                    value: `${p.age}${t.yearUnit}` },
     { label: t.facing,                                 value: facing },
     { label: lang==="zh"?"物件類型":"Loại BĐS",        value: propType },
+    ...(p.total_units     ? [{ label: lang==="zh"?"總戶數":"Tổng số căn",       value: `${p.total_units}${lang==="zh"?"戶":"căn"}` }] : []),
+    ...(p.units_per_floor ? [{ label: lang==="zh"?"同層戶數":"Số căn mỗi tầng", value: `${p.units_per_floor}${lang==="zh"?"戶":"căn"}` }] : []),
+    ...(p.elevator_count  ? [{ label: lang==="zh"?"電梯數":"Số thang máy",      value: `${p.elevator_count}${lang==="zh"?"部":"thang"}` }] : []),
     { label: lang==="zh"?"停車位":"Chỗ đậu xe",        value: parkingDisplay },
     { label: lang==="zh"?"管理費":"Phí quản lý",       value: mgmtFeeDisplay },
   ]
@@ -158,14 +162,6 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                 ))}
               </div>
             </div>
-
-            {/* Mô tả */}
-            {desc && (
-              <div className="bg-white rounded-2xl p-5 border border-gray-100">
-                <SectionTitle>{lang==="zh" ? "物件描述" : "Mô tả"}</SectionTitle>
-                <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{desc}</p>
-              </div>
-            )}
 
             {/* Tiện ích */}
             {features && features.length > 0 && (
