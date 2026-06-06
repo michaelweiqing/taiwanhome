@@ -31,19 +31,23 @@ const PROP_LABEL: Record<string,{zh:string;vi:string}> = {
 
 // Nearby key → icon + label
 const NEARBY_META: Record<string, { icon: string; zh: string; vi: string }> = {
-  mrt:      { icon:"🚇", zh:"捷運站",    vi:"Ga MRT" },
-  train:    { icon:"🚆", zh:"火車站",    vi:"Ga xe lửa" },
-  bus:      { icon:"🚌", zh:"公車",      vi:"Xe buýt" },
-  junior:   { icon:"🏫", zh:"國中",      vi:"Trường THCS" },
-  school:   { icon:"🏫", zh:"學校",      vi:"Trường học" },
-  senior:   { icon:"🎓", zh:"高中",      vi:"Trường THPT" },
-  hospital: { icon:"🏥", zh:"醫院",      vi:"Bệnh viện" },
-  market:   { icon:"🛒", zh:"超市",      vi:"Siêu thị" },
-  park:     { icon:"🌳", zh:"公園",      vi:"Công viên" },
-  mall:     { icon:"🏬", zh:"百貨公司",  vi:"Trung tâm TM" },
-  nightmarket:{ icon:"🍢", zh:"夜市",    vi:"Chợ đêm" },
-  convenience:{ icon:"🏪", zh:"便利商店",vi:"Cửa hàng TL" },
+  mrt:        { icon:"🚇", zh:"捷運站",    vi:"Ga MRT" },
+  train:      { icon:"🚆", zh:"火車站",    vi:"Ga xe lửa" },
+  bus:        { icon:"🚌", zh:"公車",      vi:"Xe buýt" },
+  hospital:   { icon:"🏥", zh:"醫院",      vi:"Bệnh viện" },
+  market:     { icon:"🛒", zh:"超市",      vi:"Siêu thị" },
+  park:       { icon:"🌳", zh:"公園",      vi:"Công viên" },
+  school:     { icon:"🏫", zh:"國小",      vi:"Trường tiểu học" },
+  junior:     { icon:"🏫", zh:"國中",      vi:"Trường THCS" },
+  senior:     { icon:"🎓", zh:"高中",      vi:"Trường THPT" },
+  university: { icon:"🎓", zh:"大學",      vi:"Đại học" },
+  mall:       { icon:"🏬", zh:"百貨公司",  vi:"Trung tâm TM" },
+  nightmarket:{ icon:"🍢", zh:"夜市",      vi:"Chợ đêm" },
+  convenience:{ icon:"🏪", zh:"便利商店",  vi:"Cửa hàng TL" },
 }
+
+// Thứ tự hiển thị
+const NEARBY_ORDER = ["mrt","train","bus","hospital","market","park","school","junior","senior","university","mall","nightmarket","convenience"]
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -196,11 +200,12 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                 )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {Object.entries(p.nearby)
-                    .filter(([key, val]) => key !== "walk_minutes" && val)
-                    .map(([key, val]) => {
+                  {NEARBY_ORDER
+                    .filter(key => key !== "walk_minutes" && p.nearby![key])
+                    .map(key => {
                       const meta = NEARBY_META[key]
-                      if (!meta) return null
+                      const val = p.nearby![key]
+                      if (!meta || !val) return null
                       return (
                         <a
                           key={key}
