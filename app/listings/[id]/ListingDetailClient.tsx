@@ -22,11 +22,24 @@ const FACING_VI: Record<string,string> = {
   "東南":"Đông Nam","西南":"Tây Nam","東北":"Đông Bắc","西北":"Tây Bắc",
 }
 const PROP_LABEL: Record<string,{zh:string;vi:string}> = {
-  apartment:{zh:"公寓大廈",vi:"Chung cư"},
-  house:    {zh:"透天厝",  vi:"Nhà phố"},
-  studio:   {zh:"套房",    vi:"Studio"},
-  villa:    {zh:"豪宅",    vi:"Biệt thự"},
+  apartment:     {zh:"公寓大廈",   vi:"Chung cư thang máy"},
+  apartment_walkup:{zh:"公寓(無電梯)",vi:"Chung cư thang bộ"},
+  house:         {zh:"透天厝",     vi:"Nhà cả căn"},
+  studio:        {zh:"套房",       vi:"Studio"},
+  villa:         {zh:"別墅",       vi:"Biệt thự"},
 }
+
+// Tiện ích xung quanh (Nearby)
+const NEARBY_ITEMS = [
+  { icon:"🚇", zh:"捷運站",    vi:"Ga MRT" },
+  { icon:"🏫", zh:"學校",      vi:"Trường học" },
+  { icon:"🏥", zh:"醫院",      vi:"Bệnh viện" },
+  { icon:"🛒", zh:"超市",      vi:"Siêu thị" },
+  { icon:"🍜", zh:"餐廳",      vi:"Nhà hàng" },
+  { icon:"🏦", zh:"銀行",      vi:"Ngân hàng" },
+  { icon:"🌳", zh:"公園",      vi:"Công viên" },
+  { icon:"⛽", zh:"加油站",    vi:"Trạm xăng" },
+]
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -102,6 +115,10 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             {p.is_new && <span className="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full">{t.new}</span>}
             {p.is_featured && <span className="bg-amber-100 text-amber-600 text-xs font-bold px-3 py-1 rounded-full">⭐ {t.featured}</span>}
             <span className="bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full">{propType}</span>
+            {/* ── ID nhà ── */}
+            <span className="bg-gray-100 text-gray-400 text-xs px-3 py-1 rounded-full font-mono">
+              ID: {p.id}
+            </span>
           </div>
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
@@ -161,6 +178,38 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                 </div>
               </div>
             )}
+
+            {/* ── Nearby — Tiện ích xung quanh ── */}
+            <div className="bg-white rounded-2xl p-5 border border-gray-100">
+              <SectionTitle>{lang==="zh" ? "周邊設施" : "Tiện ích xung quanh"}</SectionTitle>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {NEARBY_ITEMS.map(item => (
+                  <a
+                    key={item.zh}
+                    href={`https://www.google.com/maps/search/${encodeURIComponent(item.zh)}/@${p.lat},${p.lng},15z`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col items-center gap-1.5 bg-gray-50 hover:bg-red-50 hover:border-red-200 border border-gray-100 rounded-xl py-3 px-2 transition group"
+                  >
+                    <span className="text-2xl group-hover:scale-110 transition">{item.icon}</span>
+                    <span className="text-xs text-gray-600 font-medium text-center">
+                      {lang==="zh" ? item.zh : item.vi}
+                    </span>
+                  </a>
+                ))}
+              </div>
+              {/* Google Maps embed nhỏ */}
+              <div className="mt-4 rounded-xl overflow-hidden border border-gray-100 h-48">
+                <iframe
+                  title="map"
+                  width="100%"
+                  height="100%"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src={`https://www.google.com/maps?q=${p.lat},${p.lng}&z=15&output=embed`}
+                />
+              </div>
+            </div>
 
             {/* Ngày đăng */}
             <p className="text-xs text-gray-400 px-1">
