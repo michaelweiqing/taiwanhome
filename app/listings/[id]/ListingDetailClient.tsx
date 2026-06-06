@@ -29,16 +29,21 @@ const PROP_LABEL: Record<string,{zh:string;vi:string}> = {
   villa:           {zh:"別墅",         vi:"Biệt thự"},
 }
 
-const NEARBY_ITEMS = [
-  { icon:"🚇", zh:"捷運站",  vi:"Ga MRT" },
-  { icon:"🏫", zh:"學校",    vi:"Trường học" },
-  { icon:"🏥", zh:"醫院",    vi:"Bệnh viện" },
-  { icon:"🛒", zh:"超市",    vi:"Siêu thị" },
-  { icon:"🍜", zh:"餐廳",    vi:"Nhà hàng" },
-  { icon:"🏦", zh:"銀行",    vi:"Ngân hàng" },
-  { icon:"🌳", zh:"公園",    vi:"Công viên" },
-  { icon:"⛽", zh:"加油站",  vi:"Trạm xăng" },
-]
+// Nearby key → icon + label
+const NEARBY_META: Record<string, { icon: string; zh: string; vi: string }> = {
+  mrt:      { icon:"🚇", zh:"捷運站",    vi:"Ga MRT" },
+  train:    { icon:"🚆", zh:"火車站",    vi:"Ga xe lửa" },
+  bus:      { icon:"🚌", zh:"公車",      vi:"Xe buýt" },
+  junior:   { icon:"🏫", zh:"國中",      vi:"Trường THCS" },
+  school:   { icon:"🏫", zh:"學校",      vi:"Trường học" },
+  senior:   { icon:"🎓", zh:"高中",      vi:"Trường THPT" },
+  hospital: { icon:"🏥", zh:"醫院",      vi:"Bệnh viện" },
+  market:   { icon:"🛒", zh:"超市",      vi:"Siêu thị" },
+  park:     { icon:"🌳", zh:"公園",      vi:"Công viên" },
+  mall:     { icon:"🏬", zh:"百貨公司",  vi:"Trung tâm TM" },
+  nightmarket:{ icon:"🍢", zh:"夜市",    vi:"Chợ đêm" },
+  convenience:{ icon:"🏪", zh:"便利商店",vi:"Cửa hàng TL" },
+}
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -178,28 +183,56 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
               </div>
             )}
 
-            {/* Tiện ích xung quanh */}
-            <div className="bg-white rounded-2xl p-5 border border-gray-100">
-              <SectionTitle>{lang==="zh" ? "周邊設施" : "Tiện ích xung quanh"}</SectionTitle>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {NEARBY_ITEMS.map(item => (
-                  <a key={item.zh}
-                    href={`https://www.google.com/maps/search/${encodeURIComponent(item.zh)}/@${p.lat},${p.lng},15z`}
-                    target="_blank" rel="noopener noreferrer"
-                    className="flex flex-col items-center gap-1.5 bg-gray-50 hover:bg-red-50 hover:border-red-200 border border-gray-100 rounded-xl py-3 px-2 transition group">
-                    <span className="text-2xl group-hover:scale-110 transition">{item.icon}</span>
-                    <span className="text-xs text-gray-600 font-medium text-center">
-                      {lang==="zh" ? item.zh : item.vi}
-                    </span>
-                  </a>
-                ))}
+            {/* Tiện ích xung quanh — dynamic from DB */}
+            {p.nearby && Object.keys(p.nearby).filter(k => k !== "walk_minutes" && p.nearby![k]).length > 0 && (
+              <div className="bg-white rounded-2xl p-5 border border-gray-100">
+                <SectionTitle>{lang==="zh" ? "周邊設施" : "Tiện ích xung quanh"}</SectionTitle>
+
+                {/* Walk minutes badge */}
+                {p.nearby.walk_minutes && (
+                  <div className="flex items-center gap-1.5 text-xs text-blue-600 bg-blue-50 rounded-lg px-3 py-1.5 mb-4 w-fit">
+                    🚶 {lang==="zh" ? `步行約 ${p.nearby.walk_minutes} 分鐘生活圈` : `Bán kính đi bộ ${p.nearby.walk_minutes} phút`}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {Object.entries(p.nearby)
+                    .filter(([key, val]) => key !== "walk_minutes" && val)
+                    .map(([key, val]) => {
+                      const meta = NEARBY_META[key]
+                      if (!meta) return null
+                      return (
+                        <a
+                          key={key}
+                          href={`https://www.google.com/maps/search/${encodeURIComponent(String(val))}/@${p.lat},${p.lng},15z`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 bg-gray-50 hover:bg-red-50 hover:border-red-200 border border-gray-100 rounded-xl px-4 py-3 transition group"
+                        >
+                          <span className="text-2xl shrink-0 group-hover:scale-110 transition">{meta.icon}</span>
+                          <div className="min-w-0">
+                            <div className="text-[11px] text-gray-400 font-medium">
+                              {lang==="zh" ? meta.zh : meta.vi}
+                            </div>
+                            <div className="text-sm font-semibold text-gray-800 truncate">
+                              {String(val)}
+                            </div>
+                          </div>
+                          <span className="ml-auto text-gray-300 text-xs shrink-0">↗</span>
+                        </a>
+                      )
+                    })
+                  }
+                </div>
+
+                {/* Google Maps embed */}
+                <div className="mt-4 rounded-xl overflow-hidden border border-gray-100 h-48">
+                  <iframe title="map" width="100%" height="100%" loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src={`https://www.google.com/maps?q=${p.lat},${p.lng}&z=15&output=embed`} />
+                </div>
               </div>
-              <div className="mt-4 rounded-xl overflow-hidden border border-gray-100 h-48">
-                <iframe title="map" width="100%" height="100%" loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  src={`https://www.google.com/maps?q=${p.lat},${p.lng}&z=15&output=embed`} />
-              </div>
-            </div>
+            )}
 
             {/* Ngày đăng */}
             <p className="text-xs text-gray-400 px-1">
