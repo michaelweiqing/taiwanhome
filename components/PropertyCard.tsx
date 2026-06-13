@@ -8,7 +8,21 @@ import { useFavorites } from "@/hooks/useFavorites"
 
 const TYPE_ZH: Record<string,string> = { apartment:"公寓", house:"透天厝", studio:"套房", villa:"豪宅" }
 const TYPE_VI: Record<string,string> = { apartment:"Chung cư", house:"Nhà phố", studio:"Studio", villa:"Biệt thự" }
-
+// Tự động phân loại apartment: 無電梯公寓 hay 華廈/大樓
+function getPropertyTypeLabel(p: Property, lang: "zh" | "vi"): string {
+  if (p.property_type !== "apartment") {
+    return lang === "zh"
+      ? (TYPE_ZH[p.property_type] ?? p.property_type)
+      : (TYPE_VI[p.property_type] ?? p.property_type)
+  }
+  const hasElevator =
+    (p.features    ?? []).some(f => f === "電梯") ||
+    (p.features_vi ?? []).some(f => f === "Thang máy")
+  const isWalkUp = p.total_floors < 6 && !hasElevator
+  return lang === "zh"
+    ? (isWalkUp ? "無電梯公寓" : "華廈/大樓")
+    : (isWalkUp ? "Chung cư thang bộ" : "Chung cư thang máy")
+}
 export default function PropertyCard({ property: p }: { property: Property }) {
   const { lang, t } = useLang()
   const { toggle, isFavorite } = useFavorites()
@@ -18,7 +32,7 @@ export default function PropertyCard({ property: p }: { property: Property }) {
   const title    = lang==="zh" ? p.title_zh  : p.title_vi
   const district = lang==="zh" ? p.district  : p.district_vi
   const city     = lang==="zh" ? p.city      : p.city_vi
-  const ptype    = lang==="zh" ? TYPE_ZH[p.property_type] : TYPE_VI[p.property_type]
+  const ptype    = getApartmentType(p, lang)
 
   const img = (!imgErr && p.images?.[0]) ? p.images[0] : null
 
