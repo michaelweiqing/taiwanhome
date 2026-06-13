@@ -256,7 +256,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <a
-                  href={`https://lvr.land.moi.gov.tw/homePage.action`}
+                  href={`https://lvr.land.moi.gov.tw/`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 flex items-center gap-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl px-4 py-3 transition group"
