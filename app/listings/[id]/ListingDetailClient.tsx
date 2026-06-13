@@ -254,17 +254,64 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                   ? "透過內政部實價登錄平台，查詢此地區的真實成交價格紀錄，做出更明智的買賣決策。"
                   : "Tra cứu giá giao dịch thực tế trong khu vực này qua hệ thống 實價登錄 của Bộ Nội vụ Đài Loan, giúp bạn đưa ra quyết định mua bán chính xác hơn."}
               </p>
-              <div className="flex flex-col sm:flex-row gap-3">
+              {/* 3 nút link — 591, leju, chính phủ */}
+              <div className="flex flex-col gap-2">
+
+                {/* 591 — có bảng lịch sử giao dịch chi tiết nhất */}
                 <a
-                  href={`https://lvr.land.moi.gov.tw/`}
+                  href={
+                    p.community_name
+                      ? `https://www.591.com.tw/find-real-price?regionid=8&search=${encodeURIComponent(p.community_name)}`
+                      : `https://www.591.com.tw/find-real-price?regionid=8&search=${encodeURIComponent(p.district)}`
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center gap-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl px-4 py-3 transition group"
+                  className="flex items-center gap-3 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-xl px-4 py-3 transition group"
+                >
+                  <span className="text-2xl shrink-0">🔥</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs text-orange-500 font-medium mb-0.5">
+                      {lang==="zh" ? "591實價登錄 — 最詳細歷史成交紀錄" : "591 — Lịch sử giao dịch chi tiết nhất"}
+                    </div>
+                    <div className="text-sm font-semibold text-orange-700 truncate">
+                      {p.community_name
+                        ? (lang==="zh" ? `查詢「${p.community_name}」成交紀錄` : `Tra cứu "${p.community_name}"`)
+                        : (lang==="zh" ? `查詢「${p.district}」成交行情` : `Tra cứu khu ${p.district_vi}`)}
+                    </div>
+                  </div>
+                  <span className="ml-auto text-orange-400 text-xs shrink-0 group-hover:translate-x-0.5 transition">↗</span>
+                </a>
+
+                {/* 樂居 leju — bản đồ giá trực quan */}
+                <a
+                  href={`https://www.leju.com.tw/realprice/?city=${encodeURIComponent(p.city)}&district=${encodeURIComponent(p.district)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 bg-green-50 hover:bg-green-100 border border-green-200 rounded-xl px-4 py-3 transition group"
+                >
+                  <span className="text-2xl shrink-0">🗺️</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs text-green-600 font-medium mb-0.5">
+                      {lang==="zh" ? "樂居 — 地圖式實價查詢" : "Leju — Bản đồ thực giá khu vực"}
+                    </div>
+                    <div className="text-sm font-semibold text-green-700 truncate">
+                      {lang==="zh" ? `${p.district} ${p.city} 房價地圖` : `Bản đồ giá ${p.district_vi}, ${p.city}`}
+                    </div>
+                  </div>
+                  <span className="ml-auto text-green-400 text-xs shrink-0 group-hover:translate-x-0.5 transition">↗</span>
+                </a>
+
+                {/* Chính phủ — nguồn gốc chính thức */}
+                <a
+                  href="https://lvr.land.moi.gov.tw/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl px-4 py-3 transition group"
                 >
                   <span className="text-2xl shrink-0">🏛️</span>
-                  <div className="min-w-0">
-                    <div className="text-xs text-blue-400 font-medium">
-                      {lang==="zh" ? "內政部不動產交易實價查詢" : "Bộ Nội vụ — Thực giá BĐS"}
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs text-blue-400 font-medium mb-0.5">
+                      {lang==="zh" ? "內政部不動產交易實價查詢（官方）" : "Bộ Nội vụ — Nguồn chính thức"}
                     </div>
                     <div className="text-sm font-semibold text-blue-700 truncate">
                       lvr.land.moi.gov.tw
@@ -272,28 +319,12 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                   </div>
                   <span className="ml-auto text-blue-400 text-xs shrink-0 group-hover:translate-x-0.5 transition">↗</span>
                 </a>
-                <a
-                  href={`https://www.google.com/search?q=${encodeURIComponent(`${p.district} ${p.city} 實價登錄 成交價`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 flex items-center gap-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 transition group"
-                >
-                  <span className="text-2xl shrink-0">🔍</span>
-                  <div className="min-w-0">
-                    <div className="text-xs text-gray-400 font-medium">
-                      {lang==="zh" ? "搜尋此區成交行情" : "Tìm giá giao dịch khu vực này"}
-                    </div>
-                    <div className="text-sm font-semibold text-gray-700 truncate">
-                      {lang==="zh" ? `${p.district} 實價登錄` : `${p.district_vi} — thực giá`}
-                    </div>
-                  </div>
-                  <span className="ml-auto text-gray-400 text-xs shrink-0 group-hover:translate-x-0.5 transition">↗</span>
-                </a>
               </div>
+
               <p className="text-[11px] text-gray-400 mt-3">
                 {lang==="zh"
-                  ? "⚠️ 實價登錄資料由政府提供，本平台不擔保其完整性。請以官方網站為準。"
-                  : "⚠️ Dữ liệu thực giá do chính phủ Đài Loan cung cấp. Vui lòng kiểm tra trực tiếp trên trang chính thức."}
+                  ? "⚠️ 實價登錄資料由政府每月更新，591及樂居為第三方彙整平台，資料請斟酌參考。"
+                  : "⚠️ Dữ liệu thực giá cập nhật hàng tháng từ chính phủ. 591 và Leju là nền tảng tổng hợp bên thứ ba, chỉ mang tính tham khảo."}
               </p>
             </div>
           </div>
