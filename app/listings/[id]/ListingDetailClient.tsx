@@ -245,6 +245,57 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
               {" · "}
               {lang==="zh" ? `瀏覽 ${p.views} 次` : `${p.views} lượt xem`}
             </p>
+
+            {/* 實價登錄 — Thực giá giao dịch */}
+            <div className="bg-white rounded-2xl p-5 border border-gray-100">
+              <SectionTitle>{lang==="zh" ? "實價登錄查詢" : "Tra cứu thực giá giao dịch"}</SectionTitle>
+              <p className="text-sm text-gray-500 mb-4 leading-relaxed">
+                {lang==="zh"
+                  ? "透過內政部實價登錄平台，查詢此地區的真實成交價格紀錄，做出更明智的買賣決策。"
+                  : "Tra cứu giá giao dịch thực tế trong khu vực này qua hệ thống 實價登錄 của Bộ Nội vụ Đài Loan, giúp bạn đưa ra quyết định mua bán chính xác hơn."}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a
+                  href={`https://lvr.land.moi.gov.tw/homePage.action`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center gap-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl px-4 py-3 transition group"
+                >
+                  <span className="text-2xl shrink-0">🏛️</span>
+                  <div className="min-w-0">
+                    <div className="text-xs text-blue-400 font-medium">
+                      {lang==="zh" ? "內政部不動產交易實價查詢" : "Bộ Nội vụ — Thực giá BĐS"}
+                    </div>
+                    <div className="text-sm font-semibold text-blue-700 truncate">
+                      lvr.land.moi.gov.tw
+                    </div>
+                  </div>
+                  <span className="ml-auto text-blue-400 text-xs shrink-0 group-hover:translate-x-0.5 transition">↗</span>
+                </a>
+                <a
+                  href={`https://www.google.com/search?q=${encodeURIComponent(`${p.district} ${p.city} 實價登錄 成交價`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center gap-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 transition group"
+                >
+                  <span className="text-2xl shrink-0">🔍</span>
+                  <div className="min-w-0">
+                    <div className="text-xs text-gray-400 font-medium">
+                      {lang==="zh" ? "搜尋此區成交行情" : "Tìm giá giao dịch khu vực này"}
+                    </div>
+                    <div className="text-sm font-semibold text-gray-700 truncate">
+                      {lang==="zh" ? `${p.district} 實價登錄` : `${p.district_vi} — thực giá`}
+                    </div>
+                  </div>
+                  <span className="ml-auto text-gray-400 text-xs shrink-0 group-hover:translate-x-0.5 transition">↗</span>
+                </a>
+              </div>
+              <p className="text-[11px] text-gray-400 mt-3">
+                {lang==="zh"
+                  ? "⚠️ 實價登錄資料由政府提供，本平台不擔保其完整性。請以官方網站為準。"
+                  : "⚠️ Dữ liệu thực giá do chính phủ Đài Loan cung cấp. Vui lòng kiểm tra trực tiếp trên trang chính thức."}
+              </p>
+            </div>
           </div>
 
           {/* Cột phải */}
