@@ -22,11 +22,23 @@ const FACING_VI: Record<string,string> = {
   "東南":"Đông Nam","西南":"Tây Nam","東北":"Đông Bắc","西北":"Tây Bắc",
 }
 const PROP_LABEL: Record<string,{zh:string;vi:string}> = {
-  apartment:       {zh:"公寓大廈",     vi:"Chung cư thang máy"},
-  apartment_walkup:{zh:"公寓(無電梯)", vi:"Chung cư thang bộ"},
-  house:           {zh:"透天厝",       vi:"Nhà cả căn"},
-  studio:          {zh:"套房",         vi:"Studio"},
-  villa:           {zh:"別墅",         vi:"Biệt thự"},
+  house:  {zh:"透天厝", vi:"Nhà cả căn"},
+  studio: {zh:"套房",   vi:"Studio"},
+  villa:  {zh:"別墅",   vi:"Biệt thự"},
+}
+
+// Tự động phân loại apartment: tổng_tầng < 6 và không có 電梯 → 無電梯公寓, ngược lại → 華廈/大樓
+function getApartmentLabel(p: Property): {zh:string;vi:string} {
+  if (p.property_type !== "apartment") {
+    return PROP_LABEL[p.property_type] ?? {zh: p.property_type, vi: p.property_type}
+  }
+  const hasElevator =
+    (p.features    ?? []).some(f => f === "電梯") ||
+    (p.features_vi ?? []).some(f => f === "Thang máy")
+  const isWalkUp = p.total_floors < 6 && !hasElevator
+  return isWalkUp
+    ? {zh:"無電梯公寓", vi:"Chung cư thang bộ"}
+    : {zh:"華廈/大樓",  vi:"Chung cư thang máy"}
 }
 
 // Nearby key → icon + label
@@ -69,7 +81,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
   const desc     = lang==="zh" ? p.description_zh : p.description_vi
   const features = lang==="zh" ? p.features       : p.features_vi
   const facing   = lang==="zh" ? p.facing         : (FACING_VI[p.facing] ?? p.facing)
-  const propType = PROP_LABEL[p.property_type]?.[lang] ?? p.property_type
+  const propType = getApartmentLabel(p)[lang]
 
   const postedDate = new Date(p.posted_at).toLocaleDateString(
     lang==="zh" ? "zh-TW" : "vi-VN",
@@ -255,8 +267,6 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                   : "Tra cứu giá giao dịch thực tế trong khu vực này qua hệ thống 實價登錄 của Bộ Nội vụ Đài Loan, giúp bạn đưa ra quyết định mua bán chính xác hơn."}
               </p>
               <div className="flex flex-col gap-2">
-
-                {/* Chính phủ — nguồn gốc chính thức */}
                 <a
                   href="https://lvr.land.moi.gov.tw/"
                   target="_blank"
@@ -275,7 +285,6 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                   <span className="ml-auto text-blue-400 text-xs shrink-0 group-hover:translate-x-0.5 transition">↗</span>
                 </a>
               </div>
-
               <p className="text-[11px] text-gray-400 mt-3">
                 {lang==="zh"
                   ? "⚠️ 實價登錄資料由政府提供，本平台不擔保其完整性。請以官方網站為準。"
