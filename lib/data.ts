@@ -80,7 +80,8 @@ export async function getPropertyById(id: string): Promise<Property | null> {
     .eq("id", id)
     .single()
   if (error) { console.error("Supabase:", error.message); return null }
-  supabase.from("properties").update({ views: (data.views || 0) + 1 }).eq("id", id)
+  // Tăng views qua RPC (bypass RLS)
+  supabase.rpc("increment_views", { property_id: id })
   return data as Property
 }
 
