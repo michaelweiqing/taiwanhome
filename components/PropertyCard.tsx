@@ -32,7 +32,7 @@ export default function PropertyCard({ property: p }: { property: Property }) {
   const title    = lang==="zh" ? p.title_zh  : p.title_vi
   const district = lang==="zh" ? p.district  : p.district_vi
   const city     = lang==="zh" ? p.city      : p.city_vi
-  const ptype    = getApartmentType(p, lang)
+  const ptype    = getPropertyTypeLabel(p, lang)
 
   const img = (!imgErr && p.images?.[0]) ? p.images[0] : null
 
