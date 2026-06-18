@@ -1,6 +1,7 @@
 "use client"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { createClient } from "@/lib/supabase-browser"
 import type { Property } from "@/lib/data"
 import { formatPrice, pingToM2 } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
@@ -75,6 +76,15 @@ interface Props { property: Property; similar: Property[] }
 export default function ListingDetailClient({ property: p, similar }: Props) {
   const { lang, t } = useLang()
   const [shared, setShared] = useState(false)
+  const [views, setViews] = useState(p.views ?? 0)
+
+  // Tăng views phía client — chạy 1 lần khi vào trang
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.rpc("increment_views", { property_id: p.id }).then(() => {
+      setViews(v => v + 1)
+    })
+  }, [p.id])
 
   const title    = lang==="zh" ? p.title_zh       : p.title_vi
   const address  = lang==="zh" ? p.address        : p.address_vi
@@ -255,7 +265,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             <p className="text-xs text-gray-400 px-1">
               {lang==="zh" ? "刊登日期：" : "Ngày đăng: "}{postedDate}
               {" · "}
-              {lang==="zh" ? `瀏覽 ${p.views} 次` : `${p.views} lượt xem`}
+              {lang==="zh" ? `瀏覽 ${views} 次` : `${views} lượt xem`}
             </p>
 
             {/* 實價登錄 — Thực giá giao dịch */}
