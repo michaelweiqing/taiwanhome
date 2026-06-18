@@ -1,6 +1,7 @@
 "use client"
 import Link from "next/link"
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
 import type { Property } from "@/lib/data"
 import { formatPrice, pingToM2 } from "@/lib/data"
@@ -75,6 +76,7 @@ interface Props { property: Property; similar: Property[] }
 
 export default function ListingDetailClient({ property: p, similar }: Props) {
   const { lang, t } = useLang()
+  const router = useRouter()
   const [shared, setShared] = useState(false)
   const [views, setViews] = useState(p.views ?? 0)
 
@@ -139,6 +141,15 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 py-5">
+
+        {/* Nút quay lại */}
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-red-600 transition mb-3 group"
+        >
+          <span className="text-lg leading-none group-hover:-translate-x-1 transition-transform">←</span>
+          <span>{lang === "zh" ? "返回上一頁" : "Quay lại"}</span>
+        </button>
 
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-4 flex-wrap">
