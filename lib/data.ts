@@ -70,6 +70,7 @@ export async function getFeaturedProperties(): Promise<Property[]> {
     .from("properties")
     .select("*")
     .eq("is_featured", true)
+    .order("posted_at", { ascending: false })
     .limit(4)
   if (error) { console.error("Supabase:", error.message); return [] }
   return data as Property[]
