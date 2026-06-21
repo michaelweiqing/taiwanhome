@@ -82,7 +82,7 @@ export default function ContactForm({ agentName, agentPhone, agentLine, property
           </p>
           <p>經紀人證號：陳秀貞（104）中市經紀字第01633號</p>
           {agentDeveloper && (
-            <p className="pt-1">
+            <p className="border-t border-gray-200 mt-2 pt-2">
               {lang === "zh" ? "開發承辦人：" : "Người phụ trách: "}{agentDeveloper}
             </p>
           )}
