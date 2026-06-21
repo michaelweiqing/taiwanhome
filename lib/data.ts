@@ -38,6 +38,8 @@ export interface Property {
   agent_line: string
   agent_avatar?: string | null
   agent_is_professional?: boolean
+  agent_developer?: string | null     // 開發承辦人
+  agent_company?: string | null       // 公司名稱
   is_new: boolean
   is_featured: boolean
   parking: boolean

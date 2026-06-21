@@ -330,6 +330,8 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                 propertyTitle={title}
                 agentAvatar={p.agent_avatar}
                 agentIsProfessional={p.agent_is_professional}
+                agentDeveloper={p.agent_developer}
+                agentCompany={p.agent_company}
               />
             </div>
           </div>

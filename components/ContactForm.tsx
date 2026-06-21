@@ -9,9 +9,11 @@ interface Props {
   propertyTitle: string
   agentAvatar?: string | null
   agentIsProfessional?: boolean
+  agentDeveloper?: string | null
+  agentCompany?: string | null
 }
 
-export default function ContactForm({ agentName, agentPhone, agentLine, propertyTitle, agentAvatar, agentIsProfessional = false }: Props) {
+export default function ContactForm({ agentName, agentPhone, agentLine, propertyTitle, agentAvatar, agentIsProfessional = false, agentDeveloper, agentCompany }: Props) {
   const { lang } = useLang()
   const [form, setForm] = useState({ name: "", phone: "", message: "" })
   const [sent, setSent] = useState(false)
@@ -79,6 +81,16 @@ export default function ContactForm({ agentName, agentPhone, agentLine, property
               : "Giấy phép hành nghề số (113) 登字第456212號"}
           </p>
           <p>經紀人證號：陳秀貞（104）中市經紀字第01633號</p>
+          {agentDeveloper && (
+            <p className="pt-1">
+              {lang === "zh" ? "開發承辦人：" : "Người phụ trách: "}{agentDeveloper}
+            </p>
+          )}
+          {agentCompany && (
+            <p>
+              {lang === "zh" ? "公司名稱：" : "Công ty: "}{agentCompany}
+            </p>
+          )}
         </div>
       )}
 
