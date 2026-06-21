@@ -278,6 +278,11 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
               {" · "}
               {lang==="zh" ? `瀏覽 ${views} 次` : `${views} lượt xem`}
             </p>
+            <p className="text-xs text-gray-400 italic px-1">
+              {lang==="zh"
+                ? "如本物件已完成出售、出租或委托期滿，本廣告即視爲自動失效"
+                : "Nếu bất động sản đã được bán, cho thuê hoặc hết hạn ủy thác, quảng cáo này được coi là tự động hết hiệu lực"}
+            </p>
 
             {/* 實價登錄 — Thực giá giao dịch */}
             <div className="bg-white rounded-2xl p-5 border border-gray-100">
