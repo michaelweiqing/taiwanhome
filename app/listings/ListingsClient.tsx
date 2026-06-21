@@ -1,5 +1,6 @@
 "use client"
 import { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
 import type { Property } from "@/lib/data"
 import PropertyCard from "@/components/PropertyCard"
 import { useLang } from "@/context/LangContext"
@@ -11,6 +12,7 @@ interface Props {
 
 export default function ListingsClient({ initialProperties, searchQuery }: Props) {
   const { lang, t } = useLang()
+  const router = useRouter()
   const [typeFilter, setTypeFilter] = useState<"all"|"rent"|"buy">("all")
   const [sortBy, setSortBy]         = useState<"newest"|"price_asc"|"price_desc">("newest")
 
@@ -53,6 +55,12 @@ export default function ListingsClient({ initialProperties, searchQuery }: Props
       {/* ── Toolbar ── */}
       <div className="bg-white border-b border-gray-100 sticky top-14 z-40">
         <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center gap-3">
+
+          {/* Nút quay lại */}
+          <button onClick={() => router.back()}
+            className="flex items-center gap-1 text-gray-500 hover:text-red-600 text-sm transition mr-1">
+            ← {lang === "zh" ? "返回" : "Quay lại"}
+          </button>
 
           {/* Filter rent/buy/all */}
           <div className="flex bg-gray-100 rounded-xl overflow-hidden text-sm">
