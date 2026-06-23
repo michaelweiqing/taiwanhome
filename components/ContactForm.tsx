@@ -20,7 +20,7 @@ export default function ContactForm({ agentName, agentPhone, agentLine, property
   const [form, setForm] = useState({ name: "", phone: "", message: "" })
   const [sent, setSent] = useState(false)
 
-  const lineUrl = `https://line.me/R/ti/p/${agentLine}`
+  const lineUrl = agentLine.startsWith("http") ? agentLine : `https://line.me/ti/p/${agentLine}`
   const telUrl  = `tel:${agentPhone}`
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
