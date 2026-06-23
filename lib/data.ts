@@ -89,16 +89,60 @@ export async function getPropertyById(id: string): Promise<Property | null> {
 export async function getSimilarProperties(
   currentId: string,
   listingType: "rent" | "buy",
-  limit = 3
+  limit = 3,
+  opts?: { propertyType?: string; district?: string; city?: string; price?: number }
 ): Promise<Property[]> {
-  const { data, error } = await supabase
-    .from("properties")
-    .select("*")
-    .eq("listing_type", listingType)
-    .neq("id", currentId)
-    .limit(limit)
-  if (error) { console.error("Supabase:", error.message); return [] }
-  return data as Property[]
+  const results: Property[] = []
+
+  // Bước 1: cùng loại nhà + cùng quận
+  if (opts?.propertyType && opts?.district) {
+    const { data } = await supabase
+      .from("properties")
+      .select("*")
+      .eq("listing_type", listingType)
+      .eq("property_type", opts.propertyType)
+      .eq("district", opts.district)
+      .neq("id", currentId)
+      .order("posted_at", { ascending: false })
+      .limit(limit)
+    if (data) results.push(...data as Property[])
+  }
+
+  // Bước 2: cùng loại nhà + cùng thành phố (bù nếu thiếu)
+  if (results.length < limit && opts?.propertyType && opts?.city) {
+    const existing = results.map(r => r.id)
+    const { data } = await supabase
+      .from("properties")
+      .select("*")
+      .eq("listing_type", listingType)
+      .eq("property_type", opts.propertyType)
+      .eq("city", opts.city)
+      .neq("id", currentId)
+      .not("id", "in", `(${[...existing, currentId].join(",")})`)
+      .order("posted_at", { ascending: false })
+      .limit(limit - results.length)
+    if (data) results.push(...data as Property[])
+  }
+
+  // Bước 3: cùng listing_type + giá ±30% (fallback)
+  if (results.length < limit && opts?.price) {
+    const existing = results.map(r => r.id)
+    const lo = Math.round(opts.price * 0.7)
+    const hi = Math.round(opts.price * 1.3)
+    const { data } = await supabase
+      .from("properties")
+      .select("*")
+      .eq("listing_type", listingType)
+      .gte("price", lo)
+      .lte("price", hi)
+      .neq("id", currentId)
+      .not("id", "in", `(${[...existing, currentId].join(",")})`)
+      .order("posted_at", { ascending: false })
+      .limit(limit - results.length)
+    if (data) results.push(...data as Property[])
+  }
+
+  return results.slice(0, limit)
 }
 
 export interface FilterOptions {
