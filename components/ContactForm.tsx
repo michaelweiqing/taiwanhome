@@ -1,19 +1,21 @@
 "use client"
 import { useState } from "react"
 import { useLang } from "@/context/LangContext"
+import { createClient } from "@/lib/supabase-browser"
 
 interface Props {
   agentName: string
   agentPhone: string
   agentLine: string
   propertyTitle: string
+  propertyId: string
   agentAvatar?: string | null
   agentIsProfessional?: boolean
   agentDeveloper?: string | null
   agentCompany?: string | null
 }
 
-export default function ContactForm({ agentName, agentPhone, agentLine, propertyTitle, agentAvatar, agentIsProfessional = false, agentDeveloper, agentCompany }: Props) {
+export default function ContactForm({ agentName, agentPhone, agentLine, propertyTitle, propertyId, agentAvatar, agentIsProfessional = false, agentDeveloper, agentCompany }: Props) {
   const { lang } = useLang()
   const [form, setForm] = useState({ name: "", phone: "", message: "" })
   const [sent, setSent] = useState(false)
@@ -25,8 +27,17 @@ export default function ContactForm({ agentName, agentPhone, agentLine, property
     setForm(f => ({ ...f, [e.target.name]: e.target.value }))
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!form.name || !form.phone) return
+    const supabase = createClient()
+    await supabase.from("inquiries").insert({
+      property_id: propertyId,
+      title:       propertyTitle,
+      name:        form.name,
+      phone:       form.phone,
+      message:     form.message || null,
+      lang,
+    })
     setSent(true)
     setTimeout(() => setSent(false), 3000)
     setForm({ name: "", phone: "", message: "" })
