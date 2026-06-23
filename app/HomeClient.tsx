@@ -357,22 +357,6 @@ export default function HomeClient({ featured, newest }: Props) {
           </div>
         </section>
       </div>
-
-      {/* ── Bottom nav mobile ── */}
-      <div className="sticky bottom-0 bg-white border-t border-gray-100 grid grid-cols-4 md:hidden">
-        {[
-          { icon:"🏠", zh:"首頁", vi:"Trang chủ", href:"/" },
-          { icon:"🔍", zh:"搜尋", vi:"Tìm kiếm", href:"/listings" },
-          { icon:"❤️", zh:"收藏", vi:"Yêu thích", href:"/favorites" },
-          { icon:"👤", zh:"我的", vi:"Cá nhân", href:"/" },
-        ].map(item => (
-          <Link key={item.href+item.zh} href={item.href}
-            className="flex flex-col items-center gap-1 py-2.5 text-gray-400 hover:text-red-600 transition text-[10px]">
-            <span className="text-xl leading-none">{item.icon}</span>
-            <span>{lang==="zh" ? item.zh : item.vi}</span>
-          </Link>
-        ))}
-      </div>
     </div>
   )
 }
