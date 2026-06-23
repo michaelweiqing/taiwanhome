@@ -4,6 +4,7 @@ import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import { LangProvider } from "@/context/LangContext"
 import Navbar from "@/components/Navbar"
+import BottomTabBar from "@/components/BottomTabBar"
 import PwaInstall from "@/components/PwaInstall"
 
 export const metadata: Metadata = {
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <LangProvider>
           <Navbar />
           <main>{children}</main>
+          <BottomTabBar />
           <PwaInstall />
         </LangProvider>
       </body>
