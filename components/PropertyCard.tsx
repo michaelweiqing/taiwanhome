@@ -150,7 +150,9 @@ export default function PropertyCard({ property: p }: { property: Property }) {
 
         {/* Tuổi nhà */}
         <div className="mt-auto flex items-center justify-end">
-          <span className="text-[11px] text-gray-400">{p.age}{t.yearUnit}</span>
+          <span className="text-[11px] text-gray-400">
+            {lang === "zh" ? `${p.age}${t.yearUnit}屋` : `Nhà ${p.age}${t.yearUnit}`}
+          </span>
         </div>
       </div>
     </div>
