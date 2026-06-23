@@ -78,6 +78,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
   const { lang, t } = useLang()
   const router = useRouter()
   const [shared, setShared] = useState(false)
+  const [isFav,  setIsFav]  = useState(false)
   const [views, setViews] = useState(p.views ?? 0)
 
   // Tăng views phía client — chạy 1 lần khi vào trang
@@ -87,6 +88,19 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
       setViews(v => v + 1)
     })
   }, [p.id])
+
+  // Đọc trạng thái yêu thích từ localStorage
+  useEffect(() => {
+    const favs: string[] = JSON.parse(localStorage.getItem("taiwanhome_favs") || "[]")
+    setIsFav(favs.includes(p.id))
+  }, [p.id])
+
+  const toggleFav = () => {
+    const favs: string[] = JSON.parse(localStorage.getItem("taiwanhome_favs") || "[]")
+    const next = isFav ? favs.filter(id => id !== p.id) : [...favs, p.id]
+    localStorage.setItem("taiwanhome_favs", JSON.stringify(next))
+    setIsFav(!isFav)
+  }
 
   const title    = lang==="zh" ? p.title_zh       : p.title_vi
   const address  = lang==="zh" ? p.address        : p.address_vi
@@ -173,11 +187,25 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
           </div>
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
-            <button
-              onClick={() => { navigator.clipboard?.writeText(window.location.href); setShared(true); setTimeout(()=>setShared(false),2000) }}
-              className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition shrink-0">
-              {shared ? "✅ Đã copy" : "🔗 Chia sẻ"}
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              {/* Nút yêu thích */}
+              <button
+                onClick={toggleFav}
+                title={lang==="zh" ? (isFav?"取消收藏":"加入收藏") : (isFav?"Bỏ yêu thích":"Yêu thích")}
+                className={`flex items-center gap-1.5 text-sm border rounded-xl px-3 py-1.5 transition ${
+                  isFav
+                    ? "bg-red-50 border-red-300 text-red-500"
+                    : "border-gray-200 text-gray-400 hover:bg-gray-50"
+                }`}>
+                {isFav ? "❤️" : "🤍"} {lang==="zh" ? (isFav?"已收藏":"收藏") : (isFav?"Đã thích":"Yêu thích")}
+              </button>
+              {/* Nút chia sẻ */}
+              <button
+                onClick={() => { navigator.clipboard?.writeText(window.location.href); setShared(true); setTimeout(()=>setShared(false),2000) }}
+                className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition">
+                {shared ? "✅ Đã copy" : "🔗 Chia sẻ"}
+              </button>
+            </div>
           </div>
           <p className="text-gray-400 text-sm mt-1.5">📍 {address}</p>
         </div>
