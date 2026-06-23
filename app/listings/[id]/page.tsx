@@ -14,7 +14,7 @@ export default async function ListingDetailPage({
   const property = await getPropertyById(id)
   if (!property) notFound()
 
-  const similar = await getSimilarProperties(id, property.listing_type, 3, {
+  const similar = await getSimilarProperties(id, property.listing_type, 6, {
     propertyType: property.property_type,
     district:     property.district,
     city:         property.city,
