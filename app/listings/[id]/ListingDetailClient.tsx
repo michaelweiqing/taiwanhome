@@ -187,7 +187,9 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
           </div>
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
-            <div className="flex items-center gap-2 shrink-0">
+          </div>
+          <p className="text-gray-400 text-sm mt-1.5">📍 {address}</p>
+          <div className="flex items-center gap-2 mt-3">
               {/* Nút yêu thích */}
               <button
                 onClick={toggleFav}
@@ -205,9 +207,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                 className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition">
                 {shared ? "✅ Đã copy" : "🔗 Chia sẻ"}
               </button>
-            </div>
           </div>
-          <p className="text-gray-400 text-sm mt-1.5">📍 {address}</p>
         </div>
 
         {/* Gallery */}
