@@ -23,14 +23,14 @@ export default function SubmitForm() {
     title_vi:      "",
     title_zh:      "",
     address:       "",
-    district:      "北區",
+    district:      "",
     price:         "",
     area_ping:     "",
-    bedrooms:      "2",
-    bathrooms:     "1",
-    floor:         "3",
-    total_floors:  "7",
-    age:           "10",
+    bedrooms:      "",
+    bathrooms:     "",
+    floor:         "",
+    total_floors:  "",
+    age:           "",
     description_vi: "",
     agent_name:    "",
     agent_phone:   "",
@@ -196,10 +196,10 @@ export default function SubmitForm() {
         </label>
         <div className="grid grid-cols-2 gap-2">
           {[
-            {v:"apartment",zh:"公寓大廈",vi:"Chung cư"},
-            {v:"house",    zh:"透天厝",  vi:"Nhà phố"},
-            {v:"studio",   zh:"套房",    vi:"Studio"},
-            {v:"villa",    zh:"豪宅",    vi:"Biệt thự"},
+            {v:"apartment_walkup", zh:"公寓(無電梯)", vi:"Chung cư thang bộ"},
+            {v:"apartment",        zh:"電梯大樓",      vi:"Chung cư thang máy"},
+            {v:"house",            zh:"透天厝",        vi:"Nhà cả căn"},
+            {v:"villa",            zh:"別墅",          vi:"Biệt thự"},
           ].map(o => (
             <button key={o.v}
               onClick={() => setForm(f => ({...f, property_type: o.v}))}
@@ -249,13 +249,13 @@ export default function SubmitForm() {
         </label>
         <div className="grid grid-cols-2 gap-3">
           {[
-            {name:"price",      label:lang==="zh"?"價格(萬)":"Giá (vạn NTD)",   ph:"1680"},
-            {name:"area_ping",  label:lang==="zh"?"坪數":"Diện tích (ping)",    ph:"52"},
-            {name:"bedrooms",   label:lang==="zh"?"房間數":"Số phòng ngủ",      ph:"2"},
-            {name:"bathrooms",  label:lang==="zh"?"衛浴數":"Số WC",             ph:"1"},
-            {name:"floor",      label:lang==="zh"?"樓層":"Tầng",               ph:"3"},
-            {name:"total_floors",label:lang==="zh"?"總樓層":"Tổng số tầng",    ph:"7"},
-            {name:"age",        label:lang==="zh"?"屋齡(年)":"Tuổi nhà (năm)", ph:"10"},
+            {name:"price",       label:lang==="zh"?"價格(萬)":"Giá (vạn NTD)",  ph:""},
+            {name:"area_ping",   label:lang==="zh"?"坪數":"Diện tích (ping)",   ph:""},
+            {name:"bedrooms",    label:lang==="zh"?"房間數":"Số phòng ngủ",     ph:""},
+            {name:"bathrooms",   label:lang==="zh"?"衛浴數":"Số WC",            ph:""},
+            {name:"floor",       label:lang==="zh"?"樓層":"Tầng",              ph:""},
+            {name:"total_floors",label:lang==="zh"?"總樓層":"Tổng số tầng",    ph:""},
+            {name:"age",         label:lang==="zh"?"屋齡(年)":"Tuổi nhà (năm)",ph:""},
           ].map(f => (
             <div key={f.name}>
               <label className="text-xs text-gray-500 mb-1 block">{f.label}</label>
