@@ -102,11 +102,11 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     setIsFav(!isFav)
   }
 
-  const title    = lang==="zh" ? p.title_zh       : p.title_vi
-  const address  = lang==="zh" ? p.address        : p.address_vi
+  const title    = lang==="zh" ? (p.title_zh || p.title_vi)   : p.title_vi
+  const address  = lang==="zh" ? (p.address  || p.address_vi) : (p.address_vi || p.address)
   const desc     = lang==="zh" ? p.description_zh : p.description_vi
-  const features = lang==="zh" ? p.features       : p.features_vi
-  const facing   = lang==="zh" ? p.facing         : (FACING_VI[p.facing] ?? p.facing)
+  const features = lang==="zh" ? (p.features || [])   : (p.features_vi || [])
+  const facing   = lang==="zh" ? (p.facing || "") : (FACING_VI[p.facing ?? ""] ?? (p.facing || ""))
   const propType = getApartmentLabel(p)[lang]
 
   const postedDate = new Date(p.posted_at).toLocaleDateString(
@@ -140,10 +140,10 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ...(p.area_common_ping  ? [{ label: lang==="zh"?"共同使用":"Diện tích sở hữu chung",      value: `${p.area_common_ping}${t.pingUnit}` }] : []),
     ...(p.area_land_ping    ? [{ label: lang==="zh"?"土地坪數":"Diện tích đất",               value: `${p.area_land_ping}${t.pingUnit}` }] : []),
     ...(p.price_per_ping    ? [{ label: t.pricePerPing, value: `${p.price_per_ping.toLocaleString()}萬/${t.pingUnit}` }] : []),
-    { label: lang==="zh"?"格局":"Bố cục",              value: `${p.bedrooms}${t.bedrooms} / ${p.bathrooms}${t.bathrooms}` },
+    { label: lang==="zh"?"格局":"Bố cục",              value: `${p.bedrooms||0}${t.bedrooms} / ${p.bathrooms||0}${t.bathrooms}` },
     { label: lang==="zh"?"樓層":"Tầng/Tổng số tầng",  value: floorLabel },
-    { label: t.age,                                    value: `${p.age}${t.yearUnit}` },
-    { label: t.facing,                                 value: facing },
+    { label: t.age,                                    value: `${p.age||0}${t.yearUnit}` },
+    { label: t.facing,                                 value: facing || "-" },
     { label: lang==="zh"?"物件類型":"Loại BĐS",        value: propType },
     ...(p.total_units     ? [{ label: lang==="zh"?"總戶數":"Tổng số căn",       value: `${p.total_units}${lang==="zh"?"戶":"căn"}` }] : []),
     ...(p.units_per_floor ? [{ label: lang==="zh"?"同層戶數":"Số căn mỗi tầng", value: `${p.units_per_floor}${lang==="zh"?"戶":"căn"}` }] : []),
