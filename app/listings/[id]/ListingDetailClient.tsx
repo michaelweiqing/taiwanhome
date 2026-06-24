@@ -81,14 +81,14 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
   const router = useRouter()
   const [shared, setShared] = useState(false)
   const [isFav,  setIsFav]  = useState(false)
-  const [views, setViews] = useState(p.views ?? 0)
+  const [views, setViews] = useState(Number(p.views) ?? 0)
 
-  // Tăng views phía client — chạy 1 lần khi vào trang
+  // Tăng views — chỉ cho bảng properties (có RPC), bỏ qua user_listings
   useEffect(() => {
     const supabase = createClient()
-    supabase.rpc("increment_views", { property_id: p.id }).then(() => {
-      setViews(v => v + 1)
-    })
+    supabase.rpc("increment_views", { property_id: p.id })
+      .then(() => setViews(v => v + 1))
+      .catch(() => {}) // bỏ qua nếu RPC không tồn tại (user_listings)
   }, [p.id])
 
   // Đọc trạng thái yêu thích từ localStorage
