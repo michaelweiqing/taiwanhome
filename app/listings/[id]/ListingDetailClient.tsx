@@ -83,12 +83,16 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
   const [isFav,  setIsFav]  = useState(false)
   const [views, setViews] = useState(Number(p.views) ?? 0)
 
-  // Tăng views — chỉ cho bảng properties (có RPC), bỏ qua user_listings
+  // Tăng views — bỏ qua lỗi nếu RPC không tồn tại (user_listings)
   useEffect(() => {
     const supabase = createClient()
-    supabase.rpc("increment_views", { property_id: p.id })
-      .then(() => setViews(v => v + 1))
-      .catch(() => {}) // bỏ qua nếu RPC không tồn tại (user_listings)
+    const run = async () => {
+      try {
+        await supabase.rpc("increment_views", { property_id: p.id })
+        setViews(v => v + 1)
+      } catch {}
+    }
+    run()
   }, [p.id])
 
   // Đọc trạng thái yêu thích từ localStorage
