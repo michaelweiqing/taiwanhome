@@ -57,12 +57,15 @@ export interface Property {
 }
 
 export async function getAllProperties(): Promise<Property[]> {
-  const { data, error } = await supabase
-    .from("properties")
-    .select("*")
-    .order("posted_at", { ascending: false })
-  if (error) { console.error("Supabase:", error.message); return [] }
-  return data as Property[]
+  const [r1, r2] = await Promise.all([
+    supabase.from("properties").select("*").order("posted_at", { ascending: false }),
+    supabase.from("user_listings").select("*").order("posted_at", { ascending: false }),
+  ])
+  const admin = (r1.data || []) as Property[]
+  const user  = (r2.data || []) as Property[]
+  return [...admin, ...user].sort((a, b) =>
+    new Date(b.posted_at).getTime() - new Date(a.posted_at).getTime()
+  )
 }
 
 export async function getFeaturedProperties(): Promise<Property[]> {
@@ -77,13 +80,12 @@ export async function getFeaturedProperties(): Promise<Property[]> {
 }
 
 export async function getPropertyById(id: string): Promise<Property | null> {
-  const { data, error } = await supabase
-    .from("properties")
-    .select("*")
-    .eq("id", id)
-    .single()
-  if (error) { console.error("Supabase:", error.message); return null }
-  return data as Property
+  // Tìm trong properties trước, sau đó user_listings
+  const { data: p1 } = await supabase.from("properties").select("*").eq("id", id).maybeSingle()
+  if (p1) return p1 as Property
+  const { data: p2 } = await supabase.from("user_listings").select("*").eq("id", id).maybeSingle()
+  if (p2) return p2 as Property
+  return null
 }
 
 export async function getSimilarProperties(

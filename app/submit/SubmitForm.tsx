@@ -141,9 +141,9 @@ export default function SubmitForm() {
         }
       }
 
-      // 2. Lưu thẳng vào bảng properties — hiển thị ngay trên website
+      // 2. Lưu vào bảng user_listings — tách riêng khỏi properties admin
       const newId = String(Math.floor(1000000 + Math.random() * 9000000))
-      const { error } = await supabase.from("properties").insert({
+      const { error } = await supabase.from("user_listings").insert({
         id:            newId,
         listing_type:  form.listing_type,
         property_type: form.property_type,
