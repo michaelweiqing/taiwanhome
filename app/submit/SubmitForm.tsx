@@ -91,6 +91,10 @@ export default function SubmitForm() {
     agent_name:    "",
     agent_phone:   "",
     agent_line:    "",
+    agent_company: "",
+    agent_branch:  "",
+    agent_license: "",
+    agent_broker:  "",
   })
 
   // Kiểm tra đăng nhập qua localStorage
@@ -166,8 +170,12 @@ export default function SubmitForm() {
         agent_name:    form.agent_name,
         agent_name_vi: form.agent_name,
         agent_phone:   form.agent_phone,
-        agent_line:    form.agent_line || "https://page.line.me/881vvzrj",
+        agent_line:    form.agent_line || null,
         agent_avatar:  null,
+        agent_company: form.agent_company || null,
+        agent_branch:  form.agent_branch  || null,
+        agent_license: form.agent_license || null,
+        agent_broker:  form.agent_broker  || null,
         facing:        "",
         features:      [],
         features_vi:   [],
@@ -462,9 +470,13 @@ export default function SubmitForm() {
         </label>
         <div className="space-y-2">
           {[
-            {name:"agent_name",  ph: lang==="zh"?"姓名":"Họ tên"},
-            {name:"agent_phone", ph: lang==="zh"?"電話":"Số điện thoại"},
-            {name:"agent_line",  ph: "LINE ID"},
+            {name:"agent_name",    ph: lang==="zh"?"姓名 *":"Họ tên *"},
+            {name:"agent_phone",   ph: lang==="zh"?"電話 *":"Số điện thoại *"},
+            {name:"agent_line",    ph: lang==="zh"?"LINE ID（選填）":"LINE ID (không bắt buộc)"},
+            {name:"agent_company", ph: lang==="zh"?"公司品牌（選填）":"Công ty (không bắt buộc)"},
+            {name:"agent_branch",  ph: lang==="zh"?"公司名稱（選填）":"Chi nhánh (không bắt buộc)"},
+            {name:"agent_license", ph: lang==="zh"?"營業員證號（選填）":"Giấy phép hành nghề (không bắt buộc)"},
+            {name:"agent_broker",  ph: lang==="zh"?"經紀人證號（選填）":"Số chứng chỉ môi giới (không bắt buộc)"},
           ].map(f => (
             <input key={f.name} name={f.name} value={(form as any)[f.name]}
               onChange={handleChange} placeholder={f.ph}
