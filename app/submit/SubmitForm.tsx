@@ -217,14 +217,21 @@ export default function SubmitForm() {
 
   return (
     <div className="space-y-6">
-      {/* Tiêu đề */}
-      <div>
-        <h1 className="text-2xl font-black text-gray-900">
-          🏠 {lang === "zh" ? "刊登物件" : "Đăng tin bất động sản"}
-        </h1>
-        <p className="text-gray-500 text-sm mt-1">
-          {lang === "zh" ? "請填寫物件資料" : "Điền thông tin căn nhà của bạn"}
-        </p>
+      {/* Tiêu đề + nút đăng xuất */}
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-black text-gray-900">
+            🏠 {lang === "zh" ? "刊登物件" : "Đăng tin bất động sản"}
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            {lang === "zh" ? "請填寫物件資料" : "Điền thông tin căn nhà của bạn"}
+          </p>
+        </div>
+        <button
+          onClick={() => { localStorage.removeItem("taiwanhome_user"); router.push("/login") }}
+          className="shrink-0 text-xs text-gray-400 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 hover:text-red-500 transition">
+          {lang === "zh" ? "登出" : "Đăng xuất"}
+        </button>
       </div>
 
       {/* Loại giao dịch */}
