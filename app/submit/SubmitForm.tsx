@@ -291,27 +291,24 @@ export default function SubmitForm() {
           className="w-full bg-gray-100 text-gray-600 font-bold py-3 rounded-xl text-sm">
           ← Quay lại sửa
         </button>
+        <button onClick={() => { localStorage.removeItem("taiwanhome_user"); router.push("/login") }}
+          className="w-full text-xs text-gray-400 border border-gray-200 rounded-xl py-2.5 hover:text-red-500 hover:bg-gray-50 transition">
+          Đăng xuất
+        </button>
       </div>
     )
   }
 
   return (
     <div className="space-y-6">
-      {/* Tiêu đề + nút đăng xuất */}
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black text-gray-900">
-            🏠 {lang === "zh" ? "刊登物件" : "Đăng tin bất động sản"}
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            {lang === "zh" ? "請填寫物件資料" : "Điền thông tin căn nhà của bạn"}
-          </p>
-        </div>
-        <button
-          onClick={() => { localStorage.removeItem("taiwanhome_user"); router.push("/login") }}
-          className="shrink-0 text-xs text-gray-400 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 hover:text-red-500 transition">
-          {lang === "zh" ? "登出" : "Đăng xuất"}
-        </button>
+      {/* Tiêu đề */}
+      <div>
+        <h1 className="text-2xl font-black text-gray-900">
+          🏠 {lang === "zh" ? "刊登物件" : "Đăng tin bất động sản"}
+        </h1>
+        <p className="text-gray-500 text-sm mt-1">
+          {lang === "zh" ? "請填寫物件資料" : "Điền thông tin căn nhà của bạn"}
+        </p>
       </div>
 
       {/* Loại giao dịch */}
@@ -474,7 +471,7 @@ export default function SubmitForm() {
         </div>
       </div>
 
-      {/* Submit */}
+      {/* Submit — Xem trước */}
       <button onClick={() => {
         if (!form.title_vi || !form.price || !form.address) {
           alert("Vui lòng điền: Tiêu đề, Địa chỉ và Giá")
@@ -485,6 +482,10 @@ export default function SubmitForm() {
       }}
         className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition text-base">
         👁 Xem trước tin đăng
+      </button>
+      <button onClick={() => { localStorage.removeItem("taiwanhome_user"); router.push("/login") }}
+        className="w-full text-xs text-gray-400 border border-gray-200 rounded-xl py-2.5 hover:text-red-500 hover:bg-gray-50 transition">
+        Đăng xuất
       </button>
     </div>
   )
