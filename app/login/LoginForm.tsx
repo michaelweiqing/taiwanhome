@@ -3,33 +3,32 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
 
-// Format SĐT Đài Loan → email giả để dùng với Supabase Auth
-// VD: 0912345678 → 0912345678@taiwanhome.app
-function phoneToFakeEmail(phone: string) {
-  const clean = phone.replace(/[-\s]/g, "")
-  return `${clean}@taiwanhome.app`
+function validateTWPhone(phone: string) {
+  return /^09\d{8}$/.test(phone.replace(/[-\s]/g, ""))
 }
 
-function validateTWPhone(phone: string) {
-  const clean = phone.replace(/[-\s]/g, "")
-  return /^09\d{8}$/.test(clean) // SĐT Đài Loan bắt đầu 09, 10 số
+function cleanPhone(phone: string) {
+  return phone.replace(/[-\s]/g, "")
 }
 
 export default function LoginForm() {
   const router   = useRouter()
   const supabase = createClient()
 
-  const [phone, setPhone]     = useState("")
+  const [phone, setPhone]       = useState("")
   const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError]     = useState("")
-  const [mode, setMode]       = useState<"login" | "register">("register")
+  const [name, setName]         = useState("")
+  const [loading, setLoading]   = useState(false)
+  const [error, setError]       = useState("")
+  const [success, setSuccess]   = useState("")
+  const [mode, setMode]         = useState<"login"|"register">("register")
 
   async function handleSubmit() {
     setError("")
+    setSuccess("")
+    const ph = cleanPhone(phone)
 
-    // Validate SĐT
-    if (!validateTWPhone(phone)) {
+    if (!validateTWPhone(ph)) {
       setError("Vui lòng nhập số điện thoại Đài Loan hợp lệ (09xxxxxxxx)")
       return
     }
@@ -39,37 +38,69 @@ export default function LoginForm() {
     }
 
     setLoading(true)
-    const fakeEmail = phoneToFakeEmail(phone)
-
     try {
       if (mode === "register") {
-        const { error } = await supabase.auth.signUp({
-          email: fakeEmail,
-          password,
-          options: {
-            data: { phone: phone.replace(/[-\s]/g, "") } // lưu SĐT thật vào metadata
-          }
-        })
-        if (error) throw error
-        router.push("/submit")
+        // Kiểm tra SĐT đã tồn tại chưa
+        const { data: existing } = await supabase
+          .from("app_users")
+          .select("id")
+          .eq("phone", ph)
+          .maybeSingle()
+
+        if (existing) {
+          setError("Số điện thoại này đã đăng ký. Vui lòng đăng nhập.")
+          setMode("login")
+          setLoading(false)
+          return
+        }
+
+        // Tạo tài khoản mới
+        const { error: insertErr } = await supabase
+          .from("app_users")
+          .insert({ phone: ph, password, name: name || null })
+
+        if (insertErr) throw insertErr
+
+        // Lưu session localStorage
+        localStorage.setItem("taiwanhome_user", JSON.stringify({ phone: ph, name: name || ph }))
+
+        // Thông báo LINE cho Michael
+        await fetch("/api/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: `🆕 Tài khoản mới đăng ký!\n📱 SĐT: ${ph}${name ? `\n👤 Tên: ${name}` : ""}\n🕐 ${new Date().toLocaleString("vi-VN", { timeZone: "Asia/Taipei" })}`
+          })
+        }).catch(() => {})
+
+        setSuccess("🎉 Đăng ký thành công!")
+        setTimeout(() => router.push("/submit"), 1500)
 
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: fakeEmail,
-          password,
-        })
-        if (error) throw error
-        router.push("/submit")
+        // Đăng nhập
+        const { data: user } = await supabase
+          .from("app_users")
+          .select("id, phone, name, password")
+          .eq("phone", ph)
+          .maybeSingle()
+
+        if (!user) {
+          setError("Số điện thoại chưa đăng ký.")
+          setLoading(false)
+          return
+        }
+        if (user.password !== password) {
+          setError("Mật khẩu không đúng.")
+          setLoading(false)
+          return
+        }
+
+        localStorage.setItem("taiwanhome_user", JSON.stringify({ phone: ph, name: user.name || ph }))
+        setSuccess("✅ Đăng nhập thành công!")
+        setTimeout(() => router.push("/submit"), 1500)
       }
     } catch (err: any) {
-      if (err.message.includes("already registered")) {
-        setError("Số điện thoại này đã đăng ký. Vui lòng đăng nhập.")
-        setMode("login")
-      } else if (err.message.includes("Invalid login")) {
-        setError("Số điện thoại hoặc mật khẩu không đúng")
-      } else {
-        setError(err.message)
-      }
+      setError(err.message || "Có lỗi xảy ra, vui lòng thử lại.")
     } finally {
       setLoading(false)
     }
@@ -87,26 +118,27 @@ export default function LoginForm() {
           {mode === "register" ? "Tạo tài khoản" : "Đăng nhập"}
         </h1>
         <p className="text-gray-400 text-sm mt-1">
-          {mode === "register"
-            ? "Đăng ký để đăng tin bán/cho thuê nhà"
-            : "Chào mừng bạn quay lại"}
+          {mode === "register" ? "Đăng ký để đăng tin bán/cho thuê nhà" : "Chào mừng bạn quay lại"}
         </p>
       </div>
 
-      {/* Tab chọn mode */}
+      {/* Tab mode */}
       <div className="flex bg-gray-100 rounded-xl p-1">
-        {[
-          { v: "register", label: "Đăng ký" },
-          { v: "login",    label: "Đăng nhập" },
-        ].map(o => (
-          <button key={o.v}
-            onClick={() => { setMode(o.v as any); setError("") }}
-            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition
-              ${mode === o.v ? "bg-white shadow-sm text-gray-900" : "text-gray-500"}`}>
+        {[{v:"register",label:"Đăng ký"},{v:"login",label:"Đăng nhập"}].map(o => (
+          <button key={o.v} onClick={() => { setMode(o.v as any); setError(""); setSuccess("") }}
+            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${
+              mode===o.v ? "bg-white shadow-sm text-gray-900" : "text-gray-500"}`}>
             {o.label}
           </button>
         ))}
       </div>
+
+      {/* Thông báo thành công */}
+      {success && (
+        <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl text-center font-medium">
+          {success}
+        </div>
+      )}
 
       {/* Lỗi */}
       {error && (
@@ -115,53 +147,44 @@ export default function LoginForm() {
         </div>
       )}
 
-      {/* Input SĐT */}
+      {/* Tên (chỉ khi đăng ký) */}
+      {mode === "register" && (
+        <div>
+          <label className="text-xs font-semibold text-gray-600 mb-1.5 block">👤 Tên của bạn (không bắt buộc)</label>
+          <input type="text" value={name} onChange={e => setName(e.target.value)}
+            placeholder="Nguyễn Văn A"
+            className="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-red-400 transition" />
+        </div>
+      )}
+
+      {/* SĐT */}
       <div>
-        <label className="text-xs font-semibold text-gray-600 mb-1.5 block">
-          📱 Số điện thoại Đài Loan
-        </label>
+        <label className="text-xs font-semibold text-gray-600 mb-1.5 block">📱 Số điện thoại Đài Loan</label>
         <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden focus-within:border-red-400 transition">
-          <span className="bg-gray-50 px-3 py-3 text-sm text-gray-500 border-r border-gray-200 shrink-0">
-            🇹🇼 +886
-          </span>
-          <input
-            type="tel"
-            value={phone}
-            onChange={e => setPhone(e.target.value)}
+          <span className="bg-gray-50 px-3 py-3 text-sm text-gray-500 border-r border-gray-200 shrink-0">🇹🇼 +886</span>
+          <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
             placeholder="0912-345-678"
-            className="flex-1 px-3 py-3 text-sm focus:outline-none"
-          />
+            className="flex-1 px-3 py-3 text-sm focus:outline-none" />
         </div>
         <p className="text-xs text-gray-400 mt-1">VD: 0912345678 hoặc 0912-345-678</p>
       </div>
 
-      {/* Input mật khẩu */}
+      {/* Mật khẩu */}
       <div>
-        <label className="text-xs font-semibold text-gray-600 mb-1.5 block">
-          🔒 Mật khẩu
-        </label>
-        <input
-          type="password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          placeholder={mode === "register" ? "Tạo mật khẩu (tối thiểu 6 ký tự)" : "Nhập mật khẩu"}
-          onKeyDown={e => e.key === "Enter" && handleSubmit()}
-          className="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-red-400 transition"
-        />
+        <label className="text-xs font-semibold text-gray-600 mb-1.5 block">🔒 Mật khẩu</label>
+        <input type="password" value={password} onChange={e => setPassword(e.target.value)}
+          placeholder={mode==="register" ? "Tạo mật khẩu (tối thiểu 6 ký tự)" : "Nhập mật khẩu"}
+          onKeyDown={e => e.key==="Enter" && handleSubmit()}
+          className="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-red-400 transition" />
       </div>
 
-      {/* Nút submit */}
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
+      {/* Submit */}
+      <button onClick={handleSubmit} disabled={loading}
         className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition text-sm active:scale-95">
-        {loading
-          ? "⏳ Đang xử lý..."
-          : mode === "register" ? "🚀 Tạo tài khoản" : "→ Đăng nhập"}
+        {loading ? "⏳ Đang xử lý..." : mode==="register" ? "🚀 Tạo tài khoản" : "→ Đăng nhập"}
       </button>
 
-      {/* Ghi chú */}
-      {mode === "register" && (
+      {mode==="register" && (
         <p className="text-xs text-gray-400 text-center leading-relaxed">
           Bằng cách đăng ký, bạn đồng ý để chúng tôi liên hệ qua số điện thoại này khi cần thiết.
         </p>
