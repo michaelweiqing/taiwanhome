@@ -141,13 +141,16 @@ export default function SubmitForm() {
         }
       }
 
-      // 2. Lưu vào bảng user_listings (tách riêng khỏi properties của admin)
-      const { error } = await supabase.from("user_listings").insert({
+      // 2. Lưu thẳng vào bảng properties — hiển thị ngay trên website
+      const { error } = await supabase.from("properties").insert({
         listing_type:  form.listing_type,
         property_type: form.property_type,
         title_vi:      form.title_vi,
+        title_zh:      form.title_vi,
         address:       form.address,
+        address_vi:    form.address,
         district:      form.district,
+        district_vi:   form.district,
         city:          city,
         city_vi:       CITIES.find(c=>c.zh===city)?.vi || city,
         price:         parseFloat(form.price) || 0,
@@ -159,10 +162,24 @@ export default function SubmitForm() {
         age:           parseInt(form.age) || 0,
         images:        imageUrls,
         agent_name:    form.agent_name,
+        agent_name_vi: form.agent_name,
         agent_phone:   form.agent_phone,
-        agent_line:    form.agent_line || "",
+        agent_line:    form.agent_line || "https://page.line.me/881vvzrj",
+        agent_avatar:  null,
+        facing:        "",
+        features:      [],
+        features_vi:   [],
+        lat:           24.1477,
+        lng:           120.6736,
+        is_new:        true,
+        is_featured:   false,
+        parking:       false,
+        views:         0,
+        posted_at:     new Date().toISOString(),
         submitted_by:  user?.phone || "",
-        status:        "pending",
+        price_per_ping: parseFloat(form.area_ping) > 0
+          ? parseFloat((parseFloat(form.price) / parseFloat(form.area_ping)).toFixed(2))
+          : null,
       })
 
       if (error) throw error
