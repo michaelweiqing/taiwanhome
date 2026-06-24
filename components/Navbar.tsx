@@ -55,7 +55,7 @@ export default function Navbar() {
             className="hidden sm:flex items-center gap-1 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg px-2.5 py-1.5 transition whitespace-nowrap">
             + {lang==="zh" ? "刊登" : "Đăng"}
           </Link>
-          <a href="https://line.me/ti/p/QRGpkXLga6" target="_blank" rel="noopener noreferrer"
+          <a href="https://page.line.me/881vvzrj" target="_blank" rel="noopener noreferrer"
             className="hidden sm:flex items-center gap-1 text-xs text-green-600 border border-green-200 rounded-lg px-2.5 py-1.5 hover:bg-green-50 transition whitespace-nowrap">
             💬 LINE
           </a>
@@ -101,7 +101,7 @@ export default function Navbar() {
             className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
             ❤️ {lang==="zh"?"我的收藏":"Nhà yêu thích"}
           </Link>
-          <a href="https://line.me/ti/p/QRGpkXLga6" target="_blank" rel="noopener noreferrer"
+          <a href="https://page.line.me/881vvzrj" target="_blank" rel="noopener noreferrer"
             onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-green-50 text-green-600 transition">
             💬 LINE {lang==="zh"?"聯絡":"liên hệ"}
