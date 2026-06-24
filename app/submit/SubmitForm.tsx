@@ -70,6 +70,7 @@ export default function SubmitForm() {
   const [done, setDone]       = useState(false)
   const [images, setImages]   = useState<File[]>([])
   const [previews, setPreviews] = useState<string[]>([])
+  const [preview, setPreview] = useState(false)
   const [city, setCity] = useState("台中市")
 
   const [form, setForm] = useState({
@@ -214,6 +215,84 @@ export default function SubmitForm() {
       </p>
     </div>
   )
+
+  // Màn hình xem trước
+  if (preview) {
+    const ptLabel: Record<string,string> = {
+      apartment:"Chung cư thang máy", apartment_walkup:"Chung cư thang bộ",
+      house:"Nhà cả căn", villa:"Biệt thự", studio:"Studio"
+    }
+    return (
+      <div className="space-y-5">
+        <div className="flex items-center gap-3">
+          <button onClick={() => setPreview(false)}
+            className="text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition">
+            ← Sửa lại
+          </button>
+          <h2 className="text-lg font-black text-gray-900">Xem trước tin đăng</h2>
+        </div>
+
+        {/* Ảnh preview */}
+        {previews.length > 0 && (
+          <div className="grid grid-cols-3 gap-2">
+            {previews.map((src, i) => (
+              <img key={i} src={src} className={`w-full object-cover rounded-xl ${i===0 ? "col-span-3 h-52" : "h-24"}`} />
+            ))}
+          </div>
+        )}
+
+        {/* Thông tin chính */}
+        <div className="bg-white border border-gray-100 rounded-2xl p-4 space-y-3">
+          <div className="flex gap-2 flex-wrap">
+            <span className={`text-xs font-bold px-3 py-1 rounded-full text-white ${form.listing_type==="rent" ? "bg-blue-600" : "bg-emerald-600"}`}>
+              {form.listing_type==="rent" ? "Cho thuê" : "Bán"}
+            </span>
+            <span className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{ptLabel[form.property_type] || form.property_type}</span>
+          </div>
+          <h3 className="text-lg font-bold text-gray-900">{form.title_vi}</h3>
+          <p className="text-red-600 text-2xl font-black">{parseFloat(form.price).toLocaleString()} vạn Đài tệ</p>
+          {form.area_ping && <p className="text-sm text-gray-500">{form.area_ping} ping · {(parseFloat(form.price)/parseFloat(form.area_ping)).toFixed(2)} vạn/ping</p>}
+          <p className="text-sm text-gray-500">📍 {form.address}{form.district ? `, ${form.district}` : ""}{city ? `, ${CITIES.find(c=>c.zh===city)?.vi}` : ""}</p>
+        </div>
+
+        {/* Thông số */}
+        <div className="bg-white border border-gray-100 rounded-2xl p-4">
+          <p className="text-sm font-bold text-gray-700 mb-3">Thông số</p>
+          <div className="grid grid-cols-4 gap-3 text-center">
+            {[
+              {label:"Phòng ngủ", val:form.bedrooms},
+              {label:"WC",        val:form.bathrooms},
+              {label:"Ping",      val:form.area_ping},
+              {label:"Tuổi nhà",  val:form.age ? `${form.age}năm` : "-"},
+            ].map(item => (
+              <div key={item.label} className="bg-gray-50 rounded-xl py-2">
+                <p className="text-sm font-bold text-gray-800">{item.val || "-"}</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">{item.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Liên hệ */}
+        <div className="bg-white border border-gray-100 rounded-2xl p-4 space-y-1">
+          <p className="text-sm font-bold text-gray-700 mb-2">Thông tin liên hệ</p>
+          <p className="text-sm text-gray-600">👤 {form.agent_name}</p>
+          <p className="text-sm text-gray-600">📱 {form.agent_phone}</p>
+          {form.agent_line && <p className="text-sm text-gray-600">💬 {form.agent_line}</p>}
+        </div>
+
+        {/* Nút đăng */}
+        <button onClick={handleSubmit} disabled={loading}
+          className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition text-base">
+          {loading ? "⏳ Đang đăng tin..." : "🚀 Xác nhận đăng tin"}
+        </button>
+        <button onClick={() => setPreview(false)}
+          className="w-full bg-gray-100 text-gray-600 font-bold py-3 rounded-xl text-sm">
+          ← Quay lại sửa
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -395,11 +474,16 @@ export default function SubmitForm() {
       </div>
 
       {/* Submit */}
-      <button onClick={handleSubmit} disabled={loading}
-        className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition text-base">
-        {loading
-          ? (lang === "zh" ? "上傳中..." : "Đang đăng tin...")
-          : (lang === "zh" ? "🚀 立即刊登" : "🚀 Đăng tin ngay")}
+      <button onClick={() => {
+        if (!form.title_vi || !form.price || !form.address) {
+          alert("Vui lòng điền: Tiêu đề, Địa chỉ và Giá")
+          return
+        }
+        setPreview(true)
+        window.scrollTo({ top: 0, behavior: "smooth" })
+      }}
+        className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition text-base">
+        👁 Xem trước tin đăng
       </button>
     </div>
   )
