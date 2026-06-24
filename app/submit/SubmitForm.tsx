@@ -368,7 +368,7 @@ export default function SubmitForm() {
       <div className="space-y-3">
         <div>
           <label className="text-sm font-semibold text-gray-700 mb-1 block">
-            {lang === "zh" ? "標題 (越南文)" : "Tiêu đề tin đăng"} *
+            {lang === "zh" ? "標題" : "Tiêu đề tin đăng"} *
           </label>
           <input name="title_vi" value={form.title_vi} onChange={handleChange}
             placeholder="VD: Nhà phố 3 tầng gần Metro..."
