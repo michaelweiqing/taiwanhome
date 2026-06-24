@@ -48,8 +48,8 @@ export interface Property {
   posted_at: string
   lat: number
   lng: number
-  description_zh: string
-  description_vi: string
+  description_zh: string | null
+  description_vi: string | string[] | null
   community_name?: string | null      // 社區名稱
   total_units?: number | null         // 總戶數
   units_per_floor?: number | null     // 同層戶數

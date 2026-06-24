@@ -106,7 +106,11 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
 
   const title    = lang==="zh" ? (p.title_zh || p.title_vi)   : p.title_vi
   const address  = lang==="zh" ? (p.address  || p.address_vi) : (p.address_vi || p.address)
-  const desc     = lang==="zh" ? p.description_zh : p.description_vi
+  // description_vi có thể là string[] (properties) hoặc string (user_listings) hoặc null
+  const rawDesc  = lang==="zh" ? p.description_zh : p.description_vi
+  const descLines: string[] = Array.isArray(rawDesc)
+    ? (rawDesc as string[])
+    : rawDesc ? [rawDesc as string] : []
   const features = lang==="zh" ? (p.features || [])   : (p.features_vi || [])
   const facing   = lang==="zh" ? (p.facing || "") : (FACING_VI[p.facing ?? ""] ?? (p.facing || ""))
   const propType = getApartmentLabel(p)[lang]
