@@ -24,20 +24,22 @@ const FACING_VI: Record<string,string> = {
   "東南":"Đông Nam","西南":"Tây Nam","東北":"Đông Bắc","西北":"Tây Bắc",
 }
 const PROP_LABEL: Record<string,{zh:string;vi:string}> = {
-  house:  {zh:"透天厝", vi:"Nhà cả căn"},
-  studio: {zh:"套房",   vi:"Studio"},
-  villa:  {zh:"別墅",   vi:"Biệt thự"},
+  house:            {zh:"透天厝",    vi:"Nhà cả căn"},
+  studio:           {zh:"套房",      vi:"Studio"},
+  villa:            {zh:"別墅",      vi:"Biệt thự"},
+  apartment_walkup: {zh:"無電梯公寓",vi:"Chung cư thang bộ"},
+  apartment:        {zh:"華廈/大樓", vi:"Chung cư thang máy"},
 }
 
-// Tự động phân loại apartment: tổng_tầng < 6 và không có 電梯 → 無電梯公寓, ngược lại → 華廈/大樓
 function getApartmentLabel(p: Property): {zh:string;vi:string} {
+  if (p.property_type === "apartment_walkup") return PROP_LABEL.apartment_walkup
   if (p.property_type !== "apartment") {
     return PROP_LABEL[p.property_type] ?? {zh: p.property_type, vi: p.property_type}
   }
   const hasElevator =
-    (p.features    ?? []).some(f => f === "電梯") ||
-    (p.features_vi ?? []).some(f => f === "Thang máy")
-  const isWalkUp = p.total_floors < 6 && !hasElevator
+    (p.features    ?? []).some((f: string) => f === "電梯") ||
+    (p.features_vi ?? []).some((f: string) => f === "Thang máy")
+  const isWalkUp = (p.total_floors ?? 99) < 6 && !hasElevator
   return isWalkUp
     ? {zh:"無電梯公寓", vi:"Chung cư thang bộ"}
     : {zh:"華廈/大樓",  vi:"Chung cư thang máy"}
