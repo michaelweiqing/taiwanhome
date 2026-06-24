@@ -140,16 +140,23 @@ export default function SubmitForm() {
       // 1. Upload ảnh lên Supabase Storage
       const imageUrls: string[] = []
       for (const file of images) {
-        const ext  = file.name.split(".").pop()
+        const ext = (file.name.split(".").pop() || "jpg").toLowerCase()
+        const contentType = ext === "jpg" || ext === "jpeg" ? "image/jpeg"
+          : ext === "png" ? "image/png"
+          : ext === "heic" ? "image/heic"
+          : ext === "webp" ? "image/webp"
+          : "image/jpeg"
         const path = `user_submit/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-        const { error } = await supabase.storage
+        const { data: uploadData, error: uploadErr } = await supabase.storage
           .from("AG1780095")
-          .upload(path, file, { upsert: true })
-        if (!error) {
+          .upload(path, file, { upsert: true, contentType })
+        if (!uploadErr && uploadData) {
           const { data: urlData } = supabase.storage
             .from("AG1780095")
             .getPublicUrl(path)
           imageUrls.push(urlData.publicUrl)
+        } else if (uploadErr) {
+          console.error("Upload error:", uploadErr.message)
         }
       }
 
