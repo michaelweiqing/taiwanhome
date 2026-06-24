@@ -184,16 +184,17 @@ export async function searchProperties(filters: FilterOptions): Promise<Property
 }
 
 export function formatPrice(p: Property, lang: "zh" | "vi"): string {
+  const price = Number(p.price)
   if (p.listing_type === "rent") {
     return lang === "zh"
-      ? `NT$${p.price.toLocaleString()}/月`
-      : `NT$${p.price.toLocaleString()}/tháng`
+      ? `NT$${price.toLocaleString()}/月`
+      : `NT$${price.toLocaleString()}/tháng`
   }
   return lang === "zh"
-    ? `${p.price.toLocaleString()}萬`
-    : `${p.price.toLocaleString()} vạn Đài tệ`
+    ? `${price.toLocaleString()}萬`
+    : `${price.toLocaleString()} vạn Đài tệ`
 }
 
-export function pingToM2(ping: number): number {
-  return Math.round(ping * 3.306)
+export function pingToM2(ping: number | string): number {
+  return Math.round(Number(ping) * 3.306 * 10) / 10
 }
