@@ -87,6 +87,14 @@ export default function SubmitForm() {
     floor:         "",
     total_floors:  "",
     age:           "",
+    deposit:       "",
+    contract:      "",
+    electricity:   "",
+    water:         "",
+    parking_fee:   "",
+    pet:           false,
+    household_reg: false,
+    subsidy:       false,
     description_vi: "",
     agent_name:    "",
     agent_phone:   "",
@@ -187,6 +195,14 @@ export default function SubmitForm() {
         views:         0,
         posted_at:     new Date().toISOString(),
         submitted_by:  user?.phone || "",
+        deposit:       form.deposit || null,
+        contract:      form.contract || null,
+        electricity:   form.electricity || null,
+        water:         form.water || null,
+        parking_fee:   form.parking_fee || null,
+        pet:           form.pet,
+        household_reg: form.household_reg,
+        subsidy:       form.subsidy,
         price_per_ping: parseFloat(form.area_ping) > 0
           ? parseFloat((parseFloat(form.price) / parseFloat(form.area_ping)).toFixed(2))
           : null,
@@ -407,27 +423,52 @@ export default function SubmitForm() {
         </div>
       </div>
 
-      {/* Thông số */}
+      {/* Thông số căn nhà */}
       <div>
         <label className="text-sm font-semibold text-gray-700 mb-2 block">
           {lang === "zh" ? "物件資訊" : "Thông số căn nhà"}
         </label>
         <div className="grid grid-cols-2 gap-3">
           {[
-            {name:"price",       label:lang==="zh"?"價格(萬台幣)":"Giá (vạn Đài tệ)",  ph:""},
-            {name:"area_ping",   label:lang==="zh"?"坪數":"Diện tích (ping)",   ph:""},
-            {name:"bedrooms",    label:lang==="zh"?"房間數":"Số phòng ngủ",     ph:""},
-            {name:"bathrooms",   label:lang==="zh"?"衛浴數":"Số WC",            ph:""},
-            {name:"floor",       label:lang==="zh"?"樓層":"Tầng",              ph:""},
-            {name:"total_floors",label:lang==="zh"?"總樓層":"Tổng số tầng",    ph:""},
-            {name:"age",         label:lang==="zh"?"屋齡(年)":"Tuổi nhà (năm)",ph:""},
+            {name:"price",       label:lang==="zh"?"租金(台幣/月)":"Giá thuê (Đài tệ/tháng)", ph:"", type:"number"},
+            {name:"area_ping",   label:lang==="zh"?"坪數":"Diện tích (ping)",                  ph:"", type:"number"},
+            {name:"bedrooms",    label:lang==="zh"?"房間數":"Số phòng ngủ",                    ph:"", type:"number"},
+            {name:"bathrooms",   label:lang==="zh"?"衛浴數":"Số WC",                           ph:"", type:"number"},
+            {name:"floor",       label:lang==="zh"?"樓層":"Tầng",                              ph:"", type:"number"},
+            {name:"total_floors",label:lang==="zh"?"總樓層":"Tổng số tầng",                   ph:"", type:"number"},
+            {name:"age",         label:lang==="zh"?"屋齡(年)":"Tuổi nhà (năm)",               ph:"", type:"number"},
+            {name:"deposit",     label:lang==="zh"?"押金(月)":"Tiền cọc (tháng)",             ph:lang==="zh"?"例：2":"VD: 2", type:"number"},
+            {name:"contract",    label:lang==="zh"?"合約期限":"Thời gian HĐ",                 ph:lang==="zh"?"例：1年":"VD: 1 năm", type:"text"},
+            {name:"electricity", label:lang==="zh"?"電費":"Tiền điện",                        ph:lang==="zh"?"例：台電電費":"VD: Theo điện lực", type:"text"},
+            {name:"water",       label:lang==="zh"?"水費":"Tiền nước",                        ph:lang==="zh"?"例：300/月":"VD: 300/tháng", type:"text"},
+            {name:"parking_fee", label:lang==="zh"?"停車費":"Phí đậu xe",                     ph:lang==="zh"?"例：2000/月":"VD: 2000/tháng", type:"text"},
           ].map(f => (
             <div key={f.name}>
               <label className="text-xs text-gray-500 mb-1 block">{f.label}</label>
               <input name={f.name} value={(form as any)[f.name]} onChange={handleChange}
-                type="number" placeholder={f.ph}
+                type={f.type} placeholder={f.ph}
                 className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-red-400" />
             </div>
+          ))}
+        </div>
+
+        {/* Checkbox options */}
+        <div className="mt-4 space-y-2">
+          <p className="text-xs font-semibold text-gray-500 mb-2">{lang==="zh" ? "其他條件" : "Điều kiện khác"}</p>
+          {[
+            {name:"pet",          zh:"允許養寵物",     vi:"Nuôi thú cưng"},
+            {name:"household_reg",zh:"可設戶籍",       vi:"Nhập hộ khẩu"},
+            {name:"subsidy",      zh:"可申請政府補貼", vi:"Xin trợ cấp chính phủ"},
+          ].map(o => (
+            <label key={o.name} className="flex items-center gap-3 cursor-pointer group">
+              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition ${
+                (form as any)[o.name] ? "bg-red-600 border-red-600" : "border-gray-300 group-hover:border-red-400"
+              }`}
+                onClick={() => setForm(f => ({...f, [o.name]: !(f as any)[o.name]}))}>
+                {(form as any)[o.name] && <span className="text-white text-xs font-bold">✓</span>}
+              </div>
+              <span className="text-sm text-gray-700">{lang==="zh" ? o.zh : o.vi}</span>
+            </label>
           ))}
         </div>
       </div>
