@@ -6,6 +6,56 @@ import { useLang } from "@/context/LangContext"
 
 const DISTRICTS_ZH = ["北區","南區","西區","東區","北屯區","南屯區","西屯區","太平區","大里區","霧峰區","烏日區","大肚區","龍井區","梧棲區","清水區","沙鹿區","神岡區","大雅區","潭子區","豐原區","石岡區","東勢區","新社區","和平區","后里區"]
 
+const CITIES = [
+  { zh:"台北市", vi:"Đài Bắc" },
+  { zh:"新北市", vi:"Tân Bắc" },
+  { zh:"桃園市", vi:"Đào Viên" },
+  { zh:"台中市", vi:"Đài Trung" },
+  { zh:"彰化縣", vi:"Chương Hóa" },
+  { zh:"台南市", vi:"Đài Nam" },
+  { zh:"高雄市", vi:"Cao Hùng" },
+  { zh:"新竹市", vi:"Tân Trúc" },
+]
+
+const DISTRICTS: Record<string, { zh: string; vi: string }[]> = {
+  "台北市": [
+    {zh:"中正區",vi:"Trung Chính"},{zh:"大安區",vi:"Đại An"},{zh:"信義區",vi:"Tín Nghĩa"},
+    {zh:"松山區",vi:"Tùng Sơn"},{zh:"內湖區",vi:"Nội Hồ"},{zh:"士林區",vi:"Sĩ Lâm"},
+    {zh:"北投區",vi:"Bắc Đầu"},{zh:"文山區",vi:"Văn Sơn"},{zh:"南港區",vi:"Nam Cảng"},
+    {zh:"中山區",vi:"Trung Sơn"},{zh:"萬華區",vi:"Vạn Hoa"},{zh:"大同區",vi:"Đại Đồng"},
+  ],
+  "新北市": [
+    {zh:"板橋區",vi:"Bản Kiều"},{zh:"三重區",vi:"Tam Trọng"},{zh:"中和區",vi:"Trung Hòa"},
+    {zh:"永和區",vi:"Vĩnh Hòa"},{zh:"新莊區",vi:"Tân Trang"},{zh:"新店區",vi:"Tân Điếm"},
+    {zh:"土城區",vi:"Thổ Thành"},{zh:"蘆洲區",vi:"Lô Châu"},{zh:"淡水區",vi:"Đạm Thủy"},
+  ],
+  "桃園市": [
+    {zh:"桃園區",vi:"Đào Viên"},{zh:"中壢區",vi:"Trung Lịch"},{zh:"平鎮區",vi:"Bình Trấn"},
+    {zh:"八德區",vi:"Bát Đức"},{zh:"楊梅區",vi:"Dương Mai"},{zh:"龜山區",vi:"Quy Sơn"},
+  ],
+  "台中市": [
+    {zh:"中區",vi:"Khu Trung"},{zh:"東區",vi:"Khu Đông"},{zh:"西區",vi:"Khu Tây"},
+    {zh:"南區",vi:"Khu Nam"},{zh:"北區",vi:"Khu Bắc"},{zh:"西屯區",vi:"Tây Đồn"},
+    {zh:"南屯區",vi:"Nam Đồn"},{zh:"北屯區",vi:"Bắc Đồn"},{zh:"豐原區",vi:"Phong Nguyên"},
+    {zh:"大里區",vi:"Đại Lý"},{zh:"太平區",vi:"Thái Bình"},{zh:"清水區",vi:"Thanh Thủy"},
+    {zh:"沙鹿區",vi:"Sa Lộc"},{zh:"大甲區",vi:"Đại Giáp"},{zh:"烏日區",vi:"Ô Nhật"},
+    {zh:"潭子區",vi:"Đàm Tử"},{zh:"龍井區",vi:"Long Tỉnh"},{zh:"霧峰區",vi:"Vụ Phong"},
+  ],
+  "彰化縣": [
+    {zh:"彰化市",vi:"Chương Hóa"},{zh:"員林市",vi:"Viên Lâm"},{zh:"和美鎮",vi:"Hòa Mỹ"},
+    {zh:"鹿港鎮",vi:"Lộc Cảng"},
+  ],
+  "台南市": [
+    {zh:"東區",vi:"Khu Đông"},{zh:"南區",vi:"Khu Nam"},{zh:"北區",vi:"Khu Bắc"},
+    {zh:"安平區",vi:"An Bình"},{zh:"安南區",vi:"An Nam"},{zh:"永康區",vi:"Vĩnh Khang"},
+  ],
+  "高雄市": [
+    {zh:"三民區",vi:"Tam Dân"},{zh:"苓雅區",vi:"Linh Nhã"},{zh:"前鎮區",vi:"Tiền Trấn"},
+    {zh:"鼓山區",vi:"Cổ Sơn"},{zh:"左營區",vi:"Tả Doanh"},{zh:"鳳山區",vi:"Phụng Sơn"},
+  ],
+  "新竹市": [{zh:"東區",vi:"Khu Đông"},{zh:"北區",vi:"Khu Bắc"},{zh:"香山區",vi:"Hương Sơn"}],
+}
+
 export default function SubmitForm() {
   const { lang } = useLang()
   const router   = useRouter()
@@ -16,6 +66,7 @@ export default function SubmitForm() {
   const [done, setDone]       = useState(false)
   const [images, setImages]   = useState<File[]>([])
   const [previews, setPreviews] = useState<string[]>([])
+  const [city, setCity] = useState("台中市")
 
   const [form, setForm] = useState({
     listing_type:  "buy",
@@ -101,8 +152,8 @@ export default function SubmitForm() {
         description_vi: [form.description_vi],
         address_vi:   form.address,
         district_vi:  form.district,
-        city:         "台中市",
-        city_vi:      "Đài Trung",
+        city:         city,
+        city_vi:      CITIES.find(c=>c.zh===city)?.vi || city,
         near_mrt:     "",
         near_mrt_vi:  "",
         walk_minutes: 0,
@@ -225,20 +276,34 @@ export default function SubmitForm() {
         </div>
         <div>
           <label className="text-sm font-semibold text-gray-700 mb-1 block">
-            {lang === "zh" ? "地址" : "Địa chỉ"} *
+            {lang === "zh" ? "城市" : "Thành phố"} *
           </label>
-          <input name="address" value={form.address} onChange={handleChange}
-            placeholder="VD: 185 Đường Quang Phục, Khu Trung"
-            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400" />
+          <select value={city} onChange={e => { setCity(e.target.value); setForm(f => ({...f, district: ""})) }}
+            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400">
+            <option value="">{lang==="zh" ? "選擇城市" : "Chọn thành phố"}</option>
+            {CITIES.map(c => <option key={c.zh} value={c.zh}>{lang==="zh" ? c.zh : `${c.vi} (${c.zh})`}</option>)}
+          </select>
         </div>
         <div>
           <label className="text-sm font-semibold text-gray-700 mb-1 block">
             {lang === "zh" ? "行政區" : "Quận/Huyện"}
           </label>
           <select name="district" value={form.district} onChange={handleChange}
-            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400">
-            {DISTRICTS_ZH.map(d => <option key={d} value={d}>{d}</option>)}
+            disabled={!city}
+            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400 disabled:opacity-40">
+            <option value="">{lang==="zh" ? "選擇區域" : "Chọn quận/huyện"}</option>
+            {(DISTRICTS[city] || []).map(d => (
+              <option key={d.zh} value={d.zh}>{lang==="zh" ? d.zh : `${d.vi} (${d.zh})`}</option>
+            ))}
           </select>
+        </div>
+        <div>
+          <label className="text-sm font-semibold text-gray-700 mb-1 block">
+            {lang === "zh" ? "地址" : "Địa chỉ cụ thể"} *
+          </label>
+          <input name="address" value={form.address} onChange={handleChange}
+            placeholder="VD: 185 Đường Quang Phục, Khu Trung"
+            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400" />
         </div>
       </div>
 
@@ -249,7 +314,7 @@ export default function SubmitForm() {
         </label>
         <div className="grid grid-cols-2 gap-3">
           {[
-            {name:"price",       label:lang==="zh"?"價格(萬)":"Giá (vạn NTD)",  ph:""},
+            {name:"price",       label:lang==="zh"?"價格(萬台幣)":"Giá (vạn Đài tệ)",  ph:""},
             {name:"area_ping",   label:lang==="zh"?"坪數":"Diện tích (ping)",   ph:""},
             {name:"bedrooms",    label:lang==="zh"?"房間數":"Số phòng ngủ",     ph:""},
             {name:"bathrooms",   label:lang==="zh"?"衛浴數":"Số WC",            ph:""},
