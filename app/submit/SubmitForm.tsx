@@ -37,12 +37,18 @@ export default function SubmitForm() {
     agent_line:    "",
   })
 
-  // Kiểm tra đăng nhập
+  // Kiểm tra đăng nhập qua localStorage
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) router.push("/login")
-      else setUser(data.user)
-    })
+    const stored = localStorage.getItem("taiwanhome_user")
+    if (!stored) { router.push("/login"); return }
+    const u = JSON.parse(stored)
+    setUser(u)
+    setForm(f => ({
+      ...f,
+      agent_name:  u.name  || "",
+      agent_phone: u.phone || "",
+      agent_line:  "https://page.line.me/881vvzrj",
+    }))
   }, [])
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
@@ -67,7 +73,7 @@ export default function SubmitForm() {
       const imageUrls: string[] = []
       for (const file of images) {
         const ext  = file.name.split(".").pop()
-        const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+        const path = `user_submit/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
         const { error } = await supabase.storage
           .from("AG1780095")
           .upload(path, file, { upsert: true })
@@ -82,39 +88,52 @@ export default function SubmitForm() {
       // 2. Lưu vào bảng properties
       const { error } = await supabase.from("properties").insert({
         ...form,
-        price:       parseFloat(form.price),
-        area_ping:   parseFloat(form.area_ping),
-        bedrooms:    parseInt(form.bedrooms),
-        bathrooms:   parseInt(form.bathrooms),
-        floor:       parseInt(form.floor),
-        total_floors:parseInt(form.total_floors),
-        age:         parseInt(form.age),
-        images:      imageUrls,
-        title_zh:    form.title_zh || form.title_vi,
+        price:        parseFloat(form.price),
+        area_ping:    parseFloat(form.area_ping),
+        bedrooms:     parseInt(form.bedrooms),
+        bathrooms:    parseInt(form.bathrooms),
+        floor:        parseInt(form.floor),
+        total_floors: parseInt(form.total_floors),
+        age:          parseInt(form.age),
+        images:       imageUrls,
+        title_zh:     form.title_zh || form.title_vi,
         description_zh: form.description_vi,
-        address_vi:  form.address,
-        district_vi: form.district,
-        city:        "台中市",
-        city_vi:     "Đài Trung",
-        near_mrt:    "",
-        near_mrt_vi: "",
+        description_vi: [form.description_vi],
+        address_vi:   form.address,
+        district_vi:  form.district,
+        city:         "台中市",
+        city_vi:      "Đài Trung",
+        near_mrt:     "",
+        near_mrt_vi:  "",
         walk_minutes: 0,
-        facing:      "南",
-        features:    [],
-        features_vi: [],
-        lat:         24.1477,
-        lng:         120.6736,
-        is_new:      true,
-        is_featured: false,
-        parking:     false,
-        views:       0,
-        posted_at:   new Date().toISOString(),
-        submitted_by: user?.email,
+        facing:       "南",
+        features:     [],
+        features_vi:  [],
+        lat:          24.1477,
+        lng:          120.6736,
+        is_new:       true,
+        is_featured:  false,
+        parking:      false,
+        views:        0,
+        posted_at:    new Date().toISOString(),
         agent_name_vi: form.agent_name,
         agent_avatar:  null,
+        price_per_ping: parseFloat(form.area_ping) > 0
+          ? parseFloat((parseFloat(form.price) / parseFloat(form.area_ping)).toFixed(2))
+          : null,
       })
 
       if (error) throw error
+
+      // 3. Thông báo LINE cho Michael
+      await fetch("/api/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: `🏠 Tin đăng mới!\n📋 ${form.title_vi}\n💰 ${form.price} vạn\n📍 ${form.address}\n👤 ${form.agent_name} | ${form.agent_phone}`
+        })
+      }).catch(() => {})
+
       setDone(true)
       setTimeout(() => router.push("/listings"), 2000)
 
