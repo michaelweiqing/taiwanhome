@@ -47,7 +47,7 @@ export default function SubmitForm() {
       ...f,
       agent_name:  u.name  || "",
       agent_phone: u.phone || "",
-      agent_line:  "https://page.line.me/881vvzrj",
+      agent_line:  "",
     }))
   }, [])
 
