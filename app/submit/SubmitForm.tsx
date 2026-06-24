@@ -285,15 +285,15 @@ export default function SubmitForm() {
         {/* Nút đăng */}
         <button onClick={handleSubmit} disabled={loading}
           className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition text-base">
-          {loading ? "⏳ Đang đăng tin..." : "🚀 Xác nhận đăng tin"}
+          {loading ? (lang==="zh" ? "上傳中..." : "⏳ Đang đăng tin...") : (lang==="zh" ? "🚀 立即刊登" : "🚀 Xác nhận đăng tin")}
         </button>
         <button onClick={() => setPreview(false)}
           className="w-full bg-gray-100 text-gray-600 font-bold py-3 rounded-xl text-sm">
-          ← Quay lại sửa
+          {lang==="zh" ? "← 返回修改" : "← Quay lại sửa"}
         </button>
         <button onClick={() => { localStorage.removeItem("taiwanhome_user"); router.push("/login") }}
           className="w-full text-xs text-gray-400 border border-gray-200 rounded-xl py-2.5 hover:text-red-500 hover:bg-gray-50 transition">
-          Đăng xuất
+          {lang==="zh" ? "登出" : "Đăng xuất"}
         </button>
       </div>
     )
@@ -474,18 +474,18 @@ export default function SubmitForm() {
       {/* Submit — Xem trước */}
       <button onClick={() => {
         if (!form.title_vi || !form.price || !form.address) {
-          alert("Vui lòng điền: Tiêu đề, Địa chỉ và Giá")
+          alert(lang==="zh" ? "請填寫必填欄位：標題、地址、價格" : "Vui lòng điền: Tiêu đề, Địa chỉ và Giá")
           return
         }
         setPreview(true)
         window.scrollTo({ top: 0, behavior: "smooth" })
       }}
         className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition text-base">
-        👁 Xem trước tin đăng
+        {lang==="zh" ? "👁 預覽刊登內容" : "👁 Xem trước tin đăng"}
       </button>
       <button onClick={() => { localStorage.removeItem("taiwanhome_user"); router.push("/login") }}
         className="w-full text-xs text-gray-400 border border-gray-200 rounded-xl py-2.5 hover:text-red-500 hover:bg-gray-50 transition">
-        Đăng xuất
+        {lang==="zh" ? "登出" : "Đăng xuất"}
       </button>
     </div>
   )
