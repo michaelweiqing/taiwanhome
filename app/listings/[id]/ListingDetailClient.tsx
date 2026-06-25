@@ -158,8 +158,8 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ...(p.total_units     ? [{ label: lang==="zh"?"總戶數":"Tổng số căn",       value: `${p.total_units}${lang==="zh"?"戶":"căn"}` }] : []),
     ...(p.units_per_floor ? [{ label: lang==="zh"?"同層戶數":"Số căn mỗi tầng", value: `${p.units_per_floor}${lang==="zh"?"戶":"căn"}` }] : []),
     ...(p.elevator_count  ? [{ label: lang==="zh"?"電梯數":"Số thang máy",      value: `${p.elevator_count}${lang==="zh"?"部":"thang"}` }] : []),
-    { label: lang==="zh"?"停車位":"Chỗ đậu xe",        value: parkingDisplay },
-    { label: lang==="zh"?"管理費":"Phí quản lý",       value: mgmtFeeDisplay },
+    ...((p as any).has_parking == null ? [{ label: lang==="zh"?"停車位":"Chỗ đậu xe", value: parkingDisplay }] : []),
+    ...((p as any).deposit == undefined ? [{ label: lang==="zh"?"管理費":"Phí quản lý", value: mgmtFeeDisplay }] : []),
     // Các field từ user_listings (cho thuê)
     ...((p as any).deposit     ? [{ label: lang==="zh"?"押金":"Tiền cọc",          value: `${(p as any).deposit} ${lang==="zh"?"個月":"tháng"}` }] : []),
     ...((p as any).contract    ? [{ label: lang==="zh"?"合約期限":"Thời gian HĐ",  value: (p as any).contract }] : []),
