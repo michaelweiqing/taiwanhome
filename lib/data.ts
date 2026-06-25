@@ -160,27 +160,42 @@ export interface FilterOptions {
 }
 
 export async function searchProperties(filters: FilterOptions): Promise<Property[]> {
-  let query = supabase.from("properties").select("*")
+  function buildQuery(table: string) {
+    let query = supabase.from(table).select("*")
+    if (filters.listingType)  query = query.eq("listing_type",  filters.listingType)
+    if (filters.city)         query = query.eq("city",          filters.city)
+    if (filters.district)     query = query.eq("district",      filters.district)
+    if (filters.propertyType) query = query.eq("property_type", filters.propertyType)
+    if (filters.minPrice)     query = query.gte("price",        filters.minPrice)
+    if (filters.maxPrice)     query = query.lte("price",        filters.maxPrice)
+    if (filters.minArea)      query = query.gte("area_ping",    filters.minArea)
+    if (filters.bedrooms)     query = query.eq("bedrooms",      filters.bedrooms)
+    if (filters.sortBy === "price_asc")
+      query = query.order("price", { ascending: true })
+    else if (filters.sortBy === "price_desc")
+      query = query.order("price", { ascending: false })
+    else
+      query = query.order("posted_at", { ascending: false })
+    return query
+  }
 
-  if (filters.listingType)  query = query.eq("listing_type",  filters.listingType)
-  if (filters.city)         query = query.eq("city",          filters.city)
-  if (filters.district)     query = query.eq("district",      filters.district)
-  if (filters.propertyType) query = query.eq("property_type", filters.propertyType)
-  if (filters.minPrice)     query = query.gte("price",        filters.minPrice)
-  if (filters.maxPrice)     query = query.lte("price",        filters.maxPrice)
-  if (filters.minArea)      query = query.gte("area_ping",    filters.minArea)
-  if (filters.bedrooms)     query = query.eq("bedrooms",      filters.bedrooms)
+  const [r1, r2] = await Promise.all([
+    buildQuery("properties"),
+    buildQuery("user_listings"),
+  ])
+  const admin = (r1.data || []) as Property[]
+  const user  = (r2.data || []) as Property[]
+  const merged = [...admin, ...user]
 
+  // Sort merged results
   if (filters.sortBy === "price_asc")
-    query = query.order("price", { ascending: true })
+    merged.sort((a, b) => Number(a.price) - Number(b.price))
   else if (filters.sortBy === "price_desc")
-    query = query.order("price", { ascending: false })
+    merged.sort((a, b) => Number(b.price) - Number(a.price))
   else
-    query = query.order("posted_at", { ascending: false })
+    merged.sort((a, b) => new Date(b.posted_at).getTime() - new Date(a.posted_at).getTime())
 
-  const { data, error } = await query
-  if (error) { console.error("Supabase:", error.message); return [] }
-  return data as Property[]
+  return merged
 }
 
 export function formatPrice(p: Property, lang: "zh" | "vi"): string {
