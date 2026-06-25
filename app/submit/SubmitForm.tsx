@@ -195,6 +195,7 @@ export default function SubmitForm() {
         agent_branch:  form.agent_branch  || null,
         agent_license: form.agent_license || null,
         agent_broker:  form.agent_broker  || null,
+        description_vi: form.description_vi ? form.description_vi : null,
         facing:        "",
         features:      [],
         features_vi:   [],

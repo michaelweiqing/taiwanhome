@@ -254,6 +254,18 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
               </div>
             </div>
 
+            {/* Mô tả căn nhà */}
+            {descLines.length > 0 && (
+              <div className="bg-white rounded-2xl p-5 border border-gray-100">
+                <SectionTitle>{lang==="zh" ? "物件描述" : "Mô tả căn nhà"}</SectionTitle>
+                <div className="space-y-1.5">
+                  {descLines.map((line, i) => (
+                    <p key={i} className="text-sm text-gray-700 leading-relaxed">{line}</p>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Tiện ích */}
             {features && features.length > 0 && (
               <div className="bg-white rounded-2xl p-5 border border-gray-100">
