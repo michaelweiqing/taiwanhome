@@ -171,7 +171,7 @@ export default function SubmitForm() {
         listing_type:  form.listing_type,
         property_type: form.property_type,
         title_vi:      form.title_vi,
-        title_zh:      form.title_vi,
+        title_zh:      form.title_zh || form.title_vi,
         address:       form.address,
         address_vi:    form.address,
         district:      form.district,
@@ -400,10 +400,18 @@ export default function SubmitForm() {
       <div className="space-y-3">
         <div>
           <label className="text-sm font-semibold text-gray-700 mb-1 block">
-            {lang === "zh" ? "標題" : "Tiêu đề tin đăng"} *
+            {lang === "zh" ? "標題（越南文）" : "Tiêu đề (tiếng Việt)"} *
           </label>
           <input name="title_vi" value={form.title_vi} onChange={handleChange}
             placeholder="VD: Nhà phố 3 tầng gần Metro..."
+            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400" />
+        </div>
+        <div>
+          <label className="text-sm font-semibold text-gray-700 mb-1 block">
+            {lang === "zh" ? "標題（中文）" : "Tiêu đề (tiếng Trung)"} *
+          </label>
+          <input name="title_zh" value={form.title_zh} onChange={handleChange}
+            placeholder="VD: 近捷運3房透天厝..."
             className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400" />
         </div>
         <div>
