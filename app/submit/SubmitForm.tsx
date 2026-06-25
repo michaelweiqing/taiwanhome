@@ -153,7 +153,7 @@ export default function SubmitForm() {
   }
 
   function handleImages(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files || [])
+    const files = Array.from(e.target.files || []).slice(0, 20)
     setImages(files)
     setPreviews(files.map(f => URL.createObjectURL(f)))
   }
@@ -426,21 +426,16 @@ export default function SubmitForm() {
       <div className="space-y-3">
         <div>
           <label className="text-sm font-semibold text-gray-700 mb-1 block">
-            {lang === "zh" ? "標題（越南文）" : "Tiêu đề (tiếng Việt)"} *
+            {lang === "zh" ? "標題" : "Tiêu đề tin đăng"} *
           </label>
-          <input name="title_vi" value={form.title_vi} onChange={handleChange}
-            onBlur={e => autoTranslate("title_vi", e.target.value, "vi")}
-            placeholder="VD: Nhà phố 3 tầng gần Metro..."
+          <input
+            name={lang === "zh" ? "title_zh" : "title_vi"}
+            value={lang === "zh" ? form.title_zh : form.title_vi}
+            onChange={handleChange}
+            onBlur={e => autoTranslate(lang === "zh" ? "title_zh" : "title_vi", e.target.value, lang === "zh" ? "zh" : "vi")}
+            placeholder={lang === "zh" ? "例：近捷運3房透天厝..." : "VD: Nhà phố 3 tầng gần Metro..."}
             className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400" />
-        </div>
-        <div>
-          <label className="text-sm font-semibold text-gray-700 mb-1 block">
-            {lang === "zh" ? "標題（中文）" : "Tiêu đề (tiếng Trung)"} *
-          </label>
-          <input name="title_zh" value={form.title_zh} onChange={handleChange}
-            onBlur={e => autoTranslate("title_zh", e.target.value, "zh")}
-            placeholder="VD: 近捷運3房透天厝..."
-            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400" />
+          {translating && <p className="text-xs text-blue-500 mt-1">⏳ {lang === "zh" ? "翻譯中..." : "Đang dịch..."}</p>}
         </div>
         <div>
           <label className="text-sm font-semibold text-gray-700 mb-1 block">
@@ -482,17 +477,17 @@ export default function SubmitForm() {
         </label>
         <div className="grid grid-cols-2 gap-3">
           {[
-            {name:"price",       label:lang==="zh"?"租金(台幣/月)":"Giá thuê (Đài tệ/tháng)", ph:"", type:"number"},
+            {name:"price",       label:lang==="zh"?"租金(元台幣/月)":"Giá thuê (Đài tệ/tháng)", ph:"", type:"number"},
             {name:"area_ping",   label:lang==="zh"?"坪數":"Diện tích (ping)",                  ph:"", type:"number"},
             {name:"bedrooms",    label:lang==="zh"?"房間數":"Số phòng ngủ",                    ph:"", type:"number"},
             {name:"bathrooms",   label:lang==="zh"?"衛浴數":"Số WC",                           ph:"", type:"number"},
             {name:"floor",       label:lang==="zh"?"樓層":"Tầng",                              ph:"", type:"number"},
             {name:"total_floors",label:lang==="zh"?"總樓層":"Tổng số tầng",                   ph:"", type:"number"},
             {name:"age",         label:lang==="zh"?"屋齡(年)":"Tuổi nhà (năm)",               ph:"", type:"number"},
-            {name:"deposit",     label:lang==="zh"?"押金(月)":"Tiền cọc (tháng)",             ph:lang==="zh"?"例：2":"VD: 2", type:"number"},
-            {name:"contract",    label:lang==="zh"?"合約期限":"Thời gian HĐ",                 ph:lang==="zh"?"例：1年":"VD: 1 năm", type:"text"},
-            {name:"electricity", label:lang==="zh"?"電費":"Tiền điện",                        ph:lang==="zh"?"例：台電電費":"VD: Theo điện lực", type:"text"},
-            {name:"water",       label:lang==="zh"?"水費":"Tiền nước",                        ph:lang==="zh"?"例：300/月":"VD: 300/tháng", type:"text"},
+            {name:"deposit",     label:lang==="zh"?"押金(月)":"Tiền cọc (tháng)",             ph:"", type:"number"},
+            {name:"contract",    label:lang==="zh"?"合約期限":"Thời gian HĐ",                 ph:"", type:"text"},
+            {name:"electricity", label:lang==="zh"?"電費":"Tiền điện",                        ph:"", type:"text"},
+            {name:"water",       label:lang==="zh"?"水費":"Tiền nước",                        ph:"", type:"text"},
             {name:"parking_fee", label:lang==="zh"?"管理費":"Phí quản lý",                    ph:"", type:"text"},
           ].map(f => (
             <div key={f.name}>
@@ -557,34 +552,27 @@ export default function SubmitForm() {
       {/* Mô tả */}
       <div>
         <label className="text-sm font-semibold text-gray-700 mb-1 block">
-          {lang === "zh" ? "物件描述（越南文）" : "Mô tả căn nhà (tiếng Việt)"}
+          {lang === "zh" ? "物件描述" : "Mô tả căn nhà"}
         </label>
-        <textarea name="description_vi" value={form.description_vi} onChange={handleChange}
-          onBlur={e => autoTranslate("description_vi", e.target.value, "vi")}
-          rows={4} placeholder={lang === "zh" ? "越南文描述..." : "Mô tả chi tiết về căn nhà..."}
+        <textarea
+          name={lang === "zh" ? "description_zh" : "description_vi"}
+          value={lang === "zh" ? form.description_zh : form.description_vi}
+          onChange={handleChange}
+          onBlur={e => autoTranslate(
+            lang === "zh" ? "description_zh" : "description_vi",
+            e.target.value,
+            lang === "zh" ? "zh" : "vi"
+          )}
+          rows={5}
+          placeholder={lang === "zh" ? "詳細描述物件特色..." : "Mô tả chi tiết về căn nhà..."}
           className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400 resize-none" />
-        {form.description_zh && (
-          <div className="mt-2">
-            <label className="text-xs text-gray-500 mb-1 block">
-              {lang === "zh" ? "中文描述（自動翻譯）" : "Mô tả tiếng Trung (tự động dịch)"}
-            </label>
-            <textarea name="description_zh" value={form.description_zh} onChange={handleChange}
-              onBlur={e => autoTranslate("description_zh", e.target.value, "zh")}
-              rows={4}
-              className="w-full border border-gray-100 bg-gray-50 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400 resize-none" />
-          </div>
-        )}
-        {translating && (
-          <p className="text-xs text-blue-500 mt-1">
-            {lang === "zh" ? "⏳ 翻譯中..." : "⏳ Đang dịch..."}
-          </p>
-        )}
+        {translating && <p className="text-xs text-blue-500 mt-1">⏳ {lang === "zh" ? "翻譯中..." : "Đang dịch..."}</p>}
       </div>
 
       {/* Upload ảnh */}
       <div>
         <label className="text-sm font-semibold text-gray-700 mb-2 block">
-          📸 {lang === "zh" ? "上傳照片" : "Upload ảnh"} (tối đa 10 ảnh)
+          📸 {lang === "zh" ? "上傳照片（最多20張）" : "Upload ảnh (tối đa 20 ảnh)"}
         </label>
         <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-red-400 transition">
           <span className="text-2xl mb-1">📁</span>
