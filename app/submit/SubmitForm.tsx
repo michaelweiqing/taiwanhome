@@ -100,6 +100,7 @@ export default function SubmitForm() {
     has_furniture: false,
     furniture_note:"",
     description_vi: "",
+    description_zh: "",
     agent_name:    "",
     agent_phone:   "",
     agent_line:    "",
