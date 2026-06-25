@@ -108,13 +108,18 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     setIsFav(!isFav)
   }
 
-  const title    = lang==="zh" ? (p.title_zh || p.title_vi)   : p.title_vi
+  const title    = lang==="zh" ? (p.title_zh || p.title_vi) : (p.title_vi || p.title_zh)
   const address  = lang==="zh" ? (p.address  || p.address_vi) : (p.address_vi || p.address)
-  // description_vi có thể là string[] (properties) hoặc string (user_listings) hoặc null
-  const rawDesc  = lang==="zh" ? p.description_zh : p.description_vi
+
+  // description: ưu tiên đúng ngôn ngữ, fallback sang ngôn ngữ kia
+  const rawDescZh = p.description_zh
+  const rawDescVi = p.description_vi
+  const rawDesc = lang==="zh"
+    ? (rawDescZh || rawDescVi)
+    : (rawDescVi || rawDescZh)
   const descLines: string[] = Array.isArray(rawDesc)
-    ? (rawDesc as string[])
-    : rawDesc ? [rawDesc as string] : []
+    ? (rawDesc as string[]).filter(Boolean)
+    : rawDesc ? String(rawDesc).split("\n").filter(Boolean) : []
   const features = lang==="zh" ? (p.features || [])   : (p.features_vi || [])
   const facing   = lang==="zh" ? (p.facing || "") : (FACING_VI[p.facing ?? ""] ?? (p.facing || ""))
   const propType = getApartmentLabel(p)[lang]
@@ -149,7 +154,6 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ...(p.area_balcony_ping ? [{ label: lang==="zh"?"附屬建物":"Ban công & công trình phụ",   value: `${p.area_balcony_ping}${t.pingUnit}` }] : []),
     ...(p.area_common_ping  ? [{ label: lang==="zh"?"共同使用":"Diện tích sở hữu chung",      value: `${p.area_common_ping}${t.pingUnit}` }] : []),
     ...(p.area_land_ping    ? [{ label: lang==="zh"?"土地坪數":"Diện tích đất",               value: `${p.area_land_ping}${t.pingUnit}` }] : []),
-    ...(p.price_per_ping    ? [{ label: t.pricePerPing, value: `${Number(p.price_per_ping).toLocaleString()}萬/${t.pingUnit}` }] : []),
     { label: lang==="zh"?"格局":"Bố cục",              value: `${p.bedrooms||0}${t.bedrooms} / ${p.bathrooms||0}${t.bathrooms}` },
     { label: lang==="zh"?"樓層":"Tầng/Tổng số tầng",  value: floorLabel },
     { label: t.age,                                    value: `${p.age||0}${t.yearUnit}` },
@@ -162,7 +166,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ...((p as any).deposit == undefined ? [{ label: lang==="zh"?"管理費":"Phí quản lý", value: mgmtFeeDisplay }] : []),
     // Các field từ user_listings (cho thuê)
     ...((p as any).deposit     ? [{ label: lang==="zh"?"押金":"Tiền cọc",          value: `${(p as any).deposit} ${lang==="zh"?"個月":"tháng"}` }] : []),
-    ...((p as any).contract    ? [{ label: lang==="zh"?"合約期限":"Thời gian HĐ",  value: (p as any).contract }] : []),
+    ...((p as any).contract    ? [{ label: lang==="zh"?"合約期限":"Thời gian HĐ",  value: `${(p as any).contract}${lang==="zh"?"年":"năm"}` }] : []),
     ...((p as any).electricity ? [{ label: lang==="zh"?"電費":"Tiền điện",         value: (p as any).electricity }] : []),
     ...((p as any).water       ? [{ label: lang==="zh"?"水費":"Tiền nước",         value: (p as any).water }] : []),
     ...((p as any).parking_fee ? [{ label: lang==="zh"?"管理費":"Phí quản lý",      value: (p as any).parking_fee }] : []),
