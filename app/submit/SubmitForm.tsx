@@ -109,6 +109,30 @@ export default function SubmitForm() {
     agent_broker:  "",
   })
 
+  const [translating, setTranslating] = useState(false)
+
+  async function autoTranslate(field: string, value: string, from: "vi"|"zh") {
+    if (!value.trim()) return
+    const to = from === "vi" ? "zh" : "vi"
+    setTranslating(true)
+    try {
+      const res = await fetch("/api/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: value, from, to })
+      })
+      const { result } = await res.json()
+      if (result) {
+        const targetField = field === "title_vi" ? "title_zh"
+          : field === "title_zh" ? "title_vi"
+          : field === "description_vi" ? "description_zh"
+          : "description_vi"
+        setForm(f => ({ ...f, [targetField]: result }))
+      }
+    } catch {}
+    finally { setTranslating(false) }
+  }
+
   // Kiểm tra đăng nhập qua localStorage
   useEffect(() => {
     const stored = localStorage.getItem("taiwanhome_user")
@@ -196,6 +220,7 @@ export default function SubmitForm() {
         agent_license: form.agent_license || null,
         agent_broker:  form.agent_broker  || null,
         description_vi: form.description_vi ? form.description_vi : null,
+        description_zh: form.description_zh ? form.description_zh : (form.description_vi ? form.description_vi : null),
         facing:        "",
         features:      [],
         features_vi:   [],
@@ -403,6 +428,7 @@ export default function SubmitForm() {
             {lang === "zh" ? "標題（越南文）" : "Tiêu đề (tiếng Việt)"} *
           </label>
           <input name="title_vi" value={form.title_vi} onChange={handleChange}
+            onBlur={e => autoTranslate("title_vi", e.target.value, "vi")}
             placeholder="VD: Nhà phố 3 tầng gần Metro..."
             className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400" />
         </div>
@@ -411,6 +437,7 @@ export default function SubmitForm() {
             {lang === "zh" ? "標題（中文）" : "Tiêu đề (tiếng Trung)"} *
           </label>
           <input name="title_zh" value={form.title_zh} onChange={handleChange}
+            onBlur={e => autoTranslate("title_zh", e.target.value, "zh")}
             placeholder="VD: 近捷運3房透天厝..."
             className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400" />
         </div>
@@ -529,11 +556,28 @@ export default function SubmitForm() {
       {/* Mô tả */}
       <div>
         <label className="text-sm font-semibold text-gray-700 mb-1 block">
-          {lang === "zh" ? "物件描述" : "Mô tả căn nhà"}
+          {lang === "zh" ? "物件描述（越南文）" : "Mô tả căn nhà (tiếng Việt)"}
         </label>
         <textarea name="description_vi" value={form.description_vi} onChange={handleChange}
-          rows={4} placeholder={lang === "zh" ? "詳細描述..." : "Mô tả chi tiết về căn nhà..."}
+          onBlur={e => autoTranslate("description_vi", e.target.value, "vi")}
+          rows={4} placeholder={lang === "zh" ? "越南文描述..." : "Mô tả chi tiết về căn nhà..."}
           className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400 resize-none" />
+        {form.description_zh && (
+          <div className="mt-2">
+            <label className="text-xs text-gray-500 mb-1 block">
+              {lang === "zh" ? "中文描述（自動翻譯）" : "Mô tả tiếng Trung (tự động dịch)"}
+            </label>
+            <textarea name="description_zh" value={form.description_zh} onChange={handleChange}
+              onBlur={e => autoTranslate("description_zh", e.target.value, "zh")}
+              rows={4}
+              className="w-full border border-gray-100 bg-gray-50 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400 resize-none" />
+          </div>
+        )}
+        {translating && (
+          <p className="text-xs text-blue-500 mt-1">
+            {lang === "zh" ? "⏳ 翻譯中..." : "⏳ Đang dịch..."}
+          </p>
+        )}
       </div>
 
       {/* Upload ảnh */}
