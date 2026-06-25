@@ -165,10 +165,12 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ...((p as any).contract    ? [{ label: lang==="zh"?"合約期限":"Thời gian HĐ",  value: (p as any).contract }] : []),
     ...((p as any).electricity ? [{ label: lang==="zh"?"電費":"Tiền điện",         value: (p as any).electricity }] : []),
     ...((p as any).water       ? [{ label: lang==="zh"?"水費":"Tiền nước",         value: (p as any).water }] : []),
-    ...((p as any).parking_fee ? [{ label: lang==="zh"?"停車費":"Phí đậu xe",      value: (p as any).parking_fee }] : []),
+    ...((p as any).parking_fee ? [{ label: lang==="zh"?"管理費":"Phí quản lý",      value: (p as any).parking_fee }] : []),
     ...((p as any).pet         ? [{ label: lang==="zh"?"寵物":"Nuôi thú cưng",     value: lang==="zh"?"✅ 允許":"✅ Được phép" }] : []),
     ...((p as any).household_reg ? [{ label: lang==="zh"?"戶籍":"Nhập hộ khẩu",   value: lang==="zh"?"✅ 可設戶籍":"✅ Được đăng" }] : []),
     ...((p as any).subsidy     ? [{ label: lang==="zh"?"政府補貼":"Trợ cấp CP",    value: lang==="zh"?"✅ 可申請":"✅ Được đăng ký" }] : []),
+    ...((p as any).has_parking ? [{ label: lang==="zh"?"停車位":"Đậu xe",          value: (p as any).parking_note || (lang==="zh"?"✅ 有":"✅ Có") }] : []),
+    ...((p as any).has_furniture ? [{ label: lang==="zh"?"附傢俱家電":"Đồ đạc đi kèm", value: (p as any).furniture_note || (lang==="zh"?"✅ 有":"✅ Có") }] : []),
   ]
 
   return (

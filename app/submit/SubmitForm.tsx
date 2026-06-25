@@ -95,6 +95,10 @@ export default function SubmitForm() {
     pet:           false,
     household_reg: false,
     subsidy:       false,
+    has_parking:   false,
+    parking_note:  "",
+    has_furniture: false,
+    furniture_note:"",
     description_vi: "",
     agent_name:    "",
     agent_phone:   "",
@@ -210,6 +214,10 @@ export default function SubmitForm() {
         pet:           form.pet,
         household_reg: form.household_reg,
         subsidy:       form.subsidy,
+        has_parking:   form.has_parking,
+        parking_note:  form.parking_note  || null,
+        has_furniture: form.has_furniture,
+        furniture_note:form.furniture_note || null,
         price_per_ping: parseFloat(form.area_ping) > 0
           ? parseFloat((parseFloat(form.price) / parseFloat(form.area_ping)).toFixed(2))
           : null,
@@ -448,7 +456,7 @@ export default function SubmitForm() {
             {name:"contract",    label:lang==="zh"?"合約期限":"Thời gian HĐ",                 ph:lang==="zh"?"例：1年":"VD: 1 năm", type:"text"},
             {name:"electricity", label:lang==="zh"?"電費":"Tiền điện",                        ph:lang==="zh"?"例：台電電費":"VD: Theo điện lực", type:"text"},
             {name:"water",       label:lang==="zh"?"水費":"Tiền nước",                        ph:lang==="zh"?"例：300/月":"VD: 300/tháng", type:"text"},
-            {name:"parking_fee", label:lang==="zh"?"停車費":"Phí đậu xe",                     ph:lang==="zh"?"例：2000/月":"VD: 2000/tháng", type:"text"},
+            {name:"parking_fee", label:lang==="zh"?"管理費":"Phí quản lý",                    ph:"", type:"text"},
           ].map(f => (
             <div key={f.name}>
               <label className="text-xs text-gray-500 mb-1 block">{f.label}</label>
@@ -459,24 +467,53 @@ export default function SubmitForm() {
           ))}
         </div>
 
-        {/* Checkbox options */}
-        <div className="mt-4 space-y-2">
-          <p className="text-xs font-semibold text-gray-500 mb-2">{lang==="zh" ? "其他條件" : "Điều kiện khác"}</p>
+        {/* Checkbox + text options */}
+        <div className="mt-4 space-y-3">
+          <p className="text-xs font-semibold text-gray-500">{lang==="zh" ? "其他條件" : "Điều kiện khác"}</p>
           {[
             {name:"pet",          zh:"允許養寵物",     vi:"Nuôi thú cưng"},
             {name:"household_reg",zh:"可設戶籍",       vi:"Nhập hộ khẩu"},
             {name:"subsidy",      zh:"可申請政府補貼", vi:"Xin trợ cấp chính phủ"},
           ].map(o => (
             <label key={o.name} className="flex items-center gap-3 cursor-pointer group">
-              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition ${
+              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition shrink-0 ${
                 (form as any)[o.name] ? "bg-red-600 border-red-600" : "border-gray-300 group-hover:border-red-400"
-              }`}
-                onClick={() => setForm(f => ({...f, [o.name]: !(f as any)[o.name]}))}>
+              }`} onClick={() => setForm(f => ({...f, [o.name]: !(f as any)[o.name]}))}>
                 {(form as any)[o.name] && <span className="text-white text-xs font-bold">✓</span>}
               </div>
               <span className="text-sm text-gray-700">{lang==="zh" ? o.zh : o.vi}</span>
             </label>
           ))}
+
+          {/* Đậu xe — có ghi chú */}
+          <div className="flex items-center gap-3">
+            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition shrink-0 cursor-pointer ${
+              form.has_parking ? "bg-red-600 border-red-600" : "border-gray-300 hover:border-red-400"
+            }`} onClick={() => setForm(f => ({...f, has_parking: !f.has_parking, parking_note: f.has_parking ? "" : f.parking_note}))}>
+              {form.has_parking && <span className="text-white text-xs font-bold">✓</span>}
+            </div>
+            <span className="text-sm text-gray-700 shrink-0">{lang==="zh" ? "停車位" : "Đậu xe"}</span>
+            {form.has_parking && (
+              <input value={form.parking_note} onChange={e => setForm(f => ({...f, parking_note: e.target.value}))}
+                placeholder={lang==="zh" ? "例：地下停車場，2000/月" : "VD: Hầm, 2000/tháng"}
+                className="flex-1 border border-gray-200 rounded-xl px-3 py-1.5 text-sm focus:outline-none focus:border-red-400" />
+            )}
+          </div>
+
+          {/* Đồ đạc đi kèm */}
+          <div className="flex items-center gap-3">
+            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition shrink-0 cursor-pointer ${
+              form.has_furniture ? "bg-red-600 border-red-600" : "border-gray-300 hover:border-red-400"
+            }`} onClick={() => setForm(f => ({...f, has_furniture: !f.has_furniture, furniture_note: f.has_furniture ? "" : f.furniture_note}))}>
+              {form.has_furniture && <span className="text-white text-xs font-bold">✓</span>}
+            </div>
+            <span className="text-sm text-gray-700 shrink-0">{lang==="zh" ? "附傢俱家電" : "Đồ đạc đi kèm"}</span>
+            {form.has_furniture && (
+              <input value={form.furniture_note} onChange={e => setForm(f => ({...f, furniture_note: e.target.value}))}
+                placeholder={lang==="zh" ? "例：冷氣、洗衣機、床" : "VD: Điều hoà, máy giặt, giường"}
+                className="flex-1 border border-gray-200 rounded-xl px-3 py-1.5 text-sm focus:outline-none focus:border-red-400" />
+            )}
+          </div>
         </div>
       </div>
 
