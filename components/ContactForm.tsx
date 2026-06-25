@@ -20,7 +20,9 @@ export default function ContactForm({ agentName, agentPhone, agentLine, property
   const [form, setForm] = useState({ name: "", phone: "", message: "" })
   const [sent, setSent] = useState(false)
 
-  const lineUrl = agentLine.startsWith("http") ? agentLine : `https://line.me/ti/p/${agentLine}`
+  const lineUrl = agentLine
+    ? (agentLine.startsWith("http") ? agentLine : `https://line.me/ti/p/${agentLine}`)
+    : null
   const telUrl  = `tel:${agentPhone}`
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -47,15 +49,17 @@ export default function ContactForm({ agentName, agentPhone, agentLine, property
     <div className="space-y-4">
 
       {/* Nút liên hệ */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className={`grid gap-2 ${lineUrl ? "grid-cols-2" : "grid-cols-1"}`}>
         <a href={telUrl}
           className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl transition text-sm">
           📞 {lang === "zh" ? "立即致電" : "Gọi ngay"}
         </a>
-        <a href={lineUrl} target="_blank" rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 bg-[#06C755] hover:bg-[#05b04c] text-white font-bold py-2.5 rounded-xl transition text-sm">
-          💬 LINE
-        </a>
+        {lineUrl && (
+          <a href={lineUrl} target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 bg-[#06C755] hover:bg-[#05b04c] text-white font-bold py-2.5 rounded-xl transition text-sm">
+            💬 LINE
+          </a>
+        )}
       </div>
 
       {/* Thông tin đại lý */}
