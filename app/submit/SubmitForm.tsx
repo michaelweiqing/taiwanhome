@@ -287,81 +287,170 @@ export default function SubmitForm() {
 
   // Màn hình xem trước
   if (preview) {
-    const ptLabel: Record<string,string> = {
+    const ptLabelVi: Record<string,string> = {
       apartment:"Chung cư thang máy", apartment_walkup:"Chung cư thang bộ",
       house:"Nhà cả căn", villa:"Biệt thự", studio:"Studio"
     }
+    const ptLabelZh: Record<string,string> = {
+      apartment:"電梯大樓", apartment_walkup:"公寓(無電梯)",
+      house:"透天厝", villa:"別墅", studio:"套房"
+    }
+    const ptLabel = lang==="zh" ? ptLabelZh : ptLabelVi
+    const displayTitle = lang==="zh" ? (form.title_zh || form.title_vi) : (form.title_vi || form.title_zh)
+    const displayDesc  = lang==="zh" ? (form.description_zh || form.description_vi) : (form.description_vi || form.description_zh)
+    const cityVi = CITIES.find(c=>c.zh===city)?.vi || city
+
+    // Thông số grid
+    const specs = [
+      ...(form.bedrooms    ? [{zh:"房間數", vi:"Phòng ngủ",    val:form.bedrooms}] : []),
+      ...(form.bathrooms   ? [{zh:"衛浴數", vi:"Số WC",        val:form.bathrooms}] : []),
+      ...(form.area_ping   ? [{zh:"坪數",   vi:"Ping",         val:form.area_ping}] : []),
+      ...(form.floor       ? [{zh:"樓層",   vi:"Tầng",         val:`${form.floor}/${form.total_floors||"?"}F`}] : []),
+      ...(form.age         ? [{zh:"屋齡",   vi:"Tuổi nhà",     val:`${form.age}${lang==="zh"?"年":"năm"}`}] : []),
+    ]
+
+    // Chi tiết cho thuê
+    const rentalInfo = [
+      ...(form.deposit     ? [{zh:"押金",   vi:"Tiền cọc",     val:`${form.deposit} ${lang==="zh"?"個月":"tháng"}`}] : []),
+      ...(form.contract    ? [{zh:"合約",   vi:"Thời gian HĐ", val:`${form.contract}${lang==="zh"?"年":"năm"}`}] : []),
+      ...(form.electricity ? [{zh:"電費",   vi:"Tiền điện",    val:form.electricity}] : []),
+      ...(form.water       ? [{zh:"水費",   vi:"Tiền nước",    val:form.water}] : []),
+      ...(form.parking_fee ? [{zh:"管理費", vi:"Phí quản lý",  val:form.parking_fee}] : []),
+    ]
+
+    // Điều kiện
+    const conditions = [
+      ...(form.pet          ? [lang==="zh"?"✅ 允許養寵物":"✅ Nuôi thú cưng"] : []),
+      ...(form.household_reg? [lang==="zh"?"✅ 可設戶籍":"✅ Nhập hộ khẩu"] : []),
+      ...(form.subsidy      ? [lang==="zh"?"✅ 可申請政府補貼":"✅ Xin trợ cấp CP"] : []),
+      ...(form.has_parking  ? [lang==="zh"?`✅ 停車位${form.parking_note?" · "+form.parking_note:""}`:
+                                           `✅ Đậu xe${form.parking_note?" · "+form.parking_note:""}`] : []),
+      ...(form.has_furniture? [lang==="zh"?`✅ 附傢俱${form.furniture_note?" · "+form.furniture_note:""}`:
+                                           `✅ Đồ đạc${form.furniture_note?" · "+form.furniture_note:""}`] : []),
+    ]
+
     return (
-      <div className="space-y-5">
+      <div className="space-y-4 pb-6">
+        {/* Header */}
         <div className="flex items-center gap-3">
           <button onClick={() => setPreview(false)}
             className="text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition">
-            ← Sửa lại
+            {lang==="zh" ? "← 返回修改" : "← Sửa lại"}
           </button>
-          <h2 className="text-lg font-black text-gray-900">Xem trước tin đăng</h2>
+          <h2 className="text-lg font-black text-gray-900">
+            {lang==="zh" ? "預覽刊登內容" : "Xem trước tin đăng"}
+          </h2>
         </div>
 
-        {/* Ảnh preview */}
+        {/* Ảnh */}
         {previews.length > 0 && (
-          <div className="grid grid-cols-3 gap-2">
-            {previews.map((src, i) => (
-              <img key={i} src={src} className={`w-full object-cover rounded-xl ${i===0 ? "col-span-3 h-52" : "h-24"}`} />
+          <div className="grid grid-cols-3 gap-1.5 rounded-2xl overflow-hidden">
+            {previews.slice(0,7).map((src, i) => (
+              <img key={i} src={src} className={`w-full object-cover ${i===0 ? "col-span-3 h-52" : "h-24"}`} />
             ))}
+            {previews.length > 7 && (
+              <div className="h-24 bg-gray-800 flex items-center justify-center rounded-xl text-white text-sm font-bold">
+                +{previews.length - 7} ảnh
+              </div>
+            )}
           </div>
         )}
 
-        {/* Thông tin chính */}
-        <div className="bg-white border border-gray-100 rounded-2xl p-4 space-y-3">
+        {/* Loại + tiêu đề + giá */}
+        <div className="bg-white border border-gray-100 rounded-2xl p-4 space-y-2">
           <div className="flex gap-2 flex-wrap">
-            <span className={`text-xs font-bold px-3 py-1 rounded-full text-white ${form.listing_type==="rent" ? "bg-blue-600" : "bg-emerald-600"}`}>
-              {form.listing_type==="rent" ? "Cho thuê" : "Bán"}
+            <span className={`text-xs font-bold px-3 py-1 rounded-full text-white ${form.listing_type==="rent"?"bg-blue-600":"bg-emerald-600"}`}>
+              {form.listing_type==="rent" ? (lang==="zh"?"出租":"Cho thuê") : (lang==="zh"?"出售":"Bán")}
             </span>
-            <span className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">{ptLabel[form.property_type] || form.property_type}</span>
+            <span className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
+              {ptLabel[form.property_type] || form.property_type}
+            </span>
           </div>
-          <h3 className="text-lg font-bold text-gray-900">{form.title_vi}</h3>
-          <p className="text-red-600 text-2xl font-black">{parseFloat(form.price).toLocaleString()} vạn Đài tệ</p>
-          {form.area_ping && <p className="text-sm text-gray-500">{form.area_ping} ping · {(parseFloat(form.price)/parseFloat(form.area_ping)).toFixed(2)} vạn/ping</p>}
-          <p className="text-sm text-gray-500">📍 {form.address}{form.district ? `, ${form.district}` : ""}{city ? `, ${CITIES.find(c=>c.zh===city)?.vi}` : ""}</p>
+          <h3 className="text-lg font-bold text-gray-900">{displayTitle}</h3>
+          <p className="text-red-600 text-2xl font-black">
+            {form.listing_type==="rent"
+              ? (lang==="zh" ? `NT$${parseFloat(form.price).toLocaleString()}/月` : `NT$${parseFloat(form.price).toLocaleString()}/tháng`)
+              : (lang==="zh" ? `${parseFloat(form.price).toLocaleString()}萬` : `${parseFloat(form.price).toLocaleString()} vạn Đài tệ`)}
+          </p>
+          <p className="text-sm text-gray-500">📍 {form.address}{form.district?`, ${form.district}`:""}{city?`, ${lang==="zh"?city:cityVi}`:""}</p>
         </div>
 
         {/* Thông số */}
+        {specs.length > 0 && (
+          <div className="bg-white border border-gray-100 rounded-2xl p-4">
+            <p className="text-sm font-bold text-gray-700 mb-3">{lang==="zh"?"物件資訊":"Thông số căn nhà"}</p>
+            <div className="grid grid-cols-4 gap-2 text-center">
+              {specs.map(s => (
+                <div key={s.zh} className="bg-gray-50 rounded-xl py-2 px-1">
+                  <p className="text-sm font-bold text-gray-800">{s.val}</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">{lang==="zh"?s.zh:s.vi}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Chi tiết cho thuê */}
+        {rentalInfo.length > 0 && (
+          <div className="bg-white border border-gray-100 rounded-2xl p-4">
+            <p className="text-sm font-bold text-gray-700 mb-3">{lang==="zh"?"租賃詳情":"Chi tiết cho thuê"}</p>
+            <div className="grid grid-cols-2 gap-2">
+              {rentalInfo.map(r => (
+                <div key={r.zh} className="bg-gray-50 rounded-xl p-2.5">
+                  <p className="text-[10px] text-gray-400">{lang==="zh"?r.zh:r.vi}</p>
+                  <p className="text-sm font-bold text-gray-800 mt-0.5">{r.val}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Điều kiện */}
+        {conditions.length > 0 && (
+          <div className="bg-white border border-gray-100 rounded-2xl p-4">
+            <p className="text-sm font-bold text-gray-700 mb-2">{lang==="zh"?"其他條件":"Điều kiện khác"}</p>
+            <div className="flex flex-wrap gap-2">
+              {conditions.map((c,i) => (
+                <span key={i} className="text-xs bg-green-50 text-green-700 px-3 py-1 rounded-full">{c}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Mô tả */}
+        {displayDesc && (
+          <div className="bg-white border border-gray-100 rounded-2xl p-4">
+            <p className="text-sm font-bold text-gray-700 mb-2">{lang==="zh"?"物件描述":"Mô tả căn nhà"}</p>
+            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{displayDesc}</p>
+          </div>
+        )}
+
+        {/* Thông tin liên hệ */}
         <div className="bg-white border border-gray-100 rounded-2xl p-4">
-          <p className="text-sm font-bold text-gray-700 mb-3">Thông số</p>
-          <div className="grid grid-cols-4 gap-3 text-center">
-            {[
-              {label:"Phòng ngủ", val:form.bedrooms},
-              {label:"WC",        val:form.bathrooms},
-              {label:"Ping",      val:form.area_ping},
-              {label:"Tuổi nhà",  val:form.age ? `${form.age}năm` : "-"},
-            ].map(item => (
-              <div key={item.label} className="bg-gray-50 rounded-xl py-2">
-                <p className="text-sm font-bold text-gray-800">{item.val || "-"}</p>
-                <p className="text-[10px] text-gray-400 mt-0.5">{item.label}</p>
-              </div>
-            ))}
+          <p className="text-sm font-bold text-gray-700 mb-2">{lang==="zh"?"聯絡資訊":"Thông tin liên hệ"}</p>
+          <div className="space-y-1.5 text-sm text-gray-600">
+            <p>👤 {form.agent_name}</p>
+            <p>📱 {form.agent_phone}</p>
+            {form.agent_line    && <p>💬 {form.agent_line}</p>}
+            {form.agent_company && <p>🏢 {lang==="zh"?"公司品牌":"Công ty"}: {form.agent_company}</p>}
+            {form.agent_branch  && <p>🏷 {lang==="zh"?"公司名稱":"Chi nhánh"}: {form.agent_branch}</p>}
+            {form.agent_license && <p>📋 {lang==="zh"?"營業員證號":"Giấy phép"}: {form.agent_license}</p>}
+            {form.agent_broker  && <p>📋 {lang==="zh"?"經紀人證號":"Chứng chỉ"}: {form.agent_broker}</p>}
           </div>
         </div>
 
-        {/* Liên hệ */}
-        <div className="bg-white border border-gray-100 rounded-2xl p-4 space-y-1">
-          <p className="text-sm font-bold text-gray-700 mb-2">Thông tin liên hệ</p>
-          <p className="text-sm text-gray-600">👤 {form.agent_name}</p>
-          <p className="text-sm text-gray-600">📱 {form.agent_phone}</p>
-          {form.agent_line && <p className="text-sm text-gray-600">💬 {form.agent_line}</p>}
-        </div>
-
-        {/* Nút đăng */}
+        {/* Nút */}
         <button onClick={handleSubmit} disabled={loading}
           className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition text-base">
-          {loading ? (lang==="zh" ? "上傳中..." : "⏳ Đang đăng tin...") : (lang==="zh" ? "🚀 立即刊登" : "🚀 Xác nhận đăng tin")}
+          {loading ? (lang==="zh"?"上傳中...":"⏳ Đang đăng tin...") : (lang==="zh"?"🚀 立即刊登":"🚀 Xác nhận đăng tin")}
         </button>
         <button onClick={() => setPreview(false)}
           className="w-full bg-gray-100 text-gray-600 font-bold py-3 rounded-xl text-sm">
-          {lang==="zh" ? "← 返回修改" : "← Quay lại sửa"}
+          {lang==="zh"?"← 返回修改":"← Quay lại sửa"}
         </button>
         <button onClick={() => { localStorage.removeItem("taiwanhome_user"); router.push("/login") }}
           className="w-full text-xs text-gray-400 border border-gray-200 rounded-xl py-2.5 hover:text-red-500 hover:bg-gray-50 transition">
-          {lang==="zh" ? "登出" : "Đăng xuất"}
+          {lang==="zh"?"登出":"Đăng xuất"}
         </button>
       </div>
     )
