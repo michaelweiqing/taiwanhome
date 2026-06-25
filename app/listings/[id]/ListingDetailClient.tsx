@@ -160,6 +160,15 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ...(p.elevator_count  ? [{ label: lang==="zh"?"電梯數":"Số thang máy",      value: `${p.elevator_count}${lang==="zh"?"部":"thang"}` }] : []),
     { label: lang==="zh"?"停車位":"Chỗ đậu xe",        value: parkingDisplay },
     { label: lang==="zh"?"管理費":"Phí quản lý",       value: mgmtFeeDisplay },
+    // Các field từ user_listings (cho thuê)
+    ...((p as any).deposit     ? [{ label: lang==="zh"?"押金":"Tiền cọc",          value: `${(p as any).deposit} ${lang==="zh"?"個月":"tháng"}` }] : []),
+    ...((p as any).contract    ? [{ label: lang==="zh"?"合約期限":"Thời gian HĐ",  value: (p as any).contract }] : []),
+    ...((p as any).electricity ? [{ label: lang==="zh"?"電費":"Tiền điện",         value: (p as any).electricity }] : []),
+    ...((p as any).water       ? [{ label: lang==="zh"?"水費":"Tiền nước",         value: (p as any).water }] : []),
+    ...((p as any).parking_fee ? [{ label: lang==="zh"?"停車費":"Phí đậu xe",      value: (p as any).parking_fee }] : []),
+    ...((p as any).pet         ? [{ label: lang==="zh"?"寵物":"Nuôi thú cưng",     value: lang==="zh"?"✅ 允許":"✅ Được phép" }] : []),
+    ...((p as any).household_reg ? [{ label: lang==="zh"?"戶籍":"Nhập hộ khẩu",   value: lang==="zh"?"✅ 可設戶籍":"✅ Được đăng" }] : []),
+    ...((p as any).subsidy     ? [{ label: lang==="zh"?"政府補貼":"Trợ cấp CP",    value: lang==="zh"?"✅ 可申請":"✅ Được đăng ký" }] : []),
   ]
 
   return (
