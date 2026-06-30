@@ -8,6 +8,7 @@ import { formatPrice, pingToM2 } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
 import ImageGallery from "@/components/ImageGallery"
 import ContactForm from "@/components/ContactForm"
+import MortgageCalculator from "@/components/MortgageCalculator"
 import PropertyCard from "@/components/PropertyCard"
 
 const FEAT_ICONS: Record<string,string> = {
@@ -257,6 +258,11 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                 ))}
               </div>
             </div>
+
+            {/* Máy tính vay vốn — chỉ hiện với nhà bán, không hiện nhà cho thuê */}
+            {p.listing_type !== "rent" && (
+              <MortgageCalculator propertyPrice={Number(p.price)} />
+            )}
 
             {/* Mô tả căn nhà */}
             {descLines.length > 0 && (
