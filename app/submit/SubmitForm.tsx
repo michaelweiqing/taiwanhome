@@ -46,8 +46,15 @@ const DISTRICTS: Record<string, { zh: string; vi: string }[]> = {
     {zh:"大安區",vi:"Đại An"},{zh:"新社區",vi:"Tân Xã"},
   ],
   "彰化縣": [
-    {zh:"彰化市",vi:"Chương Hóa"},{zh:"員林市",vi:"Viên Lâm"},{zh:"和美鎮",vi:"Hòa Mỹ"},
-    {zh:"鹿港鎮",vi:"Lộc Cảng"},
+    {zh:"彰化市",vi:"Chương Hóa"},{zh:"員林市",vi:"Viên Lâm"},{zh:"鹿港鎮",vi:"Lộc Cảng"},
+    {zh:"和美鎮",vi:"Hòa Mỹ"},{zh:"北斗鎮",vi:"Bắc Đẩu"},{zh:"溪湖鎮",vi:"Khê Hồ"},
+    {zh:"田中鎮",vi:"Điền Trung"},{zh:"二林鎮",vi:"Nhị Lâm"},{zh:"線西鄉",vi:"Tuyến Tây"},
+    {zh:"伸港鄉",vi:"Thân Cảng"},{zh:"福興鄉",vi:"Phúc Hưng"},{zh:"秀水鄉",vi:"Tú Thủy"},
+    {zh:"花壇鄉",vi:"Hoa Đàn"},{zh:"芬園鄉",vi:"Phân Viên"},{zh:"大村鄉",vi:"Đại Thôn"},
+    {zh:"埔鹽鄉",vi:"Bộ Diêm"},{zh:"埔心鄉",vi:"Bộ Tâm"},{zh:"永靖鄉",vi:"Vĩnh Tĩnh"},
+    {zh:"社頭鄉",vi:"Xã Đầu"},{zh:"二水鄉",vi:"Nhị Thủy"},{zh:"田尾鄉",vi:"Điền Vĩ"},
+    {zh:"埤頭鄉",vi:"Bi Đầu"},{zh:"芳苑鄉",vi:"Phương Uyển"},{zh:"大城鄉",vi:"Đại Thành"},
+    {zh:"竹塘鄉",vi:"Trúc Đường"},{zh:"溪州鄉",vi:"Khê Châu"},
   ],
   "台南市": [
     {zh:"東區",vi:"Khu Đông"},{zh:"南區",vi:"Khu Nam"},{zh:"北區",vi:"Khu Bắc"},
@@ -58,6 +65,31 @@ const DISTRICTS: Record<string, { zh: string; vi: string }[]> = {
     {zh:"鼓山區",vi:"Cổ Sơn"},{zh:"左營區",vi:"Tả Doanh"},{zh:"鳳山區",vi:"Phụng Sơn"},
   ],
   "新竹市": [{zh:"東區",vi:"Khu Đông"},{zh:"北區",vi:"Khu Bắc"},{zh:"香山區",vi:"Hương Sơn"}],
+}
+
+// Toạ độ trung tâm 26 đơn vị hành chính 彰化縣 — mặc định khi đăng tin
+const CHANGHUA_COORDS: Record<string, { lat: number; lng: number }> = {
+  "彰化市": { lat: 24.0810, lng: 120.5388 }, "員林市": { lat: 23.9590, lng: 120.5736 },
+  "鹿港鎮": { lat: 24.0573, lng: 120.4344 }, "和美鎮": { lat: 24.1107, lng: 120.5000 },
+  "北斗鎮": { lat: 23.8709, lng: 120.5206 }, "溪湖鎮": { lat: 23.9622, lng: 120.4798 },
+  "田中鎮": { lat: 23.8614, lng: 120.5859 }, "二林鎮": { lat: 23.8993, lng: 120.3744 },
+  "線西鄉": { lat: 24.1300, lng: 120.4640 }, "伸港鄉": { lat: 24.1490, lng: 120.4830 },
+  "福興鄉": { lat: 24.0510, lng: 120.4380 }, "秀水鄉": { lat: 24.0350, lng: 120.5050 },
+  "花壇鄉": { lat: 24.0280, lng: 120.5380 }, "芬園鄉": { lat: 24.0140, lng: 120.6300 },
+  "大村鄉": { lat: 23.9930, lng: 120.5430 }, "埔鹽鄉": { lat: 24.0080, lng: 120.4640 },
+  "埔心鄉": { lat: 23.9530, lng: 120.5430 }, "永靖鄉": { lat: 23.9250, lng: 120.5470 },
+  "社頭鄉": { lat: 23.8970, lng: 120.5830 }, "二水鄉": { lat: 23.8070, lng: 120.6190 },
+  "田尾鄉": { lat: 23.8880, lng: 120.5240 }, "埤頭鄉": { lat: 23.8930, lng: 120.4640 },
+  "芳苑鄉": { lat: 23.9240, lng: 120.3210 }, "大城鄉": { lat: 23.8530, lng: 120.3210 },
+  "竹塘鄉": { lat: 23.8590, lng: 120.4270 }, "溪州鄉": { lat: 23.8510, lng: 120.4960 },
+}
+
+// Trung tâm thành phố — fallback khi không tra được toạ độ quận/huyện
+const CITY_CENTER: Record<string, { lat: number; lng: number }> = {
+  "台北市": { lat: 25.0330, lng: 121.5654 }, "新北市": { lat: 25.0169, lng: 121.4628 },
+  "桃園市": { lat: 24.9936, lng: 121.3010 }, "新竹市": { lat: 24.8138, lng: 120.9675 },
+  "台中市": { lat: 24.1477, lng: 120.6736 }, "彰化縣": { lat: 24.0810, lng: 120.5388 },
+  "台南市": { lat: 22.9999, lng: 120.2270 }, "高雄市": { lat: 22.6273, lng: 120.3014 },
 }
 
 export default function SubmitForm() {
@@ -191,6 +223,8 @@ export default function SubmitForm() {
 
       // 2. Lưu vào bảng user_listings — tách riêng khỏi properties admin
       const newId = String(Math.floor(1000000 + Math.random() * 9000000))
+      // Toạ độ theo quận/huyện (彰化縣 đầy đủ), fallback về trung tâm thành phố
+      const coord = CHANGHUA_COORDS[form.district] ?? CITY_CENTER[city] ?? { lat: 24.1477, lng: 120.6736 }
       const { error } = await supabase.from("user_listings").insert({
         id:            newId,
         listing_type:  form.listing_type,
@@ -225,8 +259,8 @@ export default function SubmitForm() {
         facing:        "",
         features:      [],
         features_vi:   [],
-        lat:           24.1477,
-        lng:           120.6736,
+        lat:           coord.lat,
+        lng:           coord.lng,
         is_new:        true,
         is_featured:   false,
         parking:       false,
