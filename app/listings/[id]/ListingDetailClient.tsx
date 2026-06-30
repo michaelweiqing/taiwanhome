@@ -153,6 +153,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     { label: lang==="zh"?"建物總坪":"Tổng diện tích",  value: `${Number(p.area_ping)}${t.pingUnit} (${pingToM2(p.area_ping)}m²)` },
     ...(p.area_main_ping    ? [{ label: lang==="zh"?"主建物":"Diện tích sử dụng riêng",       value: `${p.area_main_ping}${t.pingUnit}` }] : []),
     ...(p.area_balcony_ping ? [{ label: lang==="zh"?"附屬建物":"Ban công & công trình phụ",   value: `${p.area_balcony_ping}${t.pingUnit}` }] : []),
+    ...(p.area_basement_ping ? [{ label: lang==="zh"?"地下室":"Tầng hầm",                      value: `${p.area_basement_ping}${t.pingUnit}` }] : []),
     ...(p.area_common_ping  ? [{ label: lang==="zh"?"共同使用":"Diện tích sở hữu chung",      value: `${p.area_common_ping}${t.pingUnit}` }] : []),
     ...(p.area_land_ping    ? [{ label: lang==="zh"?"土地坪數":"Diện tích đất",               value: `${p.area_land_ping}${t.pingUnit}` }] : []),
     { label: lang==="zh"?"格局":"Bố cục",              value: `${p.bedrooms||0}${t.bedrooms} / ${p.bathrooms||0}${t.bathrooms}` },

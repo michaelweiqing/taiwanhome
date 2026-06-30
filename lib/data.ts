@@ -19,6 +19,7 @@ export interface Property {
   area_balcony_ping: number | null    // 附屬建物
   area_common_ping: number | null     // 共同使用
   area_land_ping: number | null       // 土地坪數
+  area_basement_ping: number | null   // 地下室
   bedrooms: number
   bathrooms: number
   floor: string                       // text (可填整棟、全層或數字)
