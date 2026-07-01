@@ -109,7 +109,7 @@ const NEARBY_FIELDS = [
   { key:"convenience", icon:"🏪", zh:"便利商店", vi:"Cửa hàng tiện lợi" },
 ]
 
-export default function SubmitForm() {
+export default function SubmitForm({ editId }: { editId?: string } = {}) {
   const { lang } = useLang()
   const router   = useRouter()
   const supabase = createClient()
@@ -119,8 +119,11 @@ export default function SubmitForm() {
   const [done, setDone]       = useState(false)
   const [images, setImages]   = useState<File[]>([])
   const [previews, setPreviews] = useState<string[]>([])
+  const [existingImages, setExistingImages] = useState<string[]>([])
   const [preview, setPreview] = useState(false)
   const [city, setCity] = useState("台中市")
+  const [initialLoading, setInitialLoading] = useState(!!editId)
+  const [notOwner, setNotOwner] = useState(false)
 
   const [form, setForm] = useState({
     listing_type:  "buy",
@@ -194,18 +197,79 @@ export default function SubmitForm() {
     finally { setTranslating(false) }
   }
 
-  // Kiểm tra đăng nhập qua localStorage
+  // Kiểm tra đăng nhập qua localStorage — nếu có editId thì tải dữ liệu tin cũ để sửa
   useEffect(() => {
     const stored = localStorage.getItem("taiwanhome_user")
     if (!stored) { router.push("/login"); return }
     const u = JSON.parse(stored)
     setUser(u)
-    setForm(f => ({
-      ...f,
-      agent_name:  u.name  || "",
-      agent_phone: u.phone || "",
-      agent_line:  "",
-    }))
+
+    if (editId) {
+      supabase.from("user_listings").select("*").eq("id", editId).maybeSingle().then(({ data }) => {
+        if (!data || data.submitted_by !== u.phone) {
+          setNotOwner(true)
+          setInitialLoading(false)
+          return
+        }
+        setCity(data.city || "台中市")
+        setExistingImages(data.images || [])
+        setForm(f => ({
+          ...f,
+          listing_type:  data.listing_type || "buy",
+          property_type: data.property_type || "apartment",
+          title_vi:      data.title_vi || "",
+          title_zh:      data.title_zh || "",
+          address:       data.address || "",
+          district:      data.district || "",
+          price:         data.price != null ? String(data.price) : "",
+          area_ping:     data.area_ping != null ? String(data.area_ping) : "",
+          bedrooms:      data.bedrooms != null ? String(data.bedrooms) : "",
+          bathrooms:     data.bathrooms != null ? String(data.bathrooms) : "",
+          floor:         data.floor || "",
+          total_floors:  data.total_floors != null ? String(data.total_floors) : "",
+          age:           data.age != null ? String(data.age) : "",
+          deposit:       data.deposit || "",
+          contract:      data.contract || "",
+          electricity:   data.electricity || "",
+          water:         data.water || "",
+          parking_fee:   data.parking_fee || "",
+          area_main_ping:     data.area_main_ping != null ? String(data.area_main_ping) : "",
+          area_balcony_ping:  data.area_balcony_ping != null ? String(data.area_balcony_ping) : "",
+          area_common_ping:   data.area_common_ping != null ? String(data.area_common_ping) : "",
+          area_basement_ping: data.area_basement_ping != null ? String(data.area_basement_ping) : "",
+          area_land_ping:     data.area_land_ping != null ? String(data.area_land_ping) : "",
+          community_name:     data.community_name || "",
+          total_units:        data.total_units != null ? String(data.total_units) : "",
+          units_per_floor:    data.units_per_floor != null ? String(data.units_per_floor) : "",
+          elevator_count:     data.elevator_count != null ? String(data.elevator_count) : "",
+          nearby:        data.nearby || {},
+          pet:           !!data.pet,
+          household_reg: !!data.household_reg,
+          subsidy:       !!data.subsidy,
+          has_parking:   !!data.has_parking,
+          parking_note:  data.parking_note || "",
+          has_furniture: !!data.has_furniture,
+          furniture_note:data.furniture_note || "",
+          description_vi: data.description_vi || "",
+          description_zh: data.description_zh || "",
+          agent_name:    data.agent_name || u.name || "",
+          agent_phone:   data.agent_phone || u.phone || "",
+          agent_line:    data.agent_line || "",
+          agent_company: data.agent_company || "",
+          agent_branch:  data.agent_branch || "",
+          agent_license: data.agent_license || "",
+          agent_broker:  data.agent_broker || "",
+        }))
+        setInitialLoading(false)
+      })
+    } else {
+      setForm(f => ({
+        ...f,
+        agent_name:  u.name  || "",
+        agent_phone: u.phone || "",
+        agent_line:  "",
+      }))
+    }
   }, [])
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
@@ -249,12 +313,10 @@ export default function SubmitForm() {
         }
       }
 
-      // 2. Lưu vào bảng user_listings — tách riêng khỏi properties admin
-      const newId = String(Math.floor(1000000 + Math.random() * 9000000))
-      // Toạ độ theo quận/huyện (彰化縣 đầy đủ), fallback về trung tâm thành phố
+      // 2. Chuẩn bị dữ liệu chung — dùng cho cả tạo mới & sửa tin
+      const finalImages = editId ? [...existingImages, ...imageUrls] : imageUrls
       const coord = CHANGHUA_COORDS[form.district] ?? CITY_CENTER[city] ?? { lat: 24.1477, lng: 120.6736 }
-      const { error } = await supabase.from("user_listings").insert({
-        id:            newId,
+      const commonPayload = {
         listing_type:  form.listing_type,
         property_type: form.property_type,
         title_vi:      form.title_vi,
@@ -272,29 +334,19 @@ export default function SubmitForm() {
         floor:         form.floor || "",
         total_floors:  parseInt(form.total_floors) || 0,
         age:           parseInt(form.age) || 0,
-        images:        imageUrls,
+        images:        finalImages,
         agent_name:    form.agent_name,
         agent_name_vi: form.agent_name,
         agent_phone:   form.agent_phone,
         agent_line:    form.agent_line || null,
-        agent_avatar:  null,
         agent_company: form.agent_company || null,
         agent_branch:  form.agent_branch  || null,
         agent_license: form.agent_license || null,
         agent_broker:  form.agent_broker  || null,
         description_vi: form.description_vi ? form.description_vi : null,
         description_zh: form.description_zh ? form.description_zh : (form.description_vi ? form.description_vi : null),
-        facing:        "",
-        features:      [],
-        features_vi:   [],
         lat:           coord.lat,
         lng:           coord.lng,
-        is_new:        true,
-        is_featured:   false,
-        parking:       false,
-        views:         0,
-        posted_at:     new Date().toISOString(),
-        submitted_by:  user?.phone || "",
         deposit:       form.deposit || null,
         contract:      form.contract || null,
         electricity:   form.electricity || null,
@@ -322,21 +374,49 @@ export default function SubmitForm() {
         price_per_ping: parseFloat(form.area_ping) > 0
           ? parseFloat((parseFloat(form.price) / parseFloat(form.area_ping)).toFixed(2))
           : null,
-      })
+      }
 
-      if (error) throw error
-
-      // 3. Thông báo LINE cho Michael
-      await fetch("/api/notify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: `🏠 Tin đăng mới!\n📋 ${form.title_vi}\n💰 ${form.price} vạn\n📍 ${form.address}\n👤 ${form.agent_name} | ${form.agent_phone}`
+      if (editId) {
+        // 2b. SỬA tin — dùng RPC để chỉ chủ tin mới sửa được (bỏ qua RLS)
+        const { data: ok, error } = await supabase.rpc("update_own_user_listing", {
+          p_id: editId, p_phone: user?.phone || "", p_data: commonPayload
         })
-      }).catch(() => {})
+        if (error) throw error
+        if (!ok) throw new Error(lang==="zh" ? "無權限修改此刊登" : "Bạn không có quyền sửa tin này")
 
-      setDone(true)
-      setTimeout(() => router.push("/listings"), 2000)
+        setDone(true)
+        setTimeout(() => router.push(`/listings/${editId}`), 1500)
+      } else {
+        // 2a. TẠO MỚI tin
+        const newId = String(Math.floor(1000000 + Math.random() * 9000000))
+        const { error } = await supabase.from("user_listings").insert({
+          id: newId,
+          ...commonPayload,
+          agent_avatar:  null,
+          facing:        "",
+          features:      [],
+          features_vi:   [],
+          is_new:        true,
+          is_featured:   false,
+          parking:       false,
+          views:         0,
+          posted_at:     new Date().toISOString(),
+          submitted_by:  user?.phone || "",
+        })
+        if (error) throw error
+
+        // 3. Thông báo LINE cho Michael
+        await fetch("/api/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: `🏠 Tin đăng mới!\n📋 ${form.title_vi}\n💰 ${form.price} vạn\n📍 ${form.address}\n👤 ${form.agent_name} | ${form.agent_phone}`
+          })
+        }).catch(() => {})
+
+        setDone(true)
+        setTimeout(() => router.push("/listings"), 2000)
+      }
 
     } catch (err: any) {
       alert("Lỗi: " + err.message)
@@ -347,11 +427,22 @@ export default function SubmitForm() {
 
   if (!user) return <div className="text-center py-20 text-gray-400">Đang kiểm tra đăng nhập...</div>
 
+  if (notOwner) return (
+    <div className="text-center py-20">
+      <p className="text-5xl mb-4">🚫</p>
+      <p className="text-xl font-bold text-gray-800">
+        {lang === "zh" ? "無權限編輯此刊登" : "Bạn không có quyền sửa tin này"}
+      </p>
+    </div>
+  )
+
+  if (initialLoading) return <div className="text-center py-20 text-gray-400">Đang tải dữ liệu tin đăng...</div>
+
   if (done) return (
     <div className="text-center py-20">
       <p className="text-5xl mb-4">✅</p>
       <p className="text-xl font-bold text-gray-800">
-        {lang === "zh" ? "刊登成功！" : "Đăng tin thành công!"}
+        {editId ? (lang === "zh" ? "更新成功！" : "Cập nhật thành công!") : (lang === "zh" ? "刊登成功！" : "Đăng tin thành công!")}
       </p>
       <p className="text-gray-500 mt-2">
         {lang === "zh" ? "正在跳轉..." : "Đang chuyển trang..."}
@@ -545,7 +636,9 @@ export default function SubmitForm() {
         {/* Nút */}
         <button onClick={handleSubmit} disabled={loading}
           className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition text-base">
-          {loading ? (lang==="zh"?"上傳中...":"⏳ Đang đăng tin...") : (lang==="zh"?"🚀 立即刊登":"🚀 Xác nhận đăng tin")}
+          {loading ? (lang==="zh"?"上傳中...":"⏳ Đang xử lý...") : editId
+            ? (lang==="zh"?"💾 儲存變更":"💾 Lưu thay đổi")
+            : (lang==="zh"?"🚀 立即刊登":"🚀 Xác nhận đăng tin")}
         </button>
         <button onClick={() => setPreview(false)}
           className="w-full bg-gray-100 text-gray-600 font-bold py-3 rounded-xl text-sm">
@@ -564,10 +657,10 @@ export default function SubmitForm() {
       {/* Tiêu đề */}
       <div>
         <h1 className="text-2xl font-black text-gray-900">
-          🏠 {lang === "zh" ? "刊登物件" : "Đăng tin bất động sản"}
+          🏠 {editId ? (lang === "zh" ? "編輯刊登" : "Sửa tin đăng") : (lang === "zh" ? "刊登物件" : "Đăng tin bất động sản")}
         </h1>
         <p className="text-gray-500 text-sm mt-1">
-          {lang === "zh" ? "請填寫物件資料" : "Điền thông tin căn nhà của bạn"}
+          {editId ? (lang === "zh" ? "更新物件資料" : "Cập nhật thông tin căn nhà của bạn") : (lang === "zh" ? "請填寫物件資料" : "Điền thông tin căn nhà của bạn")}
         </p>
       </div>
 
@@ -808,6 +901,19 @@ export default function SubmitForm() {
           </span>
           <input type="file" multiple accept="image/*" onChange={handleImages} className="hidden" />
         </label>
+        {existingImages.length > 0 && (
+          <div className="grid grid-cols-4 gap-2 mt-3">
+            {existingImages.map((src, i) => (
+              <div key={src} className="relative">
+                <img src={src} className="w-full h-20 object-cover rounded-lg" />
+                <button type="button" onClick={() => setExistingImages(imgs => imgs.filter((_, idx) => idx !== i))}
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-gray-900/80 text-white rounded-full text-xs flex items-center justify-center">
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
         {previews.length > 0 && (
           <div className="grid grid-cols-4 gap-2 mt-3">
             {previews.map((src, i) => (

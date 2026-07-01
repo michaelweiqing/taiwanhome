@@ -104,7 +104,7 @@ export default function ProfileClient() {
               const title = lang === "zh" ? (p.title_zh || p.title_vi) : (p.title_vi || p.title_zh)
               const img = p.images?.[0]
               return (
-                <div key={p.id} className="bg-white border border-gray-100 rounded-2xl p-3 flex gap-3 shadow-sm">
+                <div key={p.id} className="bg-amber-50 border border-amber-100 rounded-2xl p-3 flex gap-3 shadow-sm">
                   <Link href={`/listings/${p.id}`} className="shrink-0">
                     <div className="w-20 h-20 rounded-xl bg-gray-100 overflow-hidden flex items-center justify-center">
                       {img ? <img src={img} className="w-full h-full object-cover" /> : <span className="text-2xl">🏠</span>}
@@ -127,10 +127,16 @@ export default function ProfileClient() {
                     <p className="text-red-600 font-bold text-sm mt-0.5">{formatPrice(p, lang)}</p>
                     <div className="mt-auto flex items-center justify-between pt-1">
                       <span className="text-[11px] text-gray-400">👁 {p.views || 0} {lang==="zh"?"次瀏覽":"lượt xem"}</span>
-                      <button onClick={() => handleDelete(p.id)} disabled={deletingId === p.id}
-                        className="text-[11px] text-gray-400 hover:text-red-500 disabled:opacity-40 transition">
-                        {deletingId === p.id ? "..." : (lang==="zh" ? "🗑 刪除" : "🗑 Xoá")}
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <Link href={`/submit/edit/${p.id}`}
+                          className="text-[11px] text-gray-400 hover:text-blue-600 transition">
+                          {lang==="zh" ? "✏️ 編輯" : "✏️ Sửa"}
+                        </Link>
+                        <button onClick={() => handleDelete(p.id)} disabled={deletingId === p.id}
+                          className="text-[11px] text-gray-400 hover:text-red-500 disabled:opacity-40 transition">
+                          {deletingId === p.id ? "..." : (lang==="zh" ? "🗑 刪除" : "🗑 Xoá")}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
