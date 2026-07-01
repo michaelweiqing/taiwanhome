@@ -1,11 +1,16 @@
 "use client"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useLang } from "@/context/LangContext"
 
 export default function Navbar() {
   const { lang, setLang, t } = useLang()
   const [open, setOpen] = useState(false)
+  const [loggedIn, setLoggedIn] = useState(false)
+
+  useEffect(() => {
+    setLoggedIn(!!localStorage.getItem("taiwanhome_user"))
+  }, [open])
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
@@ -100,6 +105,10 @@ export default function Navbar() {
           <Link href="/favorites" onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
             ❤️ {lang==="zh"?"我的收藏":"Nhà yêu thích"}
+          </Link>
+          <Link href={loggedIn ? "/profile" : "/login"} onClick={()=>setOpen(false)}
+            className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
+            👤 {loggedIn ? (lang==="zh"?"個人專區":"Cá nhân") : (lang==="zh"?"登入 / 註冊":"Đăng nhập / Đăng ký")}
           </Link>
           <a href="https://page.line.me/881vvzrj" target="_blank" rel="noopener noreferrer"
             onClick={()=>setOpen(false)}

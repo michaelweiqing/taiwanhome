@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
 import { useLang } from "@/context/LangContext"
 import { useFavorites } from "@/hooks/useFavorites"
@@ -11,6 +11,11 @@ export default function BottomTabBar() {
   const { lang } = useLang()
   const { favorites } = useFavorites()
   const [searchOpen, setSearchOpen] = useState(false)
+  const [loggedIn, setLoggedIn] = useState(false)
+
+  useEffect(() => {
+    setLoggedIn(!!localStorage.getItem("taiwanhome_user"))
+  }, [pathname])
 
   const isSearch = pathname.startsWith("/listings")
 
@@ -73,10 +78,10 @@ export default function BottomTabBar() {
             )}
           </Link>
 
-          {/* Cá nhân */}
-          <Link href="/profile"
+          {/* Cá nhân — chưa đăng nhập → tab đăng ký, đã đăng nhập → trang cá nhân */}
+          <Link href={loggedIn ? "/profile" : "/login"}
             className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors ${
-              pathname === "/profile" ? "text-red-600" : "text-gray-400"
+              pathname === "/profile" || pathname === "/login" ? "text-red-600" : "text-gray-400"
             }`}>
             <svg viewBox="0 0 24 24" fill="none"
               stroke="currentColor" strokeWidth={2} className="w-6 h-6">
