@@ -92,6 +92,23 @@ const CITY_CENTER: Record<string, { lat: number; lng: number }> = {
   "台南市": { lat: 22.9999, lng: 120.2270 }, "高雄市": { lat: 22.6273, lng: 120.3014 },
 }
 
+// Tiện ích xung quanh (chỉ áp dụng khi Bán) — đồng bộ key với bảng nearby JSONB
+const NEARBY_FIELDS = [
+  { key:"mrt",         icon:"🚇", zh:"捷運站",   vi:"Ga MRT" },
+  { key:"train",       icon:"🚆", zh:"火車站",   vi:"Ga xe lửa" },
+  { key:"bus",         icon:"🚌", zh:"公車站",   vi:"Trạm xe buýt" },
+  { key:"hospital",    icon:"🏥", zh:"醫院",     vi:"Bệnh viện" },
+  { key:"market",      icon:"🛒", zh:"超市",     vi:"Siêu thị" },
+  { key:"park",        icon:"🌳", zh:"公園",     vi:"Công viên" },
+  { key:"school",      icon:"🏫", zh:"國小",     vi:"Trường tiểu học" },
+  { key:"junior",      icon:"🏫", zh:"國中",     vi:"Trường THCS" },
+  { key:"senior",      icon:"🎓", zh:"高中",     vi:"Trường THPT" },
+  { key:"university",  icon:"🎓", zh:"大學",     vi:"Đại học" },
+  { key:"mall",        icon:"🏬", zh:"百貨公司", vi:"Trung tâm TM" },
+  { key:"nightmarket", icon:"🍢", zh:"夜市",     vi:"Chợ đêm" },
+  { key:"convenience", icon:"🏪", zh:"便利商店", vi:"Cửa hàng tiện lợi" },
+]
+
 export default function SubmitForm() {
   const { lang } = useLang()
   const router   = useRouter()
@@ -124,6 +141,17 @@ export default function SubmitForm() {
     electricity:   "",
     water:         "",
     parking_fee:   "",
+    // Chỉ dùng khi Bán
+    area_main_ping:    "",
+    area_balcony_ping: "",
+    area_common_ping:  "",
+    area_basement_ping:"",
+    area_land_ping:    "",
+    community_name:    "",
+    total_units:       "",
+    units_per_floor:   "",
+    elevator_count:    "",
+    nearby: {} as Record<string,string>,
     pet:           false,
     household_reg: false,
     subsidy:       false,
@@ -272,6 +300,18 @@ export default function SubmitForm() {
         electricity:   form.electricity || null,
         water:         form.water || null,
         parking_fee:   form.parking_fee || null,
+        area_main_ping:    form.area_main_ping    ? parseFloat(form.area_main_ping)    : null,
+        area_balcony_ping: form.area_balcony_ping ? parseFloat(form.area_balcony_ping) : null,
+        area_common_ping:  form.area_common_ping  ? parseFloat(form.area_common_ping)  : null,
+        area_basement_ping:form.area_basement_ping? parseFloat(form.area_basement_ping): null,
+        area_land_ping:    form.area_land_ping    ? parseFloat(form.area_land_ping)    : null,
+        community_name:    form.community_name    || null,
+        total_units:       form.total_units       ? parseInt(form.total_units)       : null,
+        units_per_floor:   form.units_per_floor   ? parseInt(form.units_per_floor)   : null,
+        elevator_count:    form.elevator_count    ? parseInt(form.elevator_count)    : null,
+        nearby:        Object.keys(form.nearby).some(k => form.nearby[k]?.trim())
+          ? Object.fromEntries(Object.entries(form.nearby).filter(([,v]) => v?.trim()))
+          : null,
         pet:           form.pet,
         household_reg: form.household_reg,
         subsidy:       form.subsidy,
@@ -341,7 +381,24 @@ export default function SubmitForm() {
       ...(form.area_ping   ? [{zh:"坪數",   vi:"Ping",         val:form.area_ping}] : []),
       ...(form.floor       ? [{zh:"樓層",   vi:"Tầng",         val:`${form.floor}/${form.total_floors||"?"}F`}] : []),
       ...(form.age         ? [{zh:"屋齡",   vi:"Tuổi nhà",     val:`${form.age}${lang==="zh"?"年":"năm"}`}] : []),
+      ...(form.listing_type==="buy" ? [
+        ...(form.community_name     ? [{zh:"社區名稱",  vi:"Tên khu/toà",    val:form.community_name}] : []),
+        ...(form.total_units        ? [{zh:"總戶數",    vi:"Tổng số căn",    val:form.total_units}] : []),
+        ...(form.units_per_floor    ? [{zh:"同層戶數",  vi:"Căn/tầng",       val:form.units_per_floor}] : []),
+        ...(form.elevator_count     ? [{zh:"電梯數",    vi:"Số thang máy",   val:form.elevator_count}] : []),
+        ...(form.area_main_ping     ? [{zh:"主建物坪數",vi:"DT chính",       val:`${form.area_main_ping}坪`}] : []),
+        ...(form.area_balcony_ping  ? [{zh:"陽台坪數",  vi:"DT ban công",    val:`${form.area_balcony_ping}坪`}] : []),
+        ...(form.area_common_ping   ? [{zh:"公共坪數",  vi:"DT công cộng",   val:`${form.area_common_ping}坪`}] : []),
+        ...(form.area_basement_ping ? [{zh:"地下室坪數",vi:"DT hầm/ngầm",    val:`${form.area_basement_ping}坪`}] : []),
+        ...(form.area_land_ping     ? [{zh:"土地坪數",  vi:"DT đất",         val:`${form.area_land_ping}坪`}] : []),
+      ] : []),
     ]
+
+    // Tiện ích xung quanh (chỉ Bán)
+    const amenities = form.listing_type === "buy"
+      ? NEARBY_FIELDS.filter(nf => form.nearby[nf.key]?.trim())
+          .map(nf => `${nf.icon} ${lang==="zh"?nf.zh:nf.vi}: ${form.nearby[nf.key]}`)
+      : []
 
     // Chi tiết cho thuê
     const rentalInfo = [
@@ -434,6 +491,18 @@ export default function SubmitForm() {
                   <p className="text-[10px] text-gray-400">{lang==="zh"?r.zh:r.vi}</p>
                   <p className="text-sm font-bold text-gray-800 mt-0.5">{r.val}</p>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Tiện ích xung quanh (Bán) */}
+        {amenities.length > 0 && (
+          <div className="bg-white border border-gray-100 rounded-2xl p-4">
+            <p className="text-sm font-bold text-gray-700 mb-2">{lang==="zh"?"周邊設施":"Tiện ích xung quanh"}</p>
+            <div className="flex flex-wrap gap-2">
+              {amenities.map((a,i) => (
+                <span key={i} className="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full">{a}</span>
               ))}
             </div>
           </div>
@@ -599,7 +668,24 @@ export default function SubmitForm() {
           {lang === "zh" ? "物件資訊" : "Thông số căn nhà"}
         </label>
         <div className="grid grid-cols-2 gap-3">
-          {[
+          {(form.listing_type === "buy" ? [
+            {name:"price",       label:lang==="zh"?"售價(萬)":"Giá bán (vạn Đài tệ)",         ph:lang==="zh"?"":"VD: 880", type:"number"},
+            {name:"area_ping",   label:lang==="zh"?"坪數":"Diện tích (ping)",                  ph:"", type:"number"},
+            {name:"bedrooms",    label:lang==="zh"?"房間數":"Số phòng ngủ",                    ph:"", type:"number"},
+            {name:"bathrooms",   label:lang==="zh"?"衛浴數":"Số WC",                           ph:"", type:"number"},
+            {name:"floor",       label:lang==="zh"?"樓層":"Tầng",                              ph:"", type:"number"},
+            {name:"total_floors",label:lang==="zh"?"總樓層":"Tổng số tầng",                   ph:"", type:"number"},
+            {name:"age",         label:lang==="zh"?"屋齡(年)":"Tuổi nhà (năm)",               ph:"", type:"number"},
+            {name:"area_main_ping",     label:lang==="zh"?"主建物坪數":"DT chính (ping)",       ph:"", type:"number"},
+            {name:"area_balcony_ping",  label:lang==="zh"?"陽台坪數":"DT ban công (ping)",      ph:"", type:"number"},
+            {name:"area_common_ping",   label:lang==="zh"?"公共坪數":"DT công cộng (ping)",     ph:"", type:"number"},
+            {name:"area_basement_ping", label:lang==="zh"?"地下室坪數":"DT hầm/ngầm (ping)",    ph:"", type:"number"},
+            {name:"area_land_ping",     label:lang==="zh"?"土地坪數":"DT đất (ping)",           ph:"", type:"number"},
+            {name:"community_name",     label:lang==="zh"?"社區名稱":"Tên khu/toà nhà",         ph:"", type:"text"},
+            {name:"total_units",        label:lang==="zh"?"總戶數":"Tổng số căn",               ph:"", type:"number"},
+            {name:"units_per_floor",    label:lang==="zh"?"同層戶數":"Số căn mỗi tầng",         ph:"", type:"number"},
+            {name:"elevator_count",     label:lang==="zh"?"電梯數":"Số thang máy",              ph:"", type:"number"},
+          ] : [
             {name:"price",       label:lang==="zh"?"租金(元台幣/月)":"Giá thuê (Đài tệ/tháng)", ph:"", type:"number"},
             {name:"area_ping",   label:lang==="zh"?"坪數":"Diện tích (ping)",                  ph:"", type:"number"},
             {name:"bedrooms",    label:lang==="zh"?"房間數":"Số phòng ngủ",                    ph:"", type:"number"},
@@ -612,7 +698,7 @@ export default function SubmitForm() {
             {name:"electricity", label:lang==="zh"?"電費":"Tiền điện",                        ph:"", type:"text"},
             {name:"water",       label:lang==="zh"?"水費":"Tiền nước",                        ph:"", type:"text"},
             {name:"parking_fee", label:lang==="zh"?"管理費":"Phí quản lý",                    ph:"", type:"text"},
-          ].map(f => (
+          ]).map(f => (
             <div key={f.name}>
               <label className="text-xs text-gray-500 mb-1 block">{f.label}</label>
               <input name={f.name} value={(form as any)[f.name]} onChange={handleChange}
@@ -622,7 +708,24 @@ export default function SubmitForm() {
           ))}
         </div>
 
-        {/* Checkbox + text options */}
+        {form.listing_type === "buy" ? (
+          /* Tiện ích xung quanh — chỉ áp dụng khi Bán */
+          <div className="mt-4 space-y-2">
+            <p className="text-xs font-semibold text-gray-500">{lang==="zh" ? "周邊設施" : "Tiện ích xung quanh"}</p>
+            <div className="grid grid-cols-2 gap-2">
+              {NEARBY_FIELDS.map(nf => (
+                <div key={nf.key}>
+                  <label className="text-xs text-gray-500 mb-1 block">{nf.icon} {lang==="zh"?nf.zh:nf.vi}</label>
+                  <input value={form.nearby[nf.key] || ""}
+                    onChange={e => setForm(f => ({...f, nearby: {...f.nearby, [nf.key]: e.target.value}}))}
+                    placeholder={lang==="zh" ? "選填" : "Không bắt buộc"}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-red-400" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+        /* Checkbox + text options — chỉ áp dụng khi Cho thuê */
         <div className="mt-4 space-y-3">
           <p className="text-xs font-semibold text-gray-500">{lang==="zh" ? "其他條件" : "Điều kiện khác"}</p>
           {[
@@ -670,6 +773,7 @@ export default function SubmitForm() {
             )}
           </div>
         </div>
+        )}
       </div>
 
       {/* Mô tả */}
