@@ -168,7 +168,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ...((p as any).deposit == undefined ? [{ label: lang==="zh"?"管理費":"Phí quản lý", value: mgmtFeeDisplay }] : []),
     // Các field từ user_listings (cho thuê)
     ...((p as any).deposit     ? [{ label: lang==="zh"?"押金":"Tiền cọc",          value: `${(p as any).deposit} ${lang==="zh"?"個月":"tháng"}` }] : []),
-    ...((p as any).contract    ? [{ label: lang==="zh"?"合約期限":"Thời gian HĐ",  value: `${(p as any).contract}${lang==="zh"?"年":"năm"}` }] : []),
+    ...((p as any).contract    ? [{ label: lang==="zh"?"合約期限":"Thời hạn hợp đồng",  value: `${(p as any).contract}` }] : []),
     ...((p as any).electricity ? [{ label: lang==="zh"?"電費":"Tiền điện",         value: (p as any).electricity }] : []),
     ...((p as any).water       ? [{ label: lang==="zh"?"水費":"Tiền nước",         value: (p as any).water }] : []),
     ...((p as any).parking_fee ? [{ label: lang==="zh"?"管理費":"Phí quản lý",      value: (p as any).parking_fee }] : []),

@@ -346,7 +346,7 @@ export default function SubmitForm() {
     // Chi tiết cho thuê
     const rentalInfo = [
       ...(form.deposit     ? [{zh:"押金",   vi:"Tiền cọc",     val:`${form.deposit} ${lang==="zh"?"個月":"tháng"}`}] : []),
-      ...(form.contract    ? [{zh:"合約",   vi:"Thời gian HĐ", val:`${form.contract}${lang==="zh"?"年":"năm"}`}] : []),
+      ...(form.contract    ? [{zh:"合約",   vi:"Thời hạn hợp đồng", val:`${form.contract}`}] : []),
       ...(form.electricity ? [{zh:"電費",   vi:"Tiền điện",    val:form.electricity}] : []),
       ...(form.water       ? [{zh:"水費",   vi:"Tiền nước",    val:form.water}] : []),
       ...(form.parking_fee ? [{zh:"管理費", vi:"Phí quản lý",  val:form.parking_fee}] : []),
@@ -608,7 +608,7 @@ export default function SubmitForm() {
             {name:"total_floors",label:lang==="zh"?"總樓層":"Tổng số tầng",                   ph:"", type:"number"},
             {name:"age",         label:lang==="zh"?"屋齡(年)":"Tuổi nhà (năm)",               ph:"", type:"number"},
             {name:"deposit",     label:lang==="zh"?"押金(月)":"Tiền cọc (tháng)",             ph:"", type:"number"},
-            {name:"contract",    label:lang==="zh"?"合約期限":"Thời gian HĐ",                 ph:"", type:"text"},
+            {name:"contract",    label:lang==="zh"?"合約期限":"Thời hạn hợp đồng",             ph:lang==="zh"?"":"VD: 1 năm",    type:"text"},
             {name:"electricity", label:lang==="zh"?"電費":"Tiền điện",                        ph:"", type:"text"},
             {name:"water",       label:lang==="zh"?"水費":"Tiền nước",                        ph:"", type:"text"},
             {name:"parking_fee", label:lang==="zh"?"管理費":"Phí quản lý",                    ph:"", type:"text"},
