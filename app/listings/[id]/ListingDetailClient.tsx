@@ -113,6 +113,9 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
 
   const title    = lang==="zh" ? (p.title_zh || p.title_vi) : (p.title_vi || p.title_zh)
   const address  = lang==="zh" ? (p.address  || p.address_vi) : (p.address_vi || p.address)
+  const district = lang==="zh" ? (p.district || p.district_vi) : (p.district_vi || p.district)
+  const cityName = lang==="zh" ? (p.city     || p.city_vi)     : (p.city_vi     || p.city)
+  const fullAddress = [address, district, cityName].filter(Boolean).join(", ")
 
   // description: ưu tiên đúng ngôn ngữ, fallback sang ngôn ngữ kia
   const rawDescZh = p.description_zh
@@ -217,7 +220,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
           </div>
-          <p className="text-gray-400 text-sm mt-1.5">📍 {address}</p>
+          <p className="text-gray-400 text-sm mt-1.5">📍 {fullAddress}</p>
           <div className="flex items-center gap-2 mt-3">
               {/* Nút yêu thích */}
               <button
