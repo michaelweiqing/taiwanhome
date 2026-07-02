@@ -299,7 +299,8 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
           : ext === "heic" ? "image/heic"
           : ext === "webp" ? "image/webp"
           : "image/jpeg"
-        const path = `user_submit/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+        const subFolder = form.listing_type === "rent" ? "rent" : "sell"
+        const path = `user_submit/${subFolder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
         const { data: uploadData, error: uploadErr } = await supabase.storage
           .from("AG1780095")
           .upload(path, file, { upsert: true, contentType })
