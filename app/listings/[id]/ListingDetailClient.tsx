@@ -361,7 +361,8 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                 : "Nếu bất động sản đã được bán, cho thuê hoặc hết hạn ủy thác, quảng cáo này được coi là tự động hết hiệu lực"}
             </p>
 
-            {/* 實價登錄 — Thực giá giao dịch */}
+            {/* 實價登錄 — Thực giá giao dịch (chỉ hiện với tin admin, không hiện với tin khách đăng) */}
+            {p.source !== "user" && (
             <div className="bg-white rounded-2xl p-5 border border-gray-100">
               <SectionTitle>{lang==="zh" ? "實價登錄查詢" : "Tra cứu thực giá giao dịch"}</SectionTitle>
               <p className="text-sm text-gray-500 mb-4 leading-relaxed">
@@ -394,6 +395,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                   : "⚠️ Dữ liệu thực giá do chính phủ Đài Loan cung cấp. Vui lòng kiểm tra trực tiếp trên trang chính thức."}
               </p>
             </div>
+            )}
           </div>
 
           {/* Cột phải */}

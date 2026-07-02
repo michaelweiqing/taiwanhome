@@ -55,6 +55,7 @@ export interface Property {
   total_units?: number | null         // 總戶數
   units_per_floor?: number | null     // 同層戶數
   elevator_count?: number | null      // 電梯數
+  source?: "admin" | "user"           // Nguồn tin: admin đăng hay khách tự đăng
 }
 
 export async function getAllProperties(): Promise<Property[]> {
@@ -62,8 +63,8 @@ export async function getAllProperties(): Promise<Property[]> {
     supabase.from("properties").select("*").order("posted_at", { ascending: false }),
     supabase.from("user_listings").select("*").order("posted_at", { ascending: false }),
   ])
-  const admin = (r1.data || []) as Property[]
-  const user  = (r2.data || []) as Property[]
+  const admin = (r1.data || []).map(p => ({ ...p, source: "admin" as const }))
+  const user  = (r2.data || []).map(p => ({ ...p, source: "user" as const }))
   return [...admin, ...user].sort((a, b) =>
     new Date(b.posted_at).getTime() - new Date(a.posted_at).getTime()
   )
@@ -83,9 +84,9 @@ export async function getFeaturedProperties(): Promise<Property[]> {
 export async function getPropertyById(id: string): Promise<Property | null> {
   // Tìm trong properties trước, sau đó user_listings
   const { data: p1 } = await supabase.from("properties").select("*").eq("id", id).maybeSingle()
-  if (p1) return p1 as Property
+  if (p1) return { ...p1, source: "admin" } as Property
   const { data: p2 } = await supabase.from("user_listings").select("*").eq("id", id).maybeSingle()
-  if (p2) return p2 as Property
+  if (p2) return { ...p2, source: "user" } as Property
   return null
 }
 
@@ -97,52 +98,52 @@ export async function getSimilarProperties(
 ): Promise<Property[]> {
   const results: Property[] = []
 
+  // Chạy cùng 1 điều kiện lọc trên cả 2 bảng (admin + khách đăng), gộp kết quả
+  async function queryBoth(
+    build: (q: any) => any,
+    take: number
+  ): Promise<Property[]> {
+    const [r1, r2] = await Promise.all([
+      build(supabase.from("properties").select("*")).order("posted_at", { ascending: false }).limit(take),
+      build(supabase.from("user_listings").select("*")).order("posted_at", { ascending: false }).limit(take),
+    ])
+    const admin = (r1.data || []).map((p: any) => ({ ...p, source: "admin" as const }))
+    const user  = (r2.data || []).map((p: any) => ({ ...p, source: "user"  as const }))
+    return [...admin, ...user] as Property[]
+  }
+
   // Bước 1: cùng loại nhà + cùng quận
   if (opts?.propertyType && opts?.district) {
-    const { data } = await supabase
-      .from("properties")
-      .select("*")
+    const data = await queryBoth(q => q
       .eq("listing_type", listingType)
       .eq("property_type", opts.propertyType)
       .eq("district", opts.district)
-      .neq("id", currentId)
-      .order("posted_at", { ascending: false })
-      .limit(limit)
-    if (data) results.push(...data as Property[])
+      .neq("id", currentId), limit)
+    results.push(...data)
   }
 
   // Bước 2: cùng loại nhà + cùng thành phố (bù nếu thiếu)
   if (results.length < limit && opts?.propertyType && opts?.city) {
-    const existing = results.map(r => r.id)
-    const { data } = await supabase
-      .from("properties")
-      .select("*")
+    const existing = [...results.map(r => r.id), currentId]
+    const data = await queryBoth(q => q
       .eq("listing_type", listingType)
       .eq("property_type", opts.propertyType)
       .eq("city", opts.city)
-      .neq("id", currentId)
-      .not("id", "in", `(${[...existing, currentId].join(",")})`)
-      .order("posted_at", { ascending: false })
-      .limit(limit - results.length)
-    if (data) results.push(...data as Property[])
+      .not("id", "in", `(${existing.join(",")})`), limit - results.length)
+    results.push(...data)
   }
 
   // Bước 3: cùng listing_type + giá ±30% (fallback)
   if (results.length < limit && opts?.price) {
-    const existing = results.map(r => r.id)
+    const existing = [...results.map(r => r.id), currentId]
     const lo = Math.round(opts.price * 0.7)
     const hi = Math.round(opts.price * 1.3)
-    const { data } = await supabase
-      .from("properties")
-      .select("*")
+    const data = await queryBoth(q => q
       .eq("listing_type", listingType)
       .gte("price", lo)
       .lte("price", hi)
-      .neq("id", currentId)
-      .not("id", "in", `(${[...existing, currentId].join(",")})`)
-      .order("posted_at", { ascending: false })
-      .limit(limit - results.length)
-    if (data) results.push(...data as Property[])
+      .not("id", "in", `(${existing.join(",")})`), limit - results.length)
+    results.push(...data)
   }
 
   return results.slice(0, limit)
