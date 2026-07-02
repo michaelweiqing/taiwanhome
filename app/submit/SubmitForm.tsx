@@ -144,6 +144,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
     electricity:   "",
     water:         "",
     parking_fee:   "",
+    parking:       false,
     // Chỉ dùng khi Bán
     area_main_ping:    "",
     area_balcony_ping: "",
@@ -233,6 +234,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
           electricity:   data.electricity || "",
           water:         data.water || "",
           parking_fee:   data.parking_fee || "",
+          parking:       !!data.parking,
           area_main_ping:     data.area_main_ping != null ? String(data.area_main_ping) : "",
           area_balcony_ping:  data.area_balcony_ping != null ? String(data.area_balcony_ping) : "",
           area_common_ping:   data.area_common_ping != null ? String(data.area_common_ping) : "",
@@ -353,6 +355,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         electricity:   form.electricity || null,
         water:         form.water || null,
         parking_fee:   form.parking_fee || null,
+        parking:       form.parking,
         area_main_ping:    form.area_main_ping    ? parseFloat(form.area_main_ping)    : null,
         area_balcony_ping: form.area_balcony_ping ? parseFloat(form.area_balcony_ping) : null,
         area_common_ping:  form.area_common_ping  ? parseFloat(form.area_common_ping)  : null,
@@ -399,7 +402,6 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
           features_vi:   [],
           is_new:        true,
           is_featured:   false,
-          parking:       false,
           views:         0,
           posted_at:     new Date().toISOString(),
           submitted_by:  user?.phone || "",
@@ -483,6 +485,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         ...(form.area_common_ping   ? [{zh:"公共坪數",  vi:"DT công cộng",   val:`${form.area_common_ping}坪`}] : []),
         ...(form.area_basement_ping ? [{zh:"地下室坪數",vi:"DT hầm/ngầm",    val:`${form.area_basement_ping}坪`}] : []),
         ...(form.area_land_ping     ? [{zh:"土地坪數",  vi:"DT đất",         val:`${form.area_land_ping}坪`}] : []),
+        {zh:"停車位", vi:"Chỗ đậu xe", val: form.parking ? (lang==="zh"?"有":"Có") : (lang==="zh"?"無":"Không")},
       ] : []),
     ]
 
@@ -765,7 +768,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
           {(form.listing_type === "buy" ? [
             {name:"price",       label:lang==="zh"?"售價(萬)":"Giá bán (vạn Đài tệ)",         ph:lang==="zh"?"":"VD: 880", type:"number"},
             {name:"community_name",     label:lang==="zh"?"社區名稱":"Tên khu/toà nhà",         ph:"", type:"text"},
-            {name:"area_ping",   label:lang==="zh"?"坪數":"Diện tích (ping)",                  ph:"", type:"number"},
+            {name:"area_ping",   label:lang==="zh"?"坪數":"Tổng diện tích (ping)",             ph:"", type:"number"},
             {name:"area_main_ping",     label:lang==="zh"?"主建物坪數":"Diện tích chính (ping)",       ph:"", type:"number"},
             {name:"area_balcony_ping",  label:lang==="zh"?"陽台坪數":"Diện tích ban công (ping)",      ph:"", type:"number"},
             {name:"area_basement_ping", label:lang==="zh"?"地下室坪數":"Diện tích hầm/ngầm (ping)",    ph:"", type:"number"},
@@ -781,7 +784,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             {name:"elevator_count",     label:lang==="zh"?"電梯數":"Số thang máy",              ph:"", type:"number"},
           ] : [
             {name:"price",       label:lang==="zh"?"租金(元台幣/月)":"Giá thuê (Đài tệ/tháng)", ph:"", type:"number"},
-            {name:"area_ping",   label:lang==="zh"?"坪數":"Diện tích (ping)",                  ph:"", type:"number"},
+            {name:"area_ping",   label:lang==="zh"?"坪數":"Tổng diện tích (ping)",             ph:"", type:"number"},
             {name:"bedrooms",    label:lang==="zh"?"房間數":"Số phòng ngủ",                    ph:"", type:"number"},
             {name:"bathrooms",   label:lang==="zh"?"衛浴數":"Số WC",                           ph:"", type:"number"},
             {name:"floor",       label:lang==="zh"?"樓層":"Tầng",                              ph:"", type:"number"},
@@ -801,6 +804,23 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             </div>
           ))}
         </div>
+
+        {form.listing_type === "buy" && (
+          <div className="mt-3">
+            <label className="text-xs text-gray-500 mb-1 block">{lang==="zh" ? "停車位" : "Chỗ đậu xe"}</label>
+            <div className="flex gap-3">
+              {[{v:true,zh:"有",vi:"Có"},{v:false,zh:"無",vi:"Không"}].map(o => (
+                <button key={String(o.v)} type="button"
+                  onClick={() => setForm(f => ({...f, parking: o.v}))}
+                  className={`flex-1 py-2 rounded-xl text-sm font-semibold border transition ${
+                    form.parking === o.v ? "bg-red-600 border-red-600 text-white" : "border-gray-200 text-gray-500 hover:border-red-300"
+                  }`}>
+                  {lang==="zh" ? o.zh : o.vi}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {form.listing_type === "buy" ? (
           /* Tiện ích xung quanh — chỉ áp dụng khi Bán */
