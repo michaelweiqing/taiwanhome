@@ -768,7 +768,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
           {(form.listing_type === "buy" ? [
             {name:"price",       label:lang==="zh"?"售價(萬)":"Giá bán (vạn Đài tệ)",         ph:lang==="zh"?"":"VD: 880", type:"number"},
             {name:"community_name",     label:lang==="zh"?"社區名稱":"Tên khu/toà nhà",         ph:"", type:"text"},
-            {name:"area_ping",   label:lang==="zh"?"坪數":"Tổng diện tích (ping)",             ph:"", type:"number"},
+            {name:"area_ping",   label:lang==="zh"?"建物總坪":"Tổng diện tích (ping)",             ph:"", type:"number"},
             {name:"area_main_ping",     label:lang==="zh"?"主建物坪數":"Diện tích chính (ping)",       ph:"", type:"number"},
             {name:"area_balcony_ping",  label:lang==="zh"?"陽台坪數":"Diện tích ban công (ping)",      ph:"", type:"number"},
             {name:"area_basement_ping", label:lang==="zh"?"地下室坪數":"Diện tích hầm/ngầm (ping)",    ph:"", type:"number"},
@@ -784,7 +784,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             {name:"elevator_count",     label:lang==="zh"?"電梯數":"Số thang máy",              ph:"", type:"number"},
           ] : [
             {name:"price",       label:lang==="zh"?"租金(元台幣/月)":"Giá thuê (Đài tệ/tháng)", ph:"", type:"number"},
-            {name:"area_ping",   label:lang==="zh"?"坪數":"Tổng diện tích (ping)",             ph:"", type:"number"},
+            {name:"area_ping",   label:lang==="zh"?"建物總坪":"Tổng diện tích (ping)",             ph:"", type:"number"},
             {name:"bedrooms",    label:lang==="zh"?"房間數":"Số phòng ngủ",                    ph:"", type:"number"},
             {name:"bathrooms",   label:lang==="zh"?"衛浴數":"Số WC",                           ph:"", type:"number"},
             {name:"floor",       label:lang==="zh"?"樓層":"Tầng",                              ph:"", type:"number"},
