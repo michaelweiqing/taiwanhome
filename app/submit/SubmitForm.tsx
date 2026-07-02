@@ -300,13 +300,13 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
           : ext === "webp" ? "image/webp"
           : "image/jpeg"
         const subFolder = form.listing_type === "rent" ? "rent" : "sell"
-        const path = `user_submit/${subFolder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+        const path = `${subFolder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
         const { data: uploadData, error: uploadErr } = await supabase.storage
-          .from("AG1780095")
+          .from("user_post")
           .upload(path, file, { upsert: true, contentType })
         if (!uploadErr && uploadData) {
           const { data: urlData } = supabase.storage
-            .from("AG1780095")
+            .from("user_post")
             .getPublicUrl(path)
           imageUrls.push(urlData.publicUrl)
         } else if (uploadErr) {
