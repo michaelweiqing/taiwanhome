@@ -30,6 +30,8 @@ const PROP_LABEL: Record<string,{zh:string;vi:string}> = {
   villa:            {zh:"別墅",      vi:"Biệt thự"},
   apartment_walkup: {zh:"無電梯公寓",vi:"Chung cư thang bộ"},
   apartment:        {zh:"華廈/大樓", vi:"Chung cư thang máy"},
+  shop:             {zh:"店面",      vi:"Mặt bằng"},
+  land:             {zh:"土地",      vi:"Đất"},
 }
 
 function getApartmentLabel(p: Property): {zh:string;vi:string} {
