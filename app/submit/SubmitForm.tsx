@@ -487,7 +487,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         ...(form.area_common_ping   ? [{zh:"公共坪數",  vi:"DT công cộng",   val:`${form.area_common_ping}坪`}] : []),
         ...(form.area_basement_ping ? [{zh:"地下室坪數",vi:"DT hầm/ngầm",    val:`${form.area_basement_ping}坪`}] : []),
         ...(form.area_land_ping     ? [{zh:"土地坪數",  vi:"DT đất",         val:`${form.area_land_ping}坪`}] : []),
-        {zh:"停車位", vi:"Chỗ đậu xe", val: form.parking ? (lang==="zh"?"有":"Có") : (lang==="zh"?"無":"Không")},
+        {zh:"停車位", vi:"Chỗ đậu xe", val: form.parking ? (form.parking_note ? form.parking_note : (lang==="zh"?"有":"Có")) : (lang==="zh"?"無":"Không")},
       ] : []),
     ]
 
@@ -816,7 +816,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             <div className="flex gap-3">
               {[{v:true,zh:"有",vi:"Có"},{v:false,zh:"無",vi:"Không"}].map(o => (
                 <button key={String(o.v)} type="button"
-                  onClick={() => setForm(f => ({...f, parking: o.v}))}
+                  onClick={() => setForm(f => ({...f, parking: o.v, parking_note: o.v ? f.parking_note : ""}))}
                   className={`flex-1 py-2 rounded-xl text-sm font-semibold border transition ${
                     form.parking === o.v ? "bg-red-600 border-red-600 text-white" : "border-gray-200 text-gray-500 hover:border-red-300"
                   }`}>
@@ -824,6 +824,11 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
                 </button>
               ))}
             </div>
+            {form.parking && (
+              <input value={form.parking_note} onChange={e => setForm(f => ({...f, parking_note: e.target.value}))}
+                placeholder={lang==="zh" ? "例：地下室B1，含產權車位" : "VD: Hầm B1, chỗ đậu có sổ riêng"}
+                className="w-full mt-2 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-red-400" />
+            )}
           </div>
         )}
 
