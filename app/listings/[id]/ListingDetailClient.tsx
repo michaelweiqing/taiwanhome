@@ -16,6 +16,10 @@ function getYoutubeEmbedUrl(url: string): string | null {
   return m ? `https://www.youtube.com/embed/${m[1]}` : null
 }
 
+function isDirectVideoFile(url: string): boolean {
+  return /\.(mp4|mov|webm|mkv|3gp)(\?.*)?$/i.test(url)
+}
+
 const FEAT_ICONS: Record<string,string> = {
   "電梯":"🛗","停車位":"🚗","管理員":"👮","陽台":"🌿","冷氣":"❄️","健身房":"💪",
   "游泳池":"🏊","寵物友善":"🐾","網路":"📶","洗衣機":"🫧","近高鐵":"🚄",
@@ -259,7 +263,9 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
         {p.video_url && (
           <div className="mb-6 bg-white rounded-2xl p-5 border border-gray-100">
             <SectionTitle>🎬 {lang==="zh" ? "物件影片" : "Video nhà"}</SectionTitle>
-            {getYoutubeEmbedUrl(p.video_url) ? (
+            {isDirectVideoFile(p.video_url) ? (
+              <video src={p.video_url} controls className="w-full max-h-[480px] rounded-xl bg-black" />
+            ) : getYoutubeEmbedUrl(p.video_url) ? (
               <div className="relative w-full aspect-video rounded-xl overflow-hidden">
                 <iframe
                   src={getYoutubeEmbedUrl(p.video_url)!}

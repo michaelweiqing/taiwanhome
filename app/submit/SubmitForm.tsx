@@ -120,6 +120,9 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
   const [images, setImages]   = useState<File[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [existingImages, setExistingImages] = useState<string[]>([])
+  const [videoFile, setVideoFile] = useState<File | null>(null)
+  const [videoPreview, setVideoPreview] = useState<string>("")
+  const [videoError, setVideoError] = useState<string>("")
   const [preview, setPreview] = useState(false)
   const [city, setCity] = useState("台中市")
   const [initialLoading, setInitialLoading] = useState(!!editId)
@@ -286,9 +289,55 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
     setPreviews(files.map(f => URL.createObjectURL(f)))
   }
 
+  const MAX_VIDEO_BYTES = 500 * 1024 * 1024 // 500MB
+  const MAX_VIDEO_SECONDS = 10 * 60 // 10 phút
+
+  function handleVideo(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = ""
+    if (!file) return
+    setVideoError("")
+
+    if (file.size > MAX_VIDEO_BYTES) {
+      setVideoError(lang === "zh" ? "影片大小不可超過 500MB" : "Video không được vượt quá 500MB")
+      return
+    }
+
+    const url = URL.createObjectURL(file)
+    const vid = document.createElement("video")
+    vid.preload = "metadata"
+    vid.onloadedmetadata = () => {
+      if (vid.duration > MAX_VIDEO_SECONDS) {
+        setVideoError(lang === "zh" ? "影片時長不可超過 10 分鐘" : "Video không được dài hơn 10 phút")
+        URL.revokeObjectURL(url)
+        return
+      }
+      setVideoFile(file)
+      setVideoPreview(url)
+      setForm(f => ({...f, video_url: ""})) // video mới sẽ thay thế video cũ (nếu có)
+    }
+    vid.onerror = () => {
+      setVideoError(lang === "zh" ? "Không đọc được file video" : "Không đọc được file video")
+      URL.revokeObjectURL(url)
+    }
+    vid.src = url
+  }
+
+  function removeVideo() {
+    if (videoPreview) URL.revokeObjectURL(videoPreview)
+    setVideoFile(null)
+    setVideoPreview("")
+    setVideoError("")
+    setForm(f => ({...f, video_url: ""}))
+  }
+
   async function handleSubmit() {
     if (!form.title_vi || !form.price || !form.address) {
       alert(lang === "zh" ? "請填寫必填欄位" : "Vui lòng điền đầy đủ thông tin bắt buộc")
+      return
+    }
+    if (videoError) {
+      alert(videoError)
       return
     }
     setLoading(true)
@@ -315,6 +364,33 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
           imageUrls.push(urlData.publicUrl)
         } else if (uploadErr) {
           console.error("Upload error:", uploadErr.message)
+        }
+      }
+
+      // 1b. Upload video (nếu có chọn video mới)
+      let finalVideoUrl = form.video_url || null
+      if (videoFile) {
+        const vExt = (videoFile.name.split(".").pop() || "mp4").toLowerCase()
+        const vContentType = vExt === "mov" ? "video/quicktime"
+          : vExt === "webm" ? "video/webm"
+          : vExt === "mkv" ? "video/x-matroska"
+          : vExt === "3gp" ? "video/3gpp"
+          : "video/mp4"
+        const vSubFolder = form.listing_type === "rent" ? "rent" : "sell"
+        const vPath = `${vSubFolder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${vExt}`
+        const { data: vUploadData, error: vUploadErr } = await supabase.storage
+          .from("user_video")
+          .upload(vPath, videoFile, { upsert: true, contentType: vContentType })
+        if (!vUploadErr && vUploadData) {
+          const { data: vUrlData } = supabase.storage
+            .from("user_video")
+            .getPublicUrl(vPath)
+          finalVideoUrl = vUrlData.publicUrl
+        } else if (vUploadErr) {
+          console.error("Video upload error:", vUploadErr.message)
+          alert(lang === "zh" ? "影片上傳失敗，請再試一次" : "Tải video lên thất bại, vui lòng thử lại")
+          setLoading(false)
+          return
         }
       }
 
@@ -350,7 +426,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         agent_broker:  form.agent_broker  || null,
         description_vi: form.description_vi ? form.description_vi : null,
         description_zh: form.description_zh ? form.description_zh : (form.description_vi ? form.description_vi : null),
-        video_url:     form.video_url?.trim() || null,
+        video_url:     finalVideoUrl,
         lat:           coord.lat,
         lng:           coord.lng,
         deposit:       form.deposit || null,
@@ -960,12 +1036,33 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
       {/* Video nhà */}
       <div>
         <label className="text-sm font-semibold text-gray-700 mb-2 block">
-          🎬 {lang === "zh" ? "上傳影片連結" : "Video nhà"}
+          🎬 {lang === "zh" ? "上傳影片" : "Video nhà"}
+          <span className="text-gray-400 font-normal"> ({lang === "zh" ? "選填，單個影片≤500MB，時長≤10分鐘" : "không bắt buộc, ≤500MB, ≤10 phút"})</span>
         </label>
-        <input value={form.video_url}
-          onChange={e => setForm(f => ({...f, video_url: e.target.value}))}
-          placeholder={lang === "zh" ? "貼上 YouTube 或 TikTok 影片連結（選填）" : "Dán link video YouTube/TikTok (không bắt buộc)"}
-          className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400" />
+
+        {!videoPreview && !form.video_url && (
+          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-red-400 transition">
+            <span className="text-2xl mb-1">🎬</span>
+            <span className="text-sm text-gray-500">
+              {lang === "zh" ? "點擊選擇影片" : "Chọn video từ máy tính"}
+            </span>
+            <input type="file" accept="video/*" onChange={handleVideo} className="hidden" />
+          </label>
+        )}
+
+        {videoError && (
+          <p className="text-xs text-red-500 mt-1.5">⚠️ {videoError}</p>
+        )}
+
+        {(videoPreview || form.video_url) && (
+          <div className="relative mt-1">
+            <video src={videoPreview || form.video_url} controls className="w-full max-h-64 rounded-xl bg-black" />
+            <button type="button" onClick={removeVideo}
+              className="absolute -top-2 -right-2 w-6 h-6 bg-gray-900/80 text-white rounded-full text-xs flex items-center justify-center">
+              ✕
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Thông tin liên hệ */}
