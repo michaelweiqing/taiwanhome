@@ -11,6 +11,11 @@ import ContactForm from "@/components/ContactForm"
 import MortgageCalculator from "@/components/MortgageCalculator"
 import PropertyCard from "@/components/PropertyCard"
 
+function getYoutubeEmbedUrl(url: string): string | null {
+  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/)
+  return m ? `https://www.youtube.com/embed/${m[1]}` : null
+}
+
 const FEAT_ICONS: Record<string,string> = {
   "電梯":"🛗","停車位":"🚗","管理員":"👮","陽台":"🌿","冷氣":"❄️","健身房":"💪",
   "游泳池":"🏊","寵物友善":"🐾","網路":"📶","洗衣機":"🫧","近高鐵":"🚄",
@@ -249,6 +254,28 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
         <div className="mb-6">
           <ImageGallery images={p.images} title={title} />
         </div>
+
+        {/* Video nhà */}
+        {p.video_url && (
+          <div className="mb-6 bg-white rounded-2xl p-5 border border-gray-100">
+            <SectionTitle>🎬 {lang==="zh" ? "物件影片" : "Video nhà"}</SectionTitle>
+            {getYoutubeEmbedUrl(p.video_url) ? (
+              <div className="relative w-full aspect-video rounded-xl overflow-hidden">
+                <iframe
+                  src={getYoutubeEmbedUrl(p.video_url)!}
+                  className="absolute inset-0 w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <a href={p.video_url} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-700 transition">
+                ▶️ {lang==="zh" ? "觀看影片" : "Xem video"}
+              </a>
+            )}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 

@@ -33,6 +33,7 @@ export interface Property {
   walk_minutes?: number
   nearby?: Record<string, string> | null
   images: string[]
+  video_url?: string | null
   agent_name: string
   agent_name_vi?: string
   agent_phone: string
