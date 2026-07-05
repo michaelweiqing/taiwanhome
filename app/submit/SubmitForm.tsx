@@ -458,12 +458,12 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
     const ptLabelVi: Record<string,string> = {
       apartment:"Chung cư thang máy", apartment_walkup:"Chung cư thang bộ",
       house:"Nhà cả căn", villa:"Phòng đơn", studio:"Studio",
-      shop:"Mặt bằng", land:"Đất"
+      shop:"Mặt bằng", land:"Đất", factory:"Công xưởng"
     }
     const ptLabelZh: Record<string,string> = {
       apartment:"電梯大樓", apartment_walkup:"公寓(無電梯)",
       house:"透天厝", villa:"別墅", studio:"套房",
-      shop:"店面", land:"土地"
+      shop:"店面", land:"土地", factory:"廠房"
     }
     const ptLabel = lang==="zh" ? ptLabelZh : ptLabelVi
     const displayTitle = lang==="zh" ? (form.title_zh || form.title_vi) : (form.title_vi || form.title_zh)
@@ -702,6 +702,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             {v:"villa",            zh:"別墅",          vi:"Phòng đơn"},
             {v:"shop",             zh:"店面",          vi:"Mặt bằng"},
             {v:"land",             zh:"土地",          vi:"Đất"},
+            {v:"factory",          zh:"廠房",          vi:"Công xưởng"},
           ].map(o => (
             <button key={o.v}
               onClick={() => setForm(f => ({...f, property_type: o.v}))}
