@@ -165,6 +165,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
     furniture_note:"",
     description_vi: "",
     description_zh: "",
+    video_url:     "",
     agent_name:    "",
     agent_phone:   "",
     agent_line:    "",
@@ -254,6 +255,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
           furniture_note:data.furniture_note || "",
           description_vi: data.description_vi || "",
           description_zh: data.description_zh || "",
+          video_url:     data.video_url || "",
           agent_name:    data.agent_name || u.name || "",
           agent_phone:   data.agent_phone || u.phone || "",
           agent_line:    data.agent_line || "",
@@ -348,6 +350,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         agent_broker:  form.agent_broker  || null,
         description_vi: form.description_vi ? form.description_vi : null,
         description_zh: form.description_zh ? form.description_zh : (form.description_vi ? form.description_vi : null),
+        video_url:     form.video_url?.trim() || null,
         lat:           coord.lat,
         lng:           coord.lng,
         deposit:       form.deposit || null,
@@ -952,6 +955,17 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Video nhà */}
+      <div>
+        <label className="text-sm font-semibold text-gray-700 mb-2 block">
+          🎬 {lang === "zh" ? "上傳影片連結" : "Video nhà"}
+        </label>
+        <input value={form.video_url}
+          onChange={e => setForm(f => ({...f, video_url: e.target.value}))}
+          placeholder={lang === "zh" ? "貼上 YouTube 或 TikTok 影片連結（選填）" : "Dán link video YouTube/TikTok (không bắt buộc)"}
+          className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400" />
       </div>
 
       {/* Thông tin liên hệ */}
