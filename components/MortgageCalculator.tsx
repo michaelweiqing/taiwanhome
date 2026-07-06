@@ -1,6 +1,7 @@
 "use client"
 import { useState, useMemo } from "react"
 import { useLang } from "@/context/LangContext"
+import { Landmark } from "lucide-react"
 
 interface Props {
   propertyPrice: number
@@ -41,7 +42,7 @@ export default function MortgageCalculator({ propertyPrice }: Props) {
     <div className="bg-white rounded-2xl border border-gray-100 p-5">
       <div className="flex items-center gap-2 mb-4">
         <span className="w-1 h-5 bg-red-500 rounded-full inline-block shrink-0" />
-        <h2 className="font-bold text-gray-900">🏦 {t.title}</h2>
+        <h2 className="font-bold text-gray-900 flex items-center gap-2"><Landmark size={18} strokeWidth={2.2} className="text-red-500" /> {t.title}</h2>
       </div>
 
       <div className="space-y-4">

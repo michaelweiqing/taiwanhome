@@ -5,6 +5,7 @@ import type { Property } from "@/lib/data"
 import { formatPrice, pingToM2 } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
 import { useFavorites } from "@/hooks/useFavorites"
+import { Home, Star, Camera, Heart, MapPin, BedDouble, ShowerHead, Ruler, Building2 } from "lucide-react"
 
 const TYPE_ZH: Record<string,string> = { apartment:"公寓", house:"透天厝", studio:"套房", villa:"套房/雅房", shop:"店面", land:"土地", factory:"廠房" }
 const TYPE_VI: Record<string,string> = { apartment:"Chung cư", house:"Nhà phố", studio:"Studio", villa:"Phòng đơn", shop:"Mặt bằng", land:"Đất", factory:"Công xưởng" }
@@ -58,7 +59,7 @@ export default function PropertyCard({ property: p }: { property: Property }) {
               className="w-full h-full object-cover group-hover:scale-[1.03] transition duration-500" />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-              <span className="text-4xl">🏠</span>
+              <Home size={36} strokeWidth={1.5} className="text-gray-200" />
               <span className="text-xs text-gray-400">{ptype}</span>
             </div>
           )}
@@ -74,8 +75,8 @@ export default function PropertyCard({ property: p }: { property: Property }) {
               </span>
             )}
             {p.is_featured && (
-              <span className="bg-amber-400 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
-                ⭐ {t.featured}
+              <span className="bg-amber-400 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm inline-flex items-center gap-1">
+                <Star size={10} strokeWidth={2.5} fill="currentColor" /> {t.featured}
               </span>
             )}
           </div>
@@ -89,8 +90,8 @@ export default function PropertyCard({ property: p }: { property: Property }) {
 
           {/* Số ảnh */}
           {(p.images?.length ?? 0) > 1 && (
-            <span className="absolute bottom-2.5 right-2.5 bg-black/50 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full">
-              📷 {p.images.length}
+            <span className="absolute bottom-2.5 right-2.5 bg-black/50 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+              <Camera size={11} strokeWidth={2.2} /> {p.images.length}
             </span>
           )}
         </div>
@@ -112,8 +113,9 @@ export default function PropertyCard({ property: p }: { property: Property }) {
           <div className="flex items-center gap-1.5 shrink-0">
             <span className="text-[10px] text-gray-300 font-mono leading-none mt-0.5">{p.id}</span>
             <button onClick={e => { e.preventDefault(); e.stopPropagation(); toggle(p.id) }}
-              className="text-base leading-none mt-0.5 hover:scale-110 transition">
-              {fav ? "❤️" : "🤍"}
+              className="leading-none mt-0.5 hover:scale-110 transition">
+              <Heart size={18} strokeWidth={2} fill={fav ? "currentColor" : "none"}
+                className={fav ? "text-red-500" : "text-gray-300"} />
             </button>
           </div>
         </div>
@@ -127,7 +129,7 @@ export default function PropertyCard({ property: p }: { property: Property }) {
 
         {/* Địa chỉ */}
         <div className="flex items-center gap-1 text-xs text-gray-400 mb-2.5">
-          <span>📍</span>
+          <MapPin size={12} strokeWidth={2.2} className="shrink-0" />
           <span className="line-clamp-1">{district}, {city}</span>
           <span className="text-gray-200 mx-0.5">·</span>
           <span className="shrink-0">{ptype}</span>
@@ -136,13 +138,13 @@ export default function PropertyCard({ property: p }: { property: Property }) {
         {/* Thông số — 4 cột */}
         <div className="grid grid-cols-4 gap-1 mb-2.5">
           {[
-            { icon: "🛏", val: `${p.bedrooms}${t.bedrooms}` },
-            { icon: "🚿", val: `${p.bathrooms}${t.bathrooms}` },
-            { icon: "📐", val: `${p.area_ping}${t.pingUnit}` },
-            { icon: "🏢", val: floorLabel },
-          ].map(({ icon, val }) => (
+            { Icon: BedDouble,  val: `${p.bedrooms}${t.bedrooms}` },
+            { Icon: ShowerHead, val: `${p.bathrooms}${t.bathrooms}` },
+            { Icon: Ruler,      val: `${p.area_ping}${t.pingUnit}` },
+            { Icon: Building2,  val: floorLabel },
+          ].map(({ Icon, val }) => (
             <div key={val} className="bg-gray-50 rounded-lg py-1.5 flex flex-col items-center gap-0.5">
-              <span className="text-sm leading-none">{icon}</span>
+              <Icon size={14} strokeWidth={2} className="text-gray-400" />
               <span className="text-[10px] text-gray-600 font-medium leading-none">{val}</span>
             </div>
           ))}

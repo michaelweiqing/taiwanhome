@@ -1,5 +1,6 @@
 "use client"
 import { useState, useCallback, useEffect } from "react"
+import { Home, X } from "lucide-react"
 
 interface Props { images: string[]; title: string }
 
@@ -43,8 +44,8 @@ export default function ImageGallery({ images, title }: Props) {
 
   if (len === 0) {
     return (
-      <div className="w-full rounded-2xl bg-gray-100 flex items-center justify-center text-6xl text-gray-200"
-        style={{ aspectRatio: "4/3" }}>🏠</div>
+      <div className="w-full rounded-2xl bg-gray-100 flex items-center justify-center text-gray-200"
+        style={{ aspectRatio: "4/3" }}><Home size={56} strokeWidth={1.5} /></div>
     )
   }
 
@@ -113,8 +114,8 @@ export default function ImageGallery({ images, title }: Props) {
           <div className="flex items-center justify-between px-4 py-3 bg-black/80 shrink-0">
             <span className="text-white text-sm font-medium">{active + 1} / {len}</span>
             <button onClick={() => setLightbox(false)}
-              className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white text-xl transition">
-              ✕
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition">
+              <X size={20} strokeWidth={2.2} />
             </button>
           </div>
 

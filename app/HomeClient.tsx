@@ -5,18 +5,20 @@ import { useRouter } from "next/navigation"
 import type { Property } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
 import PropertyCard from "@/components/PropertyCard"
+import { Search, MessageCircle, Building2, Moon, Plane, Microscope, Building, Wheat, Landmark, Waves } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 
 interface Props { featured: Property[]; newest: Property[] }
 
-const CITIES = [
-  { zh:"台北市", vi:"Đài Bắc",   emoji:"🏙️", n:5234, slug:"台北市" },
-  { zh:"新北市", vi:"Tân Bắc",   emoji:"🌃", n:6102, slug:"新北市" },
-  { zh:"桃園市", vi:"Đào Viên",  emoji:"✈️", n:3540, slug:"桃園市" },
-  { zh:"新竹市", vi:"Tân Trúc",  emoji:"🔬", n:1230, slug:"新竹市" },
-  { zh:"台中市", vi:"Đài Trung", emoji:"🌆", n:3891, slug:"台中市" },
-  { zh:"彰化縣", vi:"Chương Hóa",emoji:"🌾", n:980,  slug:"彰化縣" },
-  { zh:"台南市", vi:"Đài Nam",   emoji:"🏯", n:1482, slug:"台南市" },
-  { zh:"高雄市", vi:"Cao Hùng",  emoji:"🌊", n:2710, slug:"高雄市" },
+const CITIES: { zh: string; vi: string; Icon: LucideIcon; n: number; slug: string }[] = [
+  { zh:"台北市", vi:"Đài Bắc",   Icon:Building2,   n:5234, slug:"台北市" },
+  { zh:"新北市", vi:"Tân Bắc",   Icon:Moon,        n:6102, slug:"新北市" },
+  { zh:"桃園市", vi:"Đào Viên",  Icon:Plane,       n:3540, slug:"桃園市" },
+  { zh:"新竹市", vi:"Tân Trúc",  Icon:Microscope,  n:1230, slug:"新竹市" },
+  { zh:"台中市", vi:"Đài Trung", Icon:Building,    n:3891, slug:"台中市" },
+  { zh:"彰化縣", vi:"Chương Hóa",Icon:Wheat,       n:980,  slug:"彰化縣" },
+  { zh:"台南市", vi:"Đài Nam",   Icon:Landmark,    n:1482, slug:"台南市" },
+  { zh:"高雄市", vi:"Cao Hùng",  Icon:Waves,       n:2710, slug:"高雄市" },
 ]
 
 const DISTRICTS: Record<string, { zh: string; vi: string }[]> = {
@@ -182,7 +184,7 @@ export default function HomeClient({ featured, newest }: Props) {
 
             {/* Input keyword */}
             <div className="flex items-center gap-2 px-3 pt-3">
-              <span className="text-gray-300 text-lg pl-1">🔍</span>
+              <Search size={18} strokeWidth={2.2} className="text-gray-300 shrink-0 ml-1" />
               <input value={q} onChange={e => setQ(e.target.value)}
                 onKeyDown={e => e.key==="Enter" && handleSearch()}
                 placeholder={lang==="zh" ? "搜尋地區、捷運站、社區名稱..." : "Tìm khu vực, ga MRT, tên tòa nhà..."}
@@ -314,7 +316,7 @@ export default function HomeClient({ featured, newest }: Props) {
             {CITIES.map(c => (
               <Link key={c.zh} href={`/listings?city=${encodeURIComponent(c.slug)}`}
                 className="bg-white rounded-2xl p-4 text-center border border-gray-100 hover:border-red-200 hover:shadow-md transition group">
-                <div className="text-3xl mb-2 group-hover:scale-110 transition">{c.emoji}</div>
+                <c.Icon size={28} strokeWidth={1.8} className="mx-auto mb-2 text-red-500 group-hover:scale-110 transition" />
                 <div className="font-bold text-gray-900 text-sm">{lang==="zh" ? c.zh : c.vi}</div>
                 <div className="text-xs text-red-500 mt-1">
                   {c.n.toLocaleString()} {lang==="zh" ? "件" : "căn"}
@@ -356,7 +358,7 @@ export default function HomeClient({ featured, newest }: Props) {
             <div className="flex flex-wrap items-center justify-center gap-3">
               <a href="https://page.line.me/881vvzrj" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-white text-green-600 font-bold px-6 py-3 rounded-xl text-sm hover:bg-green-50 transition shadow-lg">
-                💬 {lang==="zh" ? "LINE 聯絡我們" : "Liên hệ qua LINE"}
+                <MessageCircle size={16} strokeWidth={2.2} /> {lang==="zh" ? "LINE 聯絡我們" : "Liên hệ qua LINE"}
               </a>
               <a href="https://www.facebook.com/MichaelTranDuyKhanh/" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-white text-blue-600 font-bold px-6 py-3 rounded-xl text-sm hover:bg-blue-50 transition shadow-lg">

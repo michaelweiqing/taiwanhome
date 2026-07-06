@@ -2,6 +2,7 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useLang } from "@/context/LangContext"
+import { Home, KeyRound, Plus, Heart, User, MessageCircle } from "lucide-react"
 
 export default function Navbar() {
   const { lang, setLang, t } = useLang()
@@ -62,7 +63,7 @@ export default function Navbar() {
           </Link>
           <a href="https://page.line.me/881vvzrj" target="_blank" rel="noopener noreferrer"
             className="hidden sm:flex items-center gap-1 text-xs text-green-600 border border-green-200 rounded-lg px-2.5 py-1.5 hover:bg-green-50 transition whitespace-nowrap">
-            💬 LINE
+            <MessageCircle size={14} strokeWidth={2.2} /> LINE
           </a>
 
           {/* Language toggle */}
@@ -92,28 +93,28 @@ export default function Navbar() {
         <div className="md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-1">
           <Link href="/listings?type=buy" onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
-            🏠 {t.buy}
+            <Home size={18} strokeWidth={2.2} /> {t.buy}
           </Link>
           <Link href="/listings?type=rent" onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
-            🔑 {t.rent}
+            <KeyRound size={18} strokeWidth={2.2} /> {t.rent}
           </Link>
           <Link href="/submit" onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl bg-red-600 text-white font-bold">
-            ➕ {lang==="zh"?"刊登物件":"Đăng tin bán nhà"}
+            <Plus size={18} strokeWidth={2.5} /> {lang==="zh"?"刊登物件":"Đăng tin bán nhà"}
           </Link>
           <Link href="/favorites" onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
-            ❤️ {lang==="zh"?"我的收藏":"Nhà yêu thích"}
+            <Heart size={18} strokeWidth={2.2} fill="currentColor" className="text-red-500" /> {lang==="zh"?"我的收藏":"Nhà yêu thích"}
           </Link>
           <Link href={loggedIn ? "/profile" : "/login"} onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
-            👤 {loggedIn ? (lang==="zh"?"個人專區":"Cá nhân") : (lang==="zh"?"登入 / 註冊":"Đăng nhập / Đăng ký")}
+            <User size={18} strokeWidth={2.2} /> {loggedIn ? (lang==="zh"?"個人專區":"Cá nhân") : (lang==="zh"?"登入 / 註冊":"Đăng nhập / Đăng ký")}
           </Link>
           <a href="https://page.line.me/881vvzrj" target="_blank" rel="noopener noreferrer"
             onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-green-50 text-green-600 transition">
-            💬 LINE {lang==="zh"?"聯絡":"liên hệ"}
+            <MessageCircle size={18} strokeWidth={2.2} /> LINE {lang==="zh"?"聯絡":"liên hệ"}
           </a>
         </div>
       )}

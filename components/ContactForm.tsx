@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { useLang } from "@/context/LangContext"
 import { createClient } from "@/lib/supabase-browser"
+import { Phone, MessageCircle, CheckCircle2 } from "lucide-react"
 
 interface Props {
   agentName: string
@@ -52,12 +53,12 @@ export default function ContactForm({ agentName, agentPhone, agentLine, property
       <div className={`grid gap-2 ${lineUrl ? "grid-cols-2" : "grid-cols-1"}`}>
         <a href={telUrl}
           className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl transition text-sm">
-          📞 {lang === "zh" ? "立即致電" : "Gọi ngay"}
+          <Phone size={16} strokeWidth={2.2} /> {lang === "zh" ? "立即致電" : "Gọi ngay"}
         </a>
         {lineUrl && (
           <a href={lineUrl} target="_blank" rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 bg-[#06C755] hover:bg-[#05b04c] text-white font-bold py-2.5 rounded-xl transition text-sm">
-            💬 LINE
+            <MessageCircle size={16} strokeWidth={2.2} /> LINE
           </a>
         )}
       </div>
@@ -128,9 +129,10 @@ export default function ContactForm({ agentName, agentPhone, agentLine, property
             placeholder={lang === "zh" ? `詢問：${propertyTitle}` : `Hỏi về: ${propertyTitle}`}
             className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400 transition resize-none" />
           <button onClick={handleSubmit}
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl transition text-sm">
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2">
+            {sent && <CheckCircle2 size={16} strokeWidth={2.2} />}
             {sent
-              ? (lang === "zh" ? "✅ 已送出！" : "✅ Đã gửi!")
+              ? (lang === "zh" ? "已送出！" : "Đã gửi!")
               : (lang === "zh" ? "送出" : "Gửi ngay")}
           </button>
         </div>

@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useLang } from "@/context/LangContext"
+import { Search } from "lucide-react"
 
 const CITIES = [
   { zh:"台北市", vi:"Đài Bắc",    slug:"台北市" },
@@ -150,7 +151,7 @@ export default function SearchDrawer({ open, onClose }: Props) {
         <div className="px-4 py-3 flex flex-col gap-3 pb-6">
           {/* Keyword */}
           <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
-            <span className="text-gray-400">🔍</span>
+            <Search size={16} strokeWidth={2.2} className="text-gray-400 shrink-0" />
             <input value={q} onChange={e => setQ(e.target.value)}
               onKeyDown={e => e.key==="Enter" && handleSearch()}
               placeholder={lang==="zh" ? "搜尋地區、社區名稱..." : "Tìm khu vực, tên tòa nhà..."}
@@ -195,8 +196,8 @@ export default function SearchDrawer({ open, onClose }: Props) {
 
           {/* Search button */}
           <button onClick={handleSearch}
-            className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl text-sm font-bold transition">
-            {lang==="zh" ? "🔍 開始搜尋" : "🔍 Tìm kiếm"}
+            className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl text-sm font-bold transition flex items-center justify-center gap-2">
+            <Search size={16} strokeWidth={2.2} /> {lang==="zh" ? "開始搜尋" : "Tìm kiếm"}
           </button>
         </div>
       </div>
