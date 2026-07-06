@@ -394,14 +394,43 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         }
       }
 
+      // 1c. Dịch tiêu đề / mô tả sang ngôn ngữ còn thiếu (đảm bảo lưu đủ cả 2 ngôn ngữ)
+      async function translateText(text: string, from: "vi"|"zh", to: "vi"|"zh"): Promise<string|null> {
+        try {
+          const res = await fetch("/api/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text, from, to })
+          })
+          const { result } = await res.json()
+          return result || null
+        } catch { return null }
+      }
+
+      let finalTitleVi = form.title_vi.trim()
+      let finalTitleZh = form.title_zh.trim()
+      if (finalTitleVi && !finalTitleZh) {
+        finalTitleZh = (await translateText(finalTitleVi, "vi", "zh")) || finalTitleVi
+      } else if (finalTitleZh && !finalTitleVi) {
+        finalTitleVi = (await translateText(finalTitleZh, "zh", "vi")) || finalTitleZh
+      }
+
+      let finalDescVi = form.description_vi.trim()
+      let finalDescZh = form.description_zh.trim()
+      if (finalDescVi && !finalDescZh) {
+        finalDescZh = (await translateText(finalDescVi, "vi", "zh")) || finalDescVi
+      } else if (finalDescZh && !finalDescVi) {
+        finalDescVi = (await translateText(finalDescZh, "zh", "vi")) || finalDescZh
+      }
+
       // 2. Chuẩn bị dữ liệu chung — dùng cho cả tạo mới & sửa tin
       const finalImages = editId ? [...existingImages, ...imageUrls] : imageUrls
       const coord = CHANGHUA_COORDS[form.district] ?? CITY_CENTER[city] ?? { lat: 24.1477, lng: 120.6736 }
       const commonPayload = {
         listing_type:  form.listing_type,
         property_type: form.property_type,
-        title_vi:      form.title_vi,
-        title_zh:      form.title_zh || form.title_vi,
+        title_vi:      finalTitleVi,
+        title_zh:      finalTitleZh || finalTitleVi,
         address:       form.address,
         address_vi:    form.address,
         district:      form.district,
@@ -424,8 +453,8 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         agent_branch:  form.agent_branch  || null,
         agent_license: form.agent_license || null,
         agent_broker:  form.agent_broker  || null,
-        description_vi: form.description_vi ? form.description_vi : null,
-        description_zh: form.description_zh ? form.description_zh : (form.description_vi ? form.description_vi : null),
+        description_vi: finalDescVi ? finalDescVi : null,
+        description_zh: finalDescZh ? finalDescZh : (finalDescVi ? finalDescVi : null),
         video_url:     finalVideoUrl,
         lat:           coord.lat,
         lng:           coord.lng,
