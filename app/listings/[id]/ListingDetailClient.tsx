@@ -175,7 +175,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ...(p.area_land_ping    ? [{ label: lang==="zh"?"土地坪數":"Diện tích đất",               value: `${p.area_land_ping}${t.pingUnit}` }] : []),
     { label: lang==="zh"?"格局":"Bố cục",              value: `${p.bedrooms||0}${t.bedrooms} / ${p.bathrooms||0}${t.bathrooms}` },
     { label: lang==="zh"?"樓層":"Tầng/Tổng số tầng",  value: floorLabel },
-    { label: t.age,                                    value: `${p.age||0}${t.yearUnit}` },
+    { label: t.age,                                    value: (p.age !== null && p.age !== undefined) ? `${p.age}${t.yearUnit}` : "-" },
     { label: t.facing,                                 value: facing || "-" },
     { label: lang==="zh"?"物件類型":"Loại BĐS",        value: propType },
     ...(p.total_units     ? [{ label: lang==="zh"?"總戶數":"Tổng số căn",       value: `${p.total_units}${lang==="zh"?"戶":"căn"}` }] : []),

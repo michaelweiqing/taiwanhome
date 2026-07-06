@@ -414,7 +414,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         bathrooms:     parseInt(form.bathrooms) || 0,
         floor:         form.floor || "",
         total_floors:  parseInt(form.total_floors) || 0,
-        age:           parseInt(form.age) || 0,
+        age:           form.age !== "" ? (parseInt(form.age) || 0) : null,
         images:        finalImages,
         agent_name:    form.agent_name,
         agent_name_vi: form.agent_name,
