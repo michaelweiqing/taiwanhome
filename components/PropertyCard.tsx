@@ -6,8 +6,8 @@ import { formatPrice, pingToM2 } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
 import { useFavorites } from "@/hooks/useFavorites"
 
-const TYPE_ZH: Record<string,string> = { apartment:"公寓", house:"透天厝", studio:"套房", villa:"豪宅" }
-const TYPE_VI: Record<string,string> = { apartment:"Chung cư", house:"Nhà phố", studio:"Studio", villa:"Biệt thự" }
+const TYPE_ZH: Record<string,string> = { apartment:"公寓", house:"透天厝", studio:"套房", villa:"別墅", shop:"店面", land:"土地", factory:"廠房" }
+const TYPE_VI: Record<string,string> = { apartment:"Chung cư", house:"Nhà phố", studio:"Studio", villa:"Phòng đơn", shop:"Mặt bằng", land:"Đất", factory:"Công xưởng" }
 // Tự động phân loại apartment: 無電梯公寓 hay 華廈/大樓
 function getPropertyTypeLabel(p: Property, lang: "zh" | "vi"): string {
   if (p.property_type !== "apartment") {
