@@ -1,4 +1,4 @@
-export const revalidate = 0
+export const revalidate = 60
 
 import { getFeaturedProperties, getAllProperties } from "@/lib/data"
 import HomeClient from "./HomeClient"
