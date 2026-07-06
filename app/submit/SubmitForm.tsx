@@ -570,7 +570,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
     }
     const ptLabelZh: Record<string,string> = {
       apartment:"電梯大樓", apartment_walkup:"公寓(無電梯)",
-      house:"透天厝", villa:"別墅", studio:"套房",
+      house:"透天厝", villa:"套房/雅房", studio:"套房",
       shop:"店面", land:"土地", factory:"廠房"
     }
     const ptLabel = lang==="zh" ? ptLabelZh : ptLabelVi
@@ -807,7 +807,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             {v:"apartment_walkup", zh:"公寓(無電梯)", vi:"Chung cư thang bộ"},
             {v:"apartment",        zh:"電梯大樓",      vi:"Chung cư thang máy"},
             {v:"house",            zh:"透天厝",        vi:"Nhà cả căn"},
-            {v:"villa",            zh:"別墅",          vi:"Phòng đơn"},
+            {v:"villa",            zh:"套房/雅房",     vi:"Phòng đơn"},
             {v:"shop",             zh:"店面",          vi:"Mặt bằng"},
             {v:"land",             zh:"土地",          vi:"Đất"},
             {v:"factory",          zh:"廠房",          vi:"Công xưởng"},

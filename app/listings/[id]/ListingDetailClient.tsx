@@ -36,7 +36,7 @@ const FACING_VI: Record<string,string> = {
 const PROP_LABEL: Record<string,{zh:string;vi:string}> = {
   house:            {zh:"透天厝",    vi:"Nhà cả căn"},
   studio:           {zh:"套房",      vi:"Studio"},
-  villa:            {zh:"別墅",      vi:"Biệt thự"},
+  villa:            {zh:"套房/雅房",  vi:"Phòng đơn"},
   apartment_walkup: {zh:"無電梯公寓",vi:"Chung cư thang bộ"},
   apartment:        {zh:"華廈/大樓", vi:"Chung cư thang máy"},
   shop:             {zh:"店面",      vi:"Mặt bằng"},

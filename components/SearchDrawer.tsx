@@ -68,7 +68,7 @@ const PROPERTY_TYPES = [
   { val:"apartment_walkup", zh:"公寓(無電梯)",  vi:"Chung cư thang bộ" },
   { val:"apartment",        zh:"電梯大樓",       vi:"Chung cư thang máy" },
   { val:"house",            zh:"透天厝",         vi:"Nhà cả căn" },
-  { val:"villa",            zh:"別墅",           vi:"Phòng đơn" },
+  { val:"villa",            zh:"套房/雅房",       vi:"Phòng đơn" },
   { val:"shop",             zh:"店面",           vi:"Mặt bằng" },
   { val:"land",             zh:"土地",           vi:"Đất" },
   { val:"factory",          zh:"廠房",           vi:"Công xưởng" },
