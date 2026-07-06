@@ -10,6 +10,13 @@ import ImageGallery from "@/components/ImageGallery"
 import ContactForm from "@/components/ContactForm"
 import MortgageCalculator from "@/components/MortgageCalculator"
 import PropertyCard from "@/components/PropertyCard"
+import type { LucideIcon } from "lucide-react"
+import {
+  ArrowUpDown, Car, ShieldCheck, Leaf, Snowflake, Dumbbell, Waves, PawPrint, Wifi, Droplets,
+  TrainFront, TrainTrack, Bus, Stethoscope, ShoppingCart, Trees, School, GraduationCap, Store,
+  UtensilsCrossed, Sparkles, ShoppingBag, Flower2, Lock, CheckCircle2, MapPin, ExternalLink,
+  Footprints, Landmark, AlertTriangle, PlayCircle, Video, Heart, Link2, Star,
+} from "lucide-react"
 
 function getYoutubeEmbedUrl(url: string): string | null {
   const m = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,})/)
@@ -20,14 +27,14 @@ function isDirectVideoFile(url: string): boolean {
   return /\.(mp4|mov|webm|mkv|3gp)(\?.*)?$/i.test(url)
 }
 
-const FEAT_ICONS: Record<string,string> = {
-  "電梯":"🛗","停車位":"🚗","管理員":"👮","陽台":"🌿","冷氣":"❄️","健身房":"💪",
-  "游泳池":"🏊","寵物友善":"🐾","網路":"📶","洗衣機":"🫧","近高鐵":"🚄",
-  "全新裝潢":"✨","近商圈":"🛍️","頂樓花園":"🌸","智慧門禁":"🔐",
-  "Thang máy":"🛗","Chỗ đậu xe":"🚗","Bảo vệ 24h":"👮","Ban công":"🌿",
-  "Điều hoà":"❄️","Phòng gym":"💪","Hồ bơi":"🏊","Thú cưng OK":"🐾",
-  "Wifi miễn phí":"📶","Máy giặt":"🫧","Gần HSR":"🚄","Nội thất mới":"✨",
-  "Vườn sân thượng":"🌸","Cổng thông minh":"🔐","Wifi":"📶",
+const FEAT_ICONS: Record<string,LucideIcon> = {
+  "電梯":ArrowUpDown,"停車位":Car,"管理員":ShieldCheck,"陽台":Leaf,"冷氣":Snowflake,"健身房":Dumbbell,
+  "游泳池":Waves,"寵物友善":PawPrint,"網路":Wifi,"洗衣機":Droplets,"近高鐵":TrainFront,
+  "全新裝潢":Sparkles,"近商圈":ShoppingBag,"頂樓花園":Flower2,"智慧門禁":Lock,
+  "Thang máy":ArrowUpDown,"Chỗ đậu xe":Car,"Bảo vệ 24h":ShieldCheck,"Ban công":Leaf,
+  "Điều hoà":Snowflake,"Phòng gym":Dumbbell,"Hồ bơi":Waves,"Thú cưng OK":PawPrint,
+  "Wifi miễn phí":Wifi,"Máy giặt":Droplets,"Gần HSR":TrainFront,"Nội thất mới":Sparkles,
+  "Vườn sân thượng":Flower2,"Cổng thông minh":Lock,"Wifi":Wifi,
 }
 const FACING_VI: Record<string,string> = {
   "東":"Đông","西":"Tây","南":"Nam","北":"Bắc",
@@ -59,20 +66,20 @@ function getApartmentLabel(p: Property): {zh:string;vi:string} {
 }
 
 // Nearby key → icon + label
-const NEARBY_META: Record<string, { icon: string; zh: string; vi: string }> = {
-  mrt:        { icon:"🚇", zh:"捷運站",    vi:"Ga MRT" },
-  train:      { icon:"🚆", zh:"火車站",    vi:"Ga xe lửa" },
-  bus:        { icon:"🚌", zh:"公車",      vi:"Xe buýt" },
-  hospital:   { icon:"🏥", zh:"醫院",      vi:"Bệnh viện" },
-  market:     { icon:"🛒", zh:"超市",      vi:"Siêu thị" },
-  park:       { icon:"🌳", zh:"公園",      vi:"Công viên" },
-  school:     { icon:"🏫", zh:"國小",      vi:"Trường tiểu học" },
-  junior:     { icon:"🏫", zh:"國中",      vi:"Trường THCS" },
-  senior:     { icon:"🎓", zh:"高中",      vi:"Trường THPT" },
-  university: { icon:"🎓", zh:"大學",      vi:"Đại học" },
-  mall:       { icon:"🏬", zh:"百貨公司",  vi:"Trung tâm TM" },
-  nightmarket:{ icon:"🍢", zh:"夜市",      vi:"Chợ đêm" },
-  convenience:{ icon:"🏪", zh:"便利商店",  vi:"Cửa hàng TL" },
+const NEARBY_META: Record<string, { Icon: LucideIcon; zh: string; vi: string }> = {
+  mrt:        { Icon:TrainFront, zh:"捷運站",    vi:"Ga MRT" },
+  train:      { Icon:TrainTrack, zh:"火車站",    vi:"Ga xe lửa" },
+  bus:        { Icon:Bus,        zh:"公車",      vi:"Xe buýt" },
+  hospital:   { Icon:Stethoscope,zh:"醫院",      vi:"Bệnh viện" },
+  market:     { Icon:ShoppingCart,zh:"超市",     vi:"Siêu thị" },
+  park:       { Icon:Trees,      zh:"公園",      vi:"Công viên" },
+  school:     { Icon:School,     zh:"國小",      vi:"Trường tiểu học" },
+  junior:     { Icon:School,     zh:"國中",      vi:"Trường THCS" },
+  senior:     { Icon:GraduationCap,zh:"高中",    vi:"Trường THPT" },
+  university: { Icon:GraduationCap,zh:"大學",    vi:"Đại học" },
+  mall:       { Icon:Store,      zh:"百貨公司",  vi:"Trung tâm TM" },
+  nightmarket:{ Icon:UtensilsCrossed,zh:"夜市",  vi:"Chợ đêm" },
+  convenience:{ Icon:Store,      zh:"便利商店",  vi:"Cửa hàng TL" },
 }
 
 // Thứ tự hiển thị
@@ -152,8 +159,8 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     : (lang==="zh" ? "無" : "Không có")
 
   const parkingDisplay = p.parking
-    ? (lang==="zh" ? "✅ 有停車位" : "✅ Có chỗ đậu xe")
-    : (lang==="zh" ? "❌ 無停車位" : "❌ Không có")
+    ? (lang==="zh" ? "✓ 有停車位" : "✓ Có chỗ đậu xe")
+    : (lang==="zh" ? "✗ 無停車位" : "✗ Không có")
 
   // floor: translate 整棟 if VI
   const FLOOR_VI: Record<string,string> = { "整棟":"Cả căn", "全層":"Toàn tầng" }
@@ -189,11 +196,11 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ...((p as any).electricity ? [{ label: lang==="zh"?"電費":"Tiền điện",         value: (p as any).electricity }] : []),
     ...((p as any).water       ? [{ label: lang==="zh"?"水費":"Tiền nước",         value: (p as any).water }] : []),
     ...((p as any).parking_fee ? [{ label: lang==="zh"?"管理費":"Phí quản lý",      value: (p as any).parking_fee }] : []),
-    ...((p as any).pet         ? [{ label: lang==="zh"?"寵物":"Nuôi thú cưng",     value: lang==="zh"?"✅ 允許":"✅ Được phép" }] : []),
-    ...((p as any).household_reg ? [{ label: lang==="zh"?"戶籍":"Nhập hộ khẩu",   value: lang==="zh"?"✅ 可設戶籍":"✅ Được đăng" }] : []),
-    ...((p as any).subsidy     ? [{ label: lang==="zh"?"政府補貼":"Trợ cấp CP",    value: lang==="zh"?"✅ 可申請":"✅ Được đăng ký" }] : []),
-    ...((p as any).has_parking ? [{ label: lang==="zh"?"停車位":"Đậu xe",          value: (p as any).parking_note || (lang==="zh"?"✅ 有":"✅ Có") }] : []),
-    ...((p as any).has_furniture ? [{ label: lang==="zh"?"附傢俱家電":"Đồ đạc đi kèm", value: (p as any).furniture_note || (lang==="zh"?"✅ 有":"✅ Có") }] : []),
+    ...((p as any).pet         ? [{ label: lang==="zh"?"寵物":"Nuôi thú cưng",     value: lang==="zh"?"✓ 允許":"✓ Được phép" }] : []),
+    ...((p as any).household_reg ? [{ label: lang==="zh"?"戶籍":"Nhập hộ khẩu",   value: lang==="zh"?"✓ 可設戶籍":"✓ Được đăng" }] : []),
+    ...((p as any).subsidy     ? [{ label: lang==="zh"?"政府補貼":"Trợ cấp CP",    value: lang==="zh"?"✓ 可申請":"✓ Được đăng ký" }] : []),
+    ...((p as any).has_parking ? [{ label: lang==="zh"?"停車位":"Đậu xe",          value: (p as any).parking_note || (lang==="zh"?"✓ 有":"✓ Có") }] : []),
+    ...((p as any).has_furniture ? [{ label: lang==="zh"?"附傢俱家電":"Đồ đạc đi kèm", value: (p as any).furniture_note || (lang==="zh"?"✓ 有":"✓ Có") }] : []),
   ]
 
   return (
@@ -225,14 +232,14 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
               {p.listing_type==="rent" ? t.forRent : t.forSale}
             </span>
             {p.is_new && <span className="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full">{t.new}</span>}
-            {p.is_featured && <span className="bg-amber-100 text-amber-600 text-xs font-bold px-3 py-1 rounded-full">⭐ {t.featured}</span>}
+            {p.is_featured && <span className="bg-amber-100 text-amber-600 text-xs font-bold px-3 py-1 rounded-full inline-flex items-center gap-1"><Star size={11} strokeWidth={2.5} fill="currentColor" /> {t.featured}</span>}
             <span className="bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full">{propType}</span>
             <span className="bg-gray-100 text-gray-400 text-xs px-3 py-1 rounded-full font-mono">ID: {p.id}</span>
           </div>
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug flex-1">{title}</h1>
           </div>
-          <p className="text-gray-400 text-sm mt-1.5">📍 {fullAddress}</p>
+          <p className="text-gray-400 text-sm mt-1.5 flex items-center gap-1"><MapPin size={13} strokeWidth={2.2} className="shrink-0" /> {fullAddress}</p>
           <div className="flex items-center gap-2 mt-3">
               {/* Nút yêu thích */}
               <button
@@ -243,13 +250,13 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                     ? "bg-red-50 border-red-300 text-red-500"
                     : "border-gray-200 text-gray-400 hover:bg-gray-50"
                 }`}>
-                {isFav ? "❤️" : "🤍"} {lang==="zh" ? (isFav?"已收藏":"收藏") : (isFav?"Đã thích":"Yêu thích")}
+                <Heart size={15} strokeWidth={2} fill={isFav ? "currentColor" : "none"} /> {lang==="zh" ? (isFav?"已收藏":"收藏") : (isFav?"Đã thích":"Yêu thích")}
               </button>
               {/* Nút chia sẻ */}
               <button
                 onClick={() => { navigator.clipboard?.writeText(window.location.href); setShared(true); setTimeout(()=>setShared(false),2000) }}
                 className="flex items-center gap-1.5 text-sm text-gray-500 border border-gray-200 rounded-xl px-3 py-1.5 hover:bg-gray-50 transition">
-                {shared ? "✅ Đã copy" : "🔗 Chia sẻ"}
+                {shared ? <CheckCircle2 size={15} strokeWidth={2.2} /> : <Link2 size={15} strokeWidth={2.2} />} {shared ? (lang==="zh" ? "已複製" : "Đã copy") : t.share}
               </button>
           </div>
         </div>
@@ -262,7 +269,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
         {/* Video nhà */}
         {p.video_url && (
           <div className="mb-6 bg-white rounded-2xl p-5 border border-gray-100">
-            <SectionTitle>🎬 {lang==="zh" ? "物件影片" : "Video nhà"}</SectionTitle>
+            <SectionTitle><span className="inline-flex items-center gap-2"><Video size={18} strokeWidth={2.2} className="text-red-500" /> {lang==="zh" ? "物件影片" : "Video nhà"}</span></SectionTitle>
             {isDirectVideoFile(p.video_url) ? (
               <video src={p.video_url} controls className="w-full max-h-[480px] rounded-xl bg-black" />
             ) : getYoutubeEmbedUrl(p.video_url) ? (
@@ -277,7 +284,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
             ) : (
               <a href={p.video_url} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-700 transition">
-                ▶️ {lang==="zh" ? "觀看影片" : "Xem video"}
+                <PlayCircle size={16} strokeWidth={2.2} /> {lang==="zh" ? "觀看影片" : "Xem video"}
               </a>
             )}
           </div>
@@ -323,12 +330,15 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
               <div className="bg-white rounded-2xl p-5 border border-gray-100">
                 <SectionTitle>{lang==="zh" ? "物件特色" : "Đặc điểm nổi bật"}</SectionTitle>
                 <div className="flex flex-wrap gap-2">
-                  {features.map(f => (
-                    <span key={f} className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-full">
-                      <span>{FEAT_ICONS[f] ?? "✔️"}</span>
-                      <span>{f}</span>
-                    </span>
-                  ))}
+                  {features.map(f => {
+                    const Icon = FEAT_ICONS[f] ?? CheckCircle2
+                    return (
+                      <span key={f} className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-full">
+                        <Icon size={13} strokeWidth={2} className="text-red-500" />
+                        <span>{f}</span>
+                      </span>
+                    )
+                  })}
                 </div>
               </div>
             )}
@@ -341,7 +351,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                 {/* Walk minutes badge */}
                 {p.nearby.walk_minutes && (
                   <div className="flex items-center gap-1.5 text-xs text-blue-600 bg-blue-50 rounded-lg px-3 py-1.5 mb-4 w-fit">
-                    🚶 {lang==="zh" ? `步行約 ${p.nearby.walk_minutes} 分鐘生活圈` : `Bán kính đi bộ ${p.nearby.walk_minutes} phút`}
+                    <Footprints size={14} strokeWidth={2.2} /> {lang==="zh" ? `步行約 ${p.nearby.walk_minutes} 分鐘生活圈` : `Bán kính đi bộ ${p.nearby.walk_minutes} phút`}
                   </div>
                 )}
 
@@ -360,7 +370,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                           rel="noopener noreferrer"
                           className="flex items-center gap-3 bg-gray-50 hover:bg-red-50 hover:border-red-200 border border-gray-100 rounded-xl px-4 py-3 transition group"
                         >
-                          <span className="text-2xl shrink-0 group-hover:scale-110 transition">{meta.icon}</span>
+                          <meta.Icon size={22} strokeWidth={2} className="shrink-0 text-red-500 group-hover:scale-110 transition" />
                           <div className="min-w-0">
                             <div className="text-[11px] text-gray-400 font-medium">
                               {lang==="zh" ? meta.zh : meta.vi}
@@ -369,7 +379,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                               {String(val)}
                             </div>
                           </div>
-                          <span className="ml-auto text-gray-300 text-xs shrink-0">↗</span>
+                          <ExternalLink size={13} strokeWidth={2.2} className="ml-auto text-gray-300 shrink-0" />
                         </a>
                       )
                     })
@@ -413,7 +423,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl px-4 py-3 transition group"
                 >
-                  <span className="text-2xl shrink-0">🏛️</span>
+                  <span className="text-2xl shrink-0"><Landmark size={26} strokeWidth={2} className="text-blue-500" /></span>
                   <div className="min-w-0 flex-1">
                     <div className="text-xs text-blue-400 font-medium mb-0.5">
                       {lang==="zh" ? "內政部不動產交易實價查詢（官方）" : "Bộ Nội vụ — Nguồn chính thức"}
@@ -422,13 +432,14 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                       lvr.land.moi.gov.tw
                     </div>
                   </div>
-                  <span className="ml-auto text-blue-400 text-xs shrink-0 group-hover:translate-x-0.5 transition">↗</span>
+                  <ExternalLink size={13} strokeWidth={2.2} className="ml-auto text-blue-400 shrink-0 group-hover:translate-x-0.5 transition" />
                 </a>
               </div>
-              <p className="text-[11px] text-gray-400 mt-3">
+              <p className="text-[11px] text-gray-400 mt-3 flex items-start gap-1">
+                <AlertTriangle size={13} strokeWidth={2.2} className="shrink-0 mt-0.5" />
                 {lang==="zh"
-                  ? "⚠️ 實價登錄資料由政府提供，本平台不擔保其完整性。請以官方網站為準。"
-                  : "⚠️ Dữ liệu thực giá do chính phủ Đài Loan cung cấp. Vui lòng kiểm tra trực tiếp trên trang chính thức."}
+                  ? "實價登錄資料由政府提供，本平台不擔保其完整性。請以官方網站為準。"
+                  : "Dữ liệu thực giá do chính phủ Đài Loan cung cấp. Vui lòng kiểm tra trực tiếp trên trang chính thức."}
               </p>
             </div>
             )}
