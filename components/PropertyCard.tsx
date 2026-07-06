@@ -103,7 +103,7 @@ export default function PropertyCard({ property: p }: { property: Property }) {
         <div className="flex items-start justify-between gap-2 mb-1.5">
           <div>
             <span className="text-red-600 font-bold text-xl leading-none">{formatPrice(p, lang)}</span>
-            {p.price_per_ping && (
+            {p.price_per_ping && p.listing_type !== "rent" && (
               <span className="text-gray-400 text-[11px] ml-1">
                 · {p.price_per_ping}萬/{t.pingUnit}
               </span>
