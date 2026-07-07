@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
+import { Home, AlertTriangle, User, Smartphone, Lock, Loader2, Rocket, CheckCircle2 } from "lucide-react"
 
 function validateTWPhone(phone: string) {
   return /^09\d{8}$/.test(phone.replace(/[-\s]/g, ""))
@@ -73,7 +74,7 @@ export default function LoginForm() {
           })
         }).catch(() => {})
 
-        setSuccess("🎉 Đăng ký thành công!")
+        setSuccess("Đăng ký thành công!")
         setTimeout(() => router.push("/submit"), 1500)
 
       } else {
@@ -96,7 +97,7 @@ export default function LoginForm() {
         }
 
         localStorage.setItem("taiwanhome_user", JSON.stringify({ phone: ph, name: user.name || ph }))
-        setSuccess("✅ Đăng nhập thành công!")
+        setSuccess("Đăng nhập thành công!")
         setTimeout(() => router.push("/submit"), 1500)
       }
     } catch (err: any) {
@@ -112,7 +113,7 @@ export default function LoginForm() {
       {/* Tiêu đề */}
       <div className="text-center">
         <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
-          <span className="text-3xl">🏠</span>
+          <Home size={26} strokeWidth={2} className="text-red-500" />
         </div>
         <h1 className="text-xl font-black text-gray-900">
           {mode === "register" ? "Tạo tài khoản" : "Đăng nhập"}
@@ -135,22 +136,22 @@ export default function LoginForm() {
 
       {/* Thông báo thành công */}
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl text-center font-medium">
-          {success}
+        <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 rounded-xl text-center font-medium flex items-center justify-center gap-2">
+          <CheckCircle2 size={16} strokeWidth={2.2} /> {success}
         </div>
       )}
 
       {/* Lỗi */}
       {error && (
-        <div className="bg-red-50 border border-red-100 text-red-600 text-sm px-4 py-3 rounded-xl">
-          ⚠️ {error}
+        <div className="bg-red-50 border border-red-100 text-red-600 text-sm px-4 py-3 rounded-xl flex items-center gap-2">
+          <AlertTriangle size={15} strokeWidth={2.2} className="shrink-0" /> {error}
         </div>
       )}
 
       {/* Tên (chỉ khi đăng ký) */}
       {mode === "register" && (
         <div>
-          <label className="text-xs font-semibold text-gray-600 mb-1.5 block">👤 Tên của bạn (không bắt buộc)</label>
+          <label className="text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1"><User size={13} strokeWidth={2.2} /> Tên của bạn (không bắt buộc)</label>
           <input type="text" value={name} onChange={e => setName(e.target.value)}
             placeholder="Nguyễn Văn A"
             className="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-red-400 transition" />
@@ -159,9 +160,9 @@ export default function LoginForm() {
 
       {/* SĐT */}
       <div>
-        <label className="text-xs font-semibold text-gray-600 mb-1.5 block">📱 Số điện thoại Đài Loan</label>
+        <label className="text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1"><Smartphone size={13} strokeWidth={2.2} /> Số điện thoại Đài Loan</label>
         <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden focus-within:border-red-400 transition">
-          <span className="bg-gray-50 px-3 py-3 text-sm text-gray-500 border-r border-gray-200 shrink-0">🇹🇼 +886</span>
+          <span className="bg-gray-50 px-3 py-3 text-sm text-gray-500 border-r border-gray-200 shrink-0">+886</span>
           <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
             placeholder="0912-345-678"
             className="flex-1 px-3 py-3 text-sm focus:outline-none" />
@@ -171,7 +172,7 @@ export default function LoginForm() {
 
       {/* Mật khẩu */}
       <div>
-        <label className="text-xs font-semibold text-gray-600 mb-1.5 block">🔒 Mật khẩu</label>
+        <label className="text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1"><Lock size={13} strokeWidth={2.2} /> Mật khẩu</label>
         <input type="password" value={password} onChange={e => setPassword(e.target.value)}
           placeholder={mode==="register" ? "Tạo mật khẩu (tối thiểu 6 ký tự)" : "Nhập mật khẩu"}
           onKeyDown={e => e.key==="Enter" && handleSubmit()}
@@ -180,8 +181,12 @@ export default function LoginForm() {
 
       {/* Submit */}
       <button onClick={handleSubmit} disabled={loading}
-        className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition text-sm active:scale-95">
-        {loading ? "⏳ Đang xử lý..." : mode==="register" ? "🚀 Tạo tài khoản" : "→ Đăng nhập"}
+        className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition text-sm active:scale-95 flex items-center justify-center gap-2">
+        {loading
+          ? <><Loader2 size={16} strokeWidth={2.5} className="animate-spin" /> Đang xử lý...</>
+          : mode==="register"
+            ? <><Rocket size={16} strokeWidth={2.2} /> Tạo tài khoản</>
+            : "Đăng nhập"}
       </button>
 
       {mode==="register" && (

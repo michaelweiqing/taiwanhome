@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase-browser"
 import { formatPrice } from "@/lib/data"
 import type { Property } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
+import { Smartphone, Plus, Home, Inbox, Eye, Pencil, Trash2 } from "lucide-react"
 
 interface UserSession { phone: string; name: string }
 
@@ -65,7 +66,7 @@ export default function ProfileClient() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-lg font-bold text-gray-900 truncate">{user.name || user.phone}</p>
-          <p className="text-sm text-gray-400">📱 {user.phone}</p>
+          <p className="text-sm text-gray-400 flex items-center gap-1"><Smartphone size={12} strokeWidth={2.2} /> {user.phone}</p>
         </div>
         <button onClick={handleLogout}
           className="text-xs text-gray-400 border border-gray-200 rounded-xl px-3 py-2 hover:text-red-500 hover:bg-red-50 transition shrink-0">
@@ -76,20 +77,20 @@ export default function ProfileClient() {
       {/* Đăng tin mới */}
       <Link href="/submit"
         className="flex items-center justify-center gap-2 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition text-sm">
-        ➕ {lang === "zh" ? "刊登新物件" : "Đăng tin mới"}
+        <Plus size={16} strokeWidth={2.5} /> {lang === "zh" ? "刊登新物件" : "Đăng tin mới"}
       </Link>
 
       {/* Danh sách tin đăng */}
       <div>
-        <h2 className="text-base font-black text-gray-900 mb-3">
-          🏠 {lang === "zh" ? "我的刊登" : "Tin đăng của tôi"} {listings.length > 0 && `(${listings.length})`}
+        <h2 className="text-base font-black text-gray-900 mb-3 flex items-center gap-1.5">
+          <Home size={16} strokeWidth={2.2} className="text-red-500" /> {lang === "zh" ? "我的刊登" : "Tin đăng của tôi"} {listings.length > 0 && `(${listings.length})`}
         </h2>
 
         {loading ? (
           <p className="text-gray-400 text-center py-16 text-sm">Đang tải...</p>
         ) : listings.length === 0 ? (
           <div className="text-center py-16 bg-white border border-gray-100 rounded-2xl">
-            <p className="text-4xl mb-3">📭</p>
+            <Inbox size={36} strokeWidth={1.5} className="mx-auto mb-3 text-gray-200" />
             <p className="text-gray-500 text-sm mb-4">
               {lang === "zh" ? "尚無刊登物件" : "Bạn chưa có tin đăng nào"}
             </p>
@@ -107,7 +108,7 @@ export default function ProfileClient() {
                 <div key={p.id} className="bg-amber-50 border border-amber-100 rounded-2xl p-3 flex gap-3 shadow-sm">
                   <Link href={`/listings/${p.id}`} className="shrink-0">
                     <div className="w-20 h-20 rounded-xl bg-gray-100 overflow-hidden flex items-center justify-center">
-                      {img ? <img src={img} className="w-full h-full object-cover" /> : <span className="text-2xl">🏠</span>}
+                      {img ? <img src={img} className="w-full h-full object-cover" /> : <Home size={22} strokeWidth={1.8} className="text-gray-300" />}
                     </div>
                   </Link>
                   <div className="flex-1 min-w-0 flex flex-col">
@@ -126,15 +127,15 @@ export default function ProfileClient() {
                     </Link>
                     <p className="text-red-600 font-bold text-sm mt-0.5">{formatPrice(p, lang)}</p>
                     <div className="mt-auto flex items-center justify-between pt-1">
-                      <span className="text-[11px] text-gray-400">👁 {p.views || 0} {lang==="zh"?"次瀏覽":"lượt xem"}</span>
+                      <span className="text-[11px] text-gray-400 flex items-center gap-0.5"><Eye size={12} strokeWidth={2.2} /> {p.views || 0} {lang==="zh"?"次瀏覽":"lượt xem"}</span>
                       <div className="flex items-center gap-3">
                         <Link href={`/submit/edit/${p.id}`}
-                          className="text-[11px] text-gray-400 hover:text-blue-600 transition">
-                          {lang==="zh" ? "✏️ 編輯" : "✏️ Sửa"}
+                          className="text-[11px] text-gray-400 hover:text-blue-600 transition flex items-center gap-0.5">
+                          <Pencil size={11} strokeWidth={2.2} /> {lang==="zh" ? "編輯" : "Sửa"}
                         </Link>
                         <button onClick={() => handleDelete(p.id)} disabled={deletingId === p.id}
-                          className="text-[11px] text-gray-400 hover:text-red-500 disabled:opacity-40 transition">
-                          {deletingId === p.id ? "..." : (lang==="zh" ? "🗑 刪除" : "🗑 Xoá")}
+                          className="text-[11px] text-gray-400 hover:text-red-500 disabled:opacity-40 transition flex items-center gap-0.5">
+                          {deletingId === p.id ? "..." : <><Trash2 size={11} strokeWidth={2.2} /> {lang==="zh" ? "刪除" : "Xoá"}</>}
                         </button>
                       </div>
                     </div>
