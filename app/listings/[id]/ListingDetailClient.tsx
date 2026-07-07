@@ -16,7 +16,7 @@ import {
   ArrowUpDown, Car, ShieldCheck, Leaf, Snowflake, Dumbbell, Waves, PawPrint, Wifi, Droplets,
   TrainFront, TrainTrack, Bus, Stethoscope, ShoppingCart, Trees, School, GraduationCap, Store,
   UtensilsCrossed, Sparkles, ShoppingBag, Flower2, Lock, CheckCircle2, MapPin, ExternalLink,
-  Footprints, Landmark, AlertTriangle, PlayCircle, Video, Heart, Link2, Star, Factory,
+  Footprints, Landmark, AlertTriangle, PlayCircle, Video, Heart, Link2, Star, Factory, ShoppingBasket,
 } from "lucide-react"
 
 function getYoutubeEmbedUrl(url: string): string | null {
@@ -73,6 +73,8 @@ const NEARBY_META: Record<string, { Icon: LucideIcon; zh: string; vi: string }> 
   bus:        { Icon:Bus,        zh:"公車",      vi:"Xe buýt" },
   hospital:   { Icon:Stethoscope,zh:"醫院",      vi:"Bệnh viện" },
   market:     { Icon:ShoppingCart,zh:"超市",     vi:"Siêu thị" },
+  traditional_market: { Icon:ShoppingBasket, zh:"傳統市場", vi:"Chợ" },
+  ward_office:{ Icon:Landmark,   zh:"公所",      vi:"Ủy ban nhân dân" },
   park:       { Icon:Trees,      zh:"公園",      vi:"Công viên" },
   school:     { Icon:School,     zh:"國小",      vi:"Trường tiểu học" },
   junior:     { Icon:School,     zh:"國中",      vi:"Trường THCS" },
@@ -85,7 +87,7 @@ const NEARBY_META: Record<string, { Icon: LucideIcon; zh: string; vi: string }> 
 }
 
 // Thứ tự hiển thị
-const NEARBY_ORDER = ["mrt","train","bus","hospital","market","park","school","junior","senior","university","mall","nightmarket","convenience","industrial"]
+const NEARBY_ORDER = ["mrt","train","bus","hospital","market","traditional_market","ward_office","park","school","junior","senior","university","mall","nightmarket","convenience","industrial"]
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (

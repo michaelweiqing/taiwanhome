@@ -8,6 +8,7 @@ import {
   Home, Loader2, Camera, FolderOpen, Video, X, AlertTriangle, User, Eye,
   Save, Rocket, Ban, CheckCircle2, MapPin, Phone, MessageCircle, Building2, Tag, FileText,
   TrainFront, TrainTrack, Bus, Stethoscope, ShoppingCart, Trees, School, GraduationCap, Store, UtensilsCrossed, Factory,
+  ShoppingBasket, Landmark,
 } from "lucide-react"
 
 const DISTRICTS_ZH = ["北區","南區","西區","東區","北屯區","南屯區","西屯區","太平區","大里區","霧峰區","烏日區","大肚區","龍井區","梧棲區","清水區","沙鹿區","神岡區","大雅區","潭子區","豐原區","石岡區","東勢區","新社區","和平區","后里區"]
@@ -105,6 +106,8 @@ const NEARBY_FIELDS: { key: string; Icon: LucideIcon; zh: string; vi: string }[]
   { key:"bus",         Icon:Bus,           zh:"公車站",   vi:"Trạm xe buýt" },
   { key:"hospital",    Icon:Stethoscope,   zh:"醫院",     vi:"Bệnh viện" },
   { key:"market",      Icon:ShoppingCart,  zh:"超市",     vi:"Siêu thị" },
+  { key:"traditional_market", Icon:ShoppingBasket, zh:"傳統市場", vi:"Chợ" },
+  { key:"ward_office", Icon:Landmark,      zh:"公所",     vi:"Ủy ban nhân dân" },
   { key:"park",        Icon:Trees,         zh:"公園",     vi:"Công viên" },
   { key:"school",      Icon:School,        zh:"國小",     vi:"Trường tiểu học" },
   { key:"junior",      Icon:School,        zh:"國中",     vi:"Trường THCS" },
