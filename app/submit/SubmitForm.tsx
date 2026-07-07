@@ -172,6 +172,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
     pet:           false,
     household_reg: false,
     subsidy:       false,
+    business_license: false,
     has_parking:   false,
     parking_note:  "",
     has_furniture: false,
@@ -262,6 +263,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
           pet:           !!data.pet,
           household_reg: !!data.household_reg,
           subsidy:       !!data.subsidy,
+          business_license: !!data.business_license,
           has_parking:   !!data.has_parking,
           parking_note:  data.parking_note || "",
           has_furniture: !!data.has_furniture,
@@ -489,6 +491,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         pet:           form.pet,
         household_reg: form.household_reg,
         subsidy:       form.subsidy,
+        business_license: form.business_license,
         has_parking:   form.has_parking,
         parking_note:  form.parking_note  || null,
         has_furniture: form.has_furniture,
@@ -627,6 +630,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
       ...(form.pet          ? [lang==="zh"?"允許養寵物":"Nuôi thú cưng"] : []),
       ...(form.household_reg? [lang==="zh"?"可設戶籍":"Nhập hộ khẩu"] : []),
       ...(form.subsidy      ? [lang==="zh"?"可申請政府補貼":"Xin trợ cấp CP"] : []),
+      ...(form.business_license ? [lang==="zh"?"可登記營業登記":"Đăng ký giấy phép kinh doanh"] : []),
       ...(form.has_parking  ? [lang==="zh"?`停車位${form.parking_note?" · "+form.parking_note:""}`:
                                            `Đậu xe${form.parking_note?" · "+form.parking_note:""}`] : []),
       ...(form.has_furniture? [lang==="zh"?`附傢俱${form.furniture_note?" · "+form.furniture_note:""}`:
@@ -999,6 +1003,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             {name:"pet",          zh:"允許養寵物",     vi:"Nuôi thú cưng"},
             {name:"household_reg",zh:"可設戶籍",       vi:"Nhập hộ khẩu"},
             {name:"subsidy",      zh:"可申請政府補貼", vi:"Xin trợ cấp chính phủ"},
+            {name:"business_license", zh:"可登記營業登記", vi:"Đăng ký giấy phép kinh doanh"},
           ].map(o => (
             <label key={o.name} className="flex items-center gap-3 cursor-pointer group">
               <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition shrink-0 ${
