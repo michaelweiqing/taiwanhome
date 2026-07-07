@@ -7,7 +7,7 @@ import type { LucideIcon } from "lucide-react"
 import {
   Home, Loader2, Camera, FolderOpen, Video, X, AlertTriangle, User, Eye,
   Save, Rocket, Ban, CheckCircle2, MapPin, Phone, MessageCircle, Building2, Tag, FileText,
-  TrainFront, TrainTrack, Bus, Stethoscope, ShoppingCart, Trees, School, GraduationCap, Store, UtensilsCrossed,
+  TrainFront, TrainTrack, Bus, Stethoscope, ShoppingCart, Trees, School, GraduationCap, Store, UtensilsCrossed, Factory,
 } from "lucide-react"
 
 const DISTRICTS_ZH = ["北區","南區","西區","東區","北屯區","南屯區","西屯區","太平區","大里區","霧峰區","烏日區","大肚區","龍井區","梧棲區","清水區","沙鹿區","神岡區","大雅區","潭子區","豐原區","石岡區","東勢區","新社區","和平區","后里區"]
@@ -113,6 +113,7 @@ const NEARBY_FIELDS: { key: string; Icon: LucideIcon; zh: string; vi: string }[]
   { key:"mall",        Icon:Store,         zh:"百貨公司", vi:"Trung tâm TM" },
   { key:"nightmarket", Icon:UtensilsCrossed,zh:"夜市",    vi:"Chợ đêm" },
   { key:"convenience", Icon:Store,         zh:"便利商店", vi:"Cửa hàng tiện lợi" },
+  { key:"industrial",  Icon:Factory,       zh:"工業區",   vi:"Khu công nghiệp" },
 ]
 
 export default function SubmitForm({ editId }: { editId?: string } = {}) {
@@ -605,11 +606,9 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
       ] : []),
     ]
 
-    // Tiện ích xung quanh (chỉ Bán)
-    const amenities = form.listing_type === "buy"
-      ? NEARBY_FIELDS.filter(nf => form.nearby[nf.key]?.trim())
-          .map(nf => ({ Icon: nf.Icon, text: `${lang==="zh"?nf.zh:nf.vi}: ${form.nearby[nf.key]}` }))
-      : []
+    // Tiện ích xung quanh (áp dụng cho cả Bán và Cho thuê)
+    const amenities = NEARBY_FIELDS.filter(nf => form.nearby[nf.key]?.trim())
+      .map(nf => ({ Icon: nf.Icon, text: `${lang==="zh"?nf.zh:nf.vi}: ${form.nearby[nf.key]}` }))
 
     // Chi tiết cho thuê
     const rentalInfo = [
@@ -952,24 +951,48 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
           </div>
         )}
 
-        {form.listing_type === "buy" ? (
-          /* Tiện ích xung quanh — chỉ áp dụng khi Bán */
-          <div className="mt-4 space-y-2">
-            <p className="text-xs font-semibold text-gray-500">{lang==="zh" ? "周邊設施" : "Tiện ích xung quanh"}</p>
-            <div className="grid grid-cols-2 gap-2">
-              {NEARBY_FIELDS.map(nf => (
+        {/* Tiện ích xung quanh — áp dụng cho cả Bán và Cho thuê. Bấm chọn để bật, rồi điền chi tiết */}
+        <div className="mt-4 space-y-2">
+          <p className="text-xs font-semibold text-gray-500">{lang==="zh" ? "周邊設施" : "Tiện ích xung quanh"}</p>
+          <p className="text-[11px] text-gray-400">{lang==="zh" ? "點選啟用，再填寫詳細地點" : "Bấm chọn để bật, sau đó điền địa điểm cụ thể"}</p>
+          <div className="grid grid-cols-2 gap-2">
+            {NEARBY_FIELDS.map(nf => {
+              const selected = nf.key in form.nearby
+              return (
+                <button key={nf.key} type="button"
+                  onClick={() => setForm(f => {
+                    const next = { ...f.nearby }
+                    if (nf.key in next) delete next[nf.key]
+                    else next[nf.key] = ""
+                    return { ...f, nearby: next }
+                  })}
+                  className={`flex items-center gap-2 py-2 px-3 rounded-xl text-sm font-medium border transition ${
+                    selected ? "bg-red-600 border-red-600 text-white" : "bg-gray-50 text-gray-600 border-gray-200 hover:border-red-300"
+                  }`}>
+                  <nf.Icon size={15} strokeWidth={2} />
+                  {lang==="zh"?nf.zh:nf.vi}
+                </button>
+              )
+            })}
+          </div>
+
+          {NEARBY_FIELDS.some(nf => nf.key in form.nearby) && (
+            <div className="space-y-2 pt-1">
+              {NEARBY_FIELDS.filter(nf => nf.key in form.nearby).map(nf => (
                 <div key={nf.key}>
                   <label className="text-xs text-gray-500 mb-1 flex items-center gap-1"><nf.Icon size={12} strokeWidth={2.2} /> {lang==="zh"?nf.zh:nf.vi}</label>
                   <input value={form.nearby[nf.key] || ""}
                     onChange={e => setForm(f => ({...f, nearby: {...f.nearby, [nf.key]: e.target.value}}))}
-                    placeholder={lang==="zh" ? "選填" : "Không bắt buộc"}
+                    placeholder={lang==="zh" ? "請輸入詳細地點名稱" : "Nhập tên địa điểm cụ thể"}
                     className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-red-400" />
                 </div>
               ))}
             </div>
-          </div>
-        ) : (
-        /* Checkbox + text options — chỉ áp dụng khi Cho thuê */
+          )}
+        </div>
+
+        {/* Checkbox + text options — chỉ áp dụng khi Cho thuê */}
+        {form.listing_type === "rent" && (
         <div className="mt-4 space-y-3">
           <p className="text-xs font-semibold text-gray-500">{lang==="zh" ? "其他條件" : "Điều kiện khác"}</p>
           {[
