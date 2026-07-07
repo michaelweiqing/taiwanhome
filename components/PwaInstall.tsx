@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import { useLang } from "@/context/LangContext"
+import { Home, X, Compass, ArrowUp } from "lucide-react"
 
 export default function PwaInstall() {
   const { lang } = useLang()
@@ -77,8 +78,8 @@ export default function PwaInstall() {
     <div className="fixed bottom-20 left-3 right-3 z-50 md:left-auto md:right-4 md:w-80">
       <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-4">
         <div className="flex items-start gap-3">
-          <div className="w-12 h-12 rounded-xl bg-red-600 flex items-center justify-center shrink-0 text-2xl">
-            🏠
+          <div className="w-12 h-12 rounded-xl bg-red-600 flex items-center justify-center shrink-0">
+            <Home size={24} strokeWidth={2} className="text-white" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="font-bold text-gray-900 text-sm">
@@ -99,15 +100,15 @@ export default function PwaInstall() {
             </div>
           </div>
           <button onClick={handleDismiss}
-            className="text-gray-300 hover:text-gray-500 text-lg leading-none shrink-0 mt-0.5">
-            ✕
+            className="text-gray-300 hover:text-gray-500 shrink-0 mt-0.5">
+            <X size={18} strokeWidth={2.2} />
           </button>
         </div>
 
         {/* iOS Chrome / non-Safari → hướng dẫn mở Safari */}
         {isIOSNonSafari && (
           <div className="mt-3 bg-blue-50 rounded-xl px-3 py-2.5 text-xs text-blue-700 flex items-start gap-2">
-            <span className="text-base shrink-0">🧭</span>
+            <Compass size={16} strokeWidth={2} className="shrink-0" />
             <span>
               {lang === "zh"
                 ? "複製網址 → 打開 Safari → 貼上網址 → 分享 → 加入主畫面"
@@ -119,7 +120,7 @@ export default function PwaInstall() {
         {/* iOS Safari → hướng dẫn share */}
         {isIOS && !isIOSNonSafari && (
           <div className="mt-3 bg-gray-50 rounded-xl px-3 py-2 text-xs text-gray-500 flex items-center gap-2">
-            <span className="text-base">⬆️</span>
+            <ArrowUp size={16} strokeWidth={2.2} />
             <span>
               {lang === "zh"
                 ? "Safari → 分享 → 加入主畫面"
