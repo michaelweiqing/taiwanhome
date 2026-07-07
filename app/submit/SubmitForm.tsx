@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Fragment } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
 import { useLang } from "@/context/LangContext"
@@ -959,36 +959,33 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             {NEARBY_FIELDS.map(nf => {
               const selected = nf.key in form.nearby
               return (
-                <button key={nf.key} type="button"
-                  onClick={() => setForm(f => {
-                    const next = { ...f.nearby }
-                    if (nf.key in next) delete next[nf.key]
-                    else next[nf.key] = ""
-                    return { ...f, nearby: next }
-                  })}
-                  className={`flex items-center gap-2 py-2 px-3 rounded-xl text-sm font-medium border transition ${
-                    selected ? "bg-red-600 border-red-600 text-white" : "bg-gray-50 text-gray-600 border-gray-200 hover:border-red-300"
-                  }`}>
-                  <nf.Icon size={15} strokeWidth={2} />
-                  {lang==="zh"?nf.zh:nf.vi}
-                </button>
+                <Fragment key={nf.key}>
+                  <button type="button"
+                    onClick={() => setForm(f => {
+                      const next = { ...f.nearby }
+                      if (nf.key in next) delete next[nf.key]
+                      else next[nf.key] = ""
+                      return { ...f, nearby: next }
+                    })}
+                    className={`flex items-center gap-2 py-2 px-3 rounded-xl text-sm font-medium border transition ${
+                      selected ? "bg-red-600 border-red-600 text-white" : "bg-gray-50 text-gray-600 border-gray-200 hover:border-red-300"
+                    }`}>
+                    <nf.Icon size={15} strokeWidth={2} />
+                    {lang==="zh"?nf.zh:nf.vi}
+                  </button>
+                  {selected && (
+                    <div className="col-span-2 -mt-1">
+                      <input value={form.nearby[nf.key] || ""}
+                        onChange={e => setForm(f => ({...f, nearby: {...f.nearby, [nf.key]: e.target.value}}))}
+                        placeholder={lang==="zh" ? "請輸入詳細地點名稱" : "Nhập tên địa điểm cụ thể"}
+                        autoFocus
+                        className="w-full border border-red-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-red-400" />
+                    </div>
+                  )}
+                </Fragment>
               )
             })}
           </div>
-
-          {NEARBY_FIELDS.some(nf => nf.key in form.nearby) && (
-            <div className="space-y-2 pt-1">
-              {NEARBY_FIELDS.filter(nf => nf.key in form.nearby).map(nf => (
-                <div key={nf.key}>
-                  <label className="text-xs text-gray-500 mb-1 flex items-center gap-1"><nf.Icon size={12} strokeWidth={2.2} /> {lang==="zh"?nf.zh:nf.vi}</label>
-                  <input value={form.nearby[nf.key] || ""}
-                    onChange={e => setForm(f => ({...f, nearby: {...f.nearby, [nf.key]: e.target.value}}))}
-                    placeholder={lang==="zh" ? "請輸入詳細地點名稱" : "Nhập tên địa điểm cụ thể"}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-red-400" />
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Checkbox + text options — chỉ áp dụng khi Cho thuê */}
