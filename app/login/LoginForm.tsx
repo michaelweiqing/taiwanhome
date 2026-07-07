@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
+import { useLang } from "@/context/LangContext"
 import { Home, AlertTriangle, User, Smartphone, Lock, Loader2, Rocket, CheckCircle2, KeyRound, ArrowLeft } from "lucide-react"
 
 function validateTWPhone(phone: string) {
@@ -15,6 +16,7 @@ function cleanPhone(phone: string) {
 export default function LoginForm() {
   const router   = useRouter()
   const supabase = createClient()
+  const { lang }  = useLang()
 
   const [phone, setPhone]       = useState("")
   const [password, setPassword] = useState("")
@@ -31,11 +33,11 @@ export default function LoginForm() {
     const ph = cleanPhone(phone)
 
     if (!validateTWPhone(ph)) {
-      setError("Vui lòng nhập số điện thoại Đài Loan hợp lệ (09xxxxxxxx)")
+      setError(lang==="zh" ? "請輸入有效的台灣手機號碼（09xxxxxxxx）" : "Vui lòng nhập số điện thoại Đài Loan hợp lệ (09xxxxxxxx)")
       return
     }
     if (password.length < 6) {
-      setError("Mật khẩu tối thiểu 6 ký tự")
+      setError(lang==="zh" ? "密碼至少需要6個字元" : "Mật khẩu tối thiểu 6 ký tự")
       return
     }
 
@@ -50,7 +52,7 @@ export default function LoginForm() {
           .maybeSingle()
 
         if (existing) {
-          setError("Số điện thoại này đã đăng ký. Vui lòng đăng nhập.")
+          setError(lang==="zh" ? "此電話號碼已註冊，請登入。" : "Số điện thoại này đã đăng ký. Vui lòng đăng nhập.")
           setMode("login")
           setLoading(false)
           return
@@ -75,7 +77,7 @@ export default function LoginForm() {
           })
         }).catch(() => {})
 
-        setSuccess("Đăng ký thành công!")
+        setSuccess(lang==="zh" ? "註冊成功！" : "Đăng ký thành công!")
         setTimeout(() => router.push("/submit"), 1500)
 
       } else {
@@ -87,22 +89,22 @@ export default function LoginForm() {
           .maybeSingle()
 
         if (!user) {
-          setError("Số điện thoại chưa đăng ký.")
+          setError(lang==="zh" ? "此電話號碼尚未註冊。" : "Số điện thoại chưa đăng ký.")
           setLoading(false)
           return
         }
         if (user.password !== password) {
-          setError("Mật khẩu không đúng.")
+          setError(lang==="zh" ? "密碼錯誤。" : "Mật khẩu không đúng.")
           setLoading(false)
           return
         }
 
         localStorage.setItem("taiwanhome_user", JSON.stringify({ phone: ph, name: user.name || ph }))
-        setSuccess("Đăng nhập thành công!")
+        setSuccess(lang==="zh" ? "登入成功！" : "Đăng nhập thành công!")
         setTimeout(() => router.push("/submit"), 1500)
       }
     } catch (err: any) {
-      setError(err.message || "Có lỗi xảy ra, vui lòng thử lại.")
+      setError(err.message || (lang==="zh" ? "發生錯誤，請再試一次。" : "Có lỗi xảy ra, vui lòng thử lại."))
     } finally {
       setLoading(false)
     }
@@ -114,7 +116,7 @@ export default function LoginForm() {
     const ph = cleanPhone(forgotPhone)
 
     if (!validateTWPhone(ph)) {
-      setError("Vui lòng nhập số điện thoại Đài Loan hợp lệ (09xxxxxxxx)")
+      setError(lang==="zh" ? "請輸入有效的台灣手機號碼（09xxxxxxxx）" : "Vui lòng nhập số điện thoại Đài Loan hợp lệ (09xxxxxxxx)")
       return
     }
 
@@ -127,7 +129,7 @@ export default function LoginForm() {
         .maybeSingle()
 
       if (!user) {
-        setError("Số điện thoại này chưa đăng ký tài khoản.")
+        setError(lang==="zh" ? "此電話號碼尚未註冊帳號。" : "Số điện thoại này chưa đăng ký tài khoản.")
         setLoading(false)
         return
       }
@@ -141,10 +143,12 @@ export default function LoginForm() {
         })
       }).catch(() => {})
 
-      setSuccess("Yêu cầu đã được gửi! Chúng tôi sẽ liên hệ qua số điện thoại này trong thời gian sớm nhất để hỗ trợ đặt lại mật khẩu.")
+      setSuccess(lang==="zh"
+        ? "請求已送出！我們將盡快透過此電話號碼與您聯繫，協助重設密碼。"
+        : "Yêu cầu đã được gửi! Chúng tôi sẽ liên hệ qua số điện thoại này trong thời gian sớm nhất để hỗ trợ đặt lại mật khẩu.")
       setForgotPhone("")
     } catch (err: any) {
-      setError(err.message || "Có lỗi xảy ra, vui lòng thử lại.")
+      setError(err.message || (lang==="zh" ? "發生錯誤，請再試一次。" : "Có lỗi xảy ra, vui lòng thử lại."))
     } finally {
       setLoading(false)
     }
@@ -158,9 +162,9 @@ export default function LoginForm() {
           <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
             <KeyRound size={26} strokeWidth={2} className="text-red-500" />
           </div>
-          <h1 className="text-xl font-black text-gray-900">Quên mật khẩu</h1>
+          <h1 className="text-xl font-black text-gray-900">{lang==="zh" ? "忘記密碼" : "Quên mật khẩu"}</h1>
           <p className="text-gray-400 text-sm mt-1">
-            Nhập số điện thoại đã đăng ký, chúng tôi sẽ liên hệ để hỗ trợ đặt lại mật khẩu
+            {lang==="zh" ? "請輸入已註冊的電話號碼，我們將與您聯繫協助重設密碼" : "Nhập số điện thoại đã đăng ký, chúng tôi sẽ liên hệ để hỗ trợ đặt lại mật khẩu"}
           </p>
         </div>
 
@@ -179,7 +183,7 @@ export default function LoginForm() {
         {!success && (
           <>
             <div>
-              <label className="text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1"><Smartphone size={13} strokeWidth={2.2} /> Số điện thoại Đài Loan</label>
+              <label className="text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1"><Smartphone size={13} strokeWidth={2.2} /> {lang==="zh" ? "台灣電話號碼" : "Số điện thoại Đài Loan"}</label>
               <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden focus-within:border-red-400 transition">
                 <span className="bg-gray-50 px-3 py-3 text-sm text-gray-500 border-r border-gray-200 shrink-0">+886</span>
                 <input type="tel" value={forgotPhone} onChange={e => setForgotPhone(e.target.value)}
@@ -187,21 +191,21 @@ export default function LoginForm() {
                   placeholder="0912-345-678"
                   className="flex-1 px-3 py-3 text-sm focus:outline-none" />
               </div>
-              <p className="text-xs text-gray-400 mt-1">Số điện thoại đã dùng để đăng ký tài khoản</p>
+              <p className="text-xs text-gray-400 mt-1">{lang==="zh" ? "註冊帳號時使用的電話號碼" : "Số điện thoại đã dùng để đăng ký tài khoản"}</p>
             </div>
 
             <button onClick={handleForgotPassword} disabled={loading}
               className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition text-sm active:scale-95 flex items-center justify-center gap-2">
               {loading
-                ? <><Loader2 size={16} strokeWidth={2.5} className="animate-spin" /> Đang gửi...</>
-                : "Gửi yêu cầu"}
+                ? <><Loader2 size={16} strokeWidth={2.5} className="animate-spin" /> {lang==="zh" ? "傳送中..." : "Đang gửi..."}</>
+                : (lang==="zh" ? "送出請求" : "Gửi yêu cầu")}
             </button>
           </>
         )}
 
         <button onClick={() => { setMode("login"); setError(""); setSuccess(""); setForgotPhone("") }}
           className="w-full flex items-center justify-center gap-1.5 text-sm text-gray-500 hover:text-red-600 transition py-1">
-          <ArrowLeft size={14} strokeWidth={2.2} /> Quay lại đăng nhập
+          <ArrowLeft size={14} strokeWidth={2.2} /> {lang==="zh" ? "返回登入" : "Quay lại đăng nhập"}
         </button>
       </div>
     )
@@ -216,16 +220,21 @@ export default function LoginForm() {
           <Home size={26} strokeWidth={2} className="text-red-500" />
         </div>
         <h1 className="text-xl font-black text-gray-900">
-          {mode === "register" ? "Tạo tài khoản" : "Đăng nhập"}
+          {mode === "register" ? (lang==="zh" ? "建立帳號" : "Tạo tài khoản") : (lang==="zh" ? "登入" : "Đăng nhập")}
         </h1>
         <p className="text-gray-400 text-sm mt-1">
-          {mode === "register" ? "Đăng ký để đăng tin bán/cho thuê nhà" : "Chào mừng bạn quay lại"}
+          {mode === "register"
+            ? (lang==="zh" ? "註冊以刊登買賣/租屋物件" : "Đăng ký để đăng tin bán/cho thuê nhà")
+            : (lang==="zh" ? "歡迎回來" : "Chào mừng bạn quay lại")}
         </p>
       </div>
 
       {/* Tab mode */}
       <div className="flex bg-gray-100 rounded-xl p-1">
-        {[{v:"register",label:"Đăng ký"},{v:"login",label:"Đăng nhập"}].map(o => (
+        {[
+          {v:"register", label: lang==="zh" ? "註冊" : "Đăng ký"},
+          {v:"login",    label: lang==="zh" ? "登入" : "Đăng nhập"},
+        ].map(o => (
           <button key={o.v} onClick={() => { setMode(o.v as any); setError(""); setSuccess("") }}
             className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${
               mode===o.v ? "bg-white shadow-sm text-gray-900" : "text-gray-500"}`}>
@@ -251,39 +260,41 @@ export default function LoginForm() {
       {/* Tên (chỉ khi đăng ký) */}
       {mode === "register" && (
         <div>
-          <label className="text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1"><User size={13} strokeWidth={2.2} /> Tên của bạn (không bắt buộc)</label>
+          <label className="text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1"><User size={13} strokeWidth={2.2} /> {lang==="zh" ? "您的姓名（選填）" : "Tên của bạn (không bắt buộc)"}</label>
           <input type="text" value={name} onChange={e => setName(e.target.value)}
-            placeholder="Nguyễn Văn A"
+            placeholder={lang==="zh" ? "王小明" : "Nguyễn Văn A"}
             className="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-red-400 transition" />
         </div>
       )}
 
       {/* SĐT */}
       <div>
-        <label className="text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1"><Smartphone size={13} strokeWidth={2.2} /> Số điện thoại Đài Loan</label>
+        <label className="text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1"><Smartphone size={13} strokeWidth={2.2} /> {lang==="zh" ? "台灣電話號碼" : "Số điện thoại Đài Loan"}</label>
         <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden focus-within:border-red-400 transition">
           <span className="bg-gray-50 px-3 py-3 text-sm text-gray-500 border-r border-gray-200 shrink-0">+886</span>
           <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
             placeholder="0912-345-678"
             className="flex-1 px-3 py-3 text-sm focus:outline-none" />
         </div>
-        <p className="text-xs text-gray-400 mt-1">VD: 0912345678 hoặc 0912-345-678</p>
+        <p className="text-xs text-gray-400 mt-1">{lang==="zh" ? "例如：0912345678 或 0912-345-678" : "VD: 0912345678 hoặc 0912-345-678"}</p>
       </div>
 
       {/* Mật khẩu */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs font-semibold text-gray-600 flex items-center gap-1"><Lock size={13} strokeWidth={2.2} /> Mật khẩu</label>
+          <label className="text-xs font-semibold text-gray-600 flex items-center gap-1"><Lock size={13} strokeWidth={2.2} /> {lang==="zh" ? "密碼" : "Mật khẩu"}</label>
           {mode === "login" && (
             <button type="button"
               onClick={() => { setMode("forgot"); setError(""); setSuccess(""); setForgotPhone(phone) }}
               className="text-xs text-red-500 hover:text-red-600 font-medium transition">
-              Quên mật khẩu?
+              {lang==="zh" ? "忘記密碼？" : "Quên mật khẩu?"}
             </button>
           )}
         </div>
         <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-          placeholder={mode==="register" ? "Tạo mật khẩu (tối thiểu 6 ký tự)" : "Nhập mật khẩu"}
+          placeholder={mode==="register"
+            ? (lang==="zh" ? "設定密碼（至少6個字元）" : "Tạo mật khẩu (tối thiểu 6 ký tự)")
+            : (lang==="zh" ? "輸入密碼" : "Nhập mật khẩu")}
           onKeyDown={e => e.key==="Enter" && handleSubmit()}
           className="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-red-400 transition" />
       </div>
@@ -292,15 +303,17 @@ export default function LoginForm() {
       <button onClick={handleSubmit} disabled={loading}
         className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-3.5 rounded-xl transition text-sm active:scale-95 flex items-center justify-center gap-2">
         {loading
-          ? <><Loader2 size={16} strokeWidth={2.5} className="animate-spin" /> Đang xử lý...</>
+          ? <><Loader2 size={16} strokeWidth={2.5} className="animate-spin" /> {lang==="zh" ? "處理中..." : "Đang xử lý..."}</>
           : mode==="register"
-            ? <><Rocket size={16} strokeWidth={2.2} /> Tạo tài khoản</>
-            : "Đăng nhập"}
+            ? <><Rocket size={16} strokeWidth={2.2} /> {lang==="zh" ? "建立帳號" : "Tạo tài khoản"}</>
+            : (lang==="zh" ? "登入" : "Đăng nhập")}
       </button>
 
       {mode==="register" && (
         <p className="text-xs text-gray-400 text-center leading-relaxed">
-          Bằng cách đăng ký, bạn đồng ý để chúng tôi liên hệ qua số điện thoại này khi cần thiết.
+          {lang==="zh"
+            ? "註冊即表示您同意我們在必要時透過此電話號碼與您聯繫。"
+            : "Bằng cách đăng ký, bạn đồng ý để chúng tôi liên hệ qua số điện thoại này khi cần thiết."}
         </p>
       )}
     </div>
