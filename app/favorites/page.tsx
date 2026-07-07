@@ -4,6 +4,7 @@ import { getAllProperties } from "@/lib/data"
 import type { Property } from "@/lib/data"
 import PropertyCard from "@/components/PropertyCard"
 import { useLang } from "@/context/LangContext"
+import { Heart } from "lucide-react"
 
 export default function FavoritesPage() {
   const { lang } = useLang()
@@ -22,15 +23,15 @@ export default function FavoritesPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-black text-gray-900 mb-6">
-        ❤️ {lang === "zh" ? "我的收藏" : "Nhà yêu thích"}
+      <h1 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-2">
+        <Heart size={22} strokeWidth={2.2} fill="currentColor" className="text-red-500" /> {lang === "zh" ? "我的收藏" : "Nhà yêu thích"}
       </h1>
 
       {loading ? (
         <p className="text-gray-400 text-center py-20">Đang tải...</p>
       ) : props.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-5xl mb-4">🤍</p>
+          <Heart size={40} strokeWidth={1.5} className="mx-auto mb-4 text-gray-200" />
           <p className="text-gray-500">
             {lang === "zh" ? "尚無收藏物件" : "Chưa có nhà yêu thích nào"}
           </p>

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import type { Property } from "@/lib/data"
 import PropertyCard from "@/components/PropertyCard"
 import { useLang } from "@/context/LangContext"
+import { Search, Home } from "lucide-react"
 
 interface Props {
   initialProperties: Property[]
@@ -85,7 +86,7 @@ export default function ListingsClient({ initialProperties, searchQuery }: Props
           {/* Hiển thị từ khoá đang tìm */}
           {searchQuery && (
             <span className="text-sm text-gray-500 bg-red-50 border border-red-100 px-3 py-1.5 rounded-full flex items-center gap-1.5">
-              🔍 <span className="text-red-600 font-medium">{searchQuery}</span>
+              <Search size={13} strokeWidth={2.2} /> <span className="text-red-600 font-medium">{searchQuery}</span>
             </span>
           )}
 
@@ -100,7 +101,7 @@ export default function ListingsClient({ initialProperties, searchQuery }: Props
       <div className="max-w-6xl mx-auto px-4 py-6">
         {filtered.length === 0 ? (
           <div className="text-center py-24">
-            <div className="text-5xl mb-4">🏠</div>
+            <Home size={40} strokeWidth={1.5} className="mx-auto mb-4 text-gray-200" />
             <p className="text-gray-400 text-sm">{t.noResult}</p>
           </div>
         ) : (

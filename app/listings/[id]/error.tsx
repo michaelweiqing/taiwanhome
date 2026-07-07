@@ -1,5 +1,6 @@
 "use client"
 import { useEffect } from "react"
+import { AlertTriangle } from "lucide-react"
 
 export default function ListingError({
   error,
@@ -15,7 +16,7 @@ export default function ListingError({
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl p-8 border border-red-100 max-w-md w-full text-center">
-        <p className="text-4xl mb-4">⚠️</p>
+        <AlertTriangle size={40} strokeWidth={1.8} className="mx-auto mb-4 text-red-400" />
         <h2 className="text-lg font-bold text-gray-900 mb-2">Không thể tải trang</h2>
         <p className="text-sm text-gray-500 mb-1 font-mono bg-gray-50 rounded p-2 break-all">
           {error.message}
