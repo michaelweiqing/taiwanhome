@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase-browser"
 import type { Property } from "@/lib/data"
 import { formatPrice, pingToM2 } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
+import { useFavorites } from "@/hooks/useFavorites"
 import ImageGallery from "@/components/ImageGallery"
 import ContactForm from "@/components/ContactForm"
 import MortgageCalculator from "@/components/MortgageCalculator"
@@ -99,8 +100,9 @@ interface Props { property: Property; similar: Property[] }
 export default function ListingDetailClient({ property: p, similar }: Props) {
   const { lang, t } = useLang()
   const router = useRouter()
+  const { toggle: toggleFav, isFavorite } = useFavorites()
+  const isFav = isFavorite(p.id)
   const [shared, setShared] = useState(false)
-  const [isFav,  setIsFav]  = useState(false)
   const [views, setViews] = useState(Number(p.views) ?? 0)
 
   // Tăng views — bỏ qua nếu chủ tin tự xem bài của mình (chỉ áp dụng cho tin khách đăng)
@@ -116,19 +118,6 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     }
     run()
   }, [p.id])
-
-  // Đọc trạng thái yêu thích từ localStorage
-  useEffect(() => {
-    const favs: string[] = JSON.parse(localStorage.getItem("taiwanhome_favs") || "[]")
-    setIsFav(favs.includes(p.id))
-  }, [p.id])
-
-  const toggleFav = () => {
-    const favs: string[] = JSON.parse(localStorage.getItem("taiwanhome_favs") || "[]")
-    const next = isFav ? favs.filter(id => id !== p.id) : [...favs, p.id]
-    localStorage.setItem("taiwanhome_favs", JSON.stringify(next))
-    setIsFav(!isFav)
-  }
 
   const title    = lang==="zh" ? (p.title_zh || p.title_vi) : (p.title_vi || p.title_zh)
   const address  = lang==="zh" ? (p.address  || p.address_vi) : (p.address_vi || p.address)
@@ -243,7 +232,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
           <div className="flex items-center gap-2 mt-3">
               {/* Nút yêu thích */}
               <button
-                onClick={toggleFav}
+                onClick={() => toggleFav(p.id)}
                 title={lang==="zh" ? (isFav?"取消收藏":"加入收藏") : (isFav?"Bỏ yêu thích":"Yêu thích")}
                 className={`flex items-center gap-1.5 text-sm border rounded-xl px-3 py-1.5 transition ${
                   isFav
