@@ -3,6 +3,12 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
 import { useLang } from "@/context/LangContext"
+import type { LucideIcon } from "lucide-react"
+import {
+  Home, Loader2, Camera, FolderOpen, Video, X, AlertTriangle, User, Eye,
+  Save, Rocket, Ban, CheckCircle2, MapPin, Phone, MessageCircle, Building2, Tag, FileText,
+  TrainFront, TrainTrack, Bus, Stethoscope, ShoppingCart, Trees, School, GraduationCap, Store, UtensilsCrossed,
+} from "lucide-react"
 
 const DISTRICTS_ZH = ["北區","南區","西區","東區","北屯區","南屯區","西屯區","太平區","大里區","霧峰區","烏日區","大肚區","龍井區","梧棲區","清水區","沙鹿區","神岡區","大雅區","潭子區","豐原區","石岡區","東勢區","新社區","和平區","后里區"]
 
@@ -93,20 +99,20 @@ const CITY_CENTER: Record<string, { lat: number; lng: number }> = {
 }
 
 // Tiện ích xung quanh (chỉ áp dụng khi Bán) — đồng bộ key với bảng nearby JSONB
-const NEARBY_FIELDS = [
-  { key:"mrt",         icon:"🚇", zh:"捷運站",   vi:"Ga MRT" },
-  { key:"train",       icon:"🚆", zh:"火車站",   vi:"Ga xe lửa" },
-  { key:"bus",         icon:"🚌", zh:"公車站",   vi:"Trạm xe buýt" },
-  { key:"hospital",    icon:"🏥", zh:"醫院",     vi:"Bệnh viện" },
-  { key:"market",      icon:"🛒", zh:"超市",     vi:"Siêu thị" },
-  { key:"park",        icon:"🌳", zh:"公園",     vi:"Công viên" },
-  { key:"school",      icon:"🏫", zh:"國小",     vi:"Trường tiểu học" },
-  { key:"junior",      icon:"🏫", zh:"國中",     vi:"Trường THCS" },
-  { key:"senior",      icon:"🎓", zh:"高中",     vi:"Trường THPT" },
-  { key:"university",  icon:"🎓", zh:"大學",     vi:"Đại học" },
-  { key:"mall",        icon:"🏬", zh:"百貨公司", vi:"Trung tâm TM" },
-  { key:"nightmarket", icon:"🍢", zh:"夜市",     vi:"Chợ đêm" },
-  { key:"convenience", icon:"🏪", zh:"便利商店", vi:"Cửa hàng tiện lợi" },
+const NEARBY_FIELDS: { key: string; Icon: LucideIcon; zh: string; vi: string }[] = [
+  { key:"mrt",         Icon:TrainFront,    zh:"捷運站",   vi:"Ga MRT" },
+  { key:"train",       Icon:TrainTrack,    zh:"火車站",   vi:"Ga xe lửa" },
+  { key:"bus",         Icon:Bus,           zh:"公車站",   vi:"Trạm xe buýt" },
+  { key:"hospital",    Icon:Stethoscope,   zh:"醫院",     vi:"Bệnh viện" },
+  { key:"market",      Icon:ShoppingCart,  zh:"超市",     vi:"Siêu thị" },
+  { key:"park",        Icon:Trees,         zh:"公園",     vi:"Công viên" },
+  { key:"school",      Icon:School,        zh:"國小",     vi:"Trường tiểu học" },
+  { key:"junior",      Icon:School,        zh:"國中",     vi:"Trường THCS" },
+  { key:"senior",      Icon:GraduationCap, zh:"高中",     vi:"Trường THPT" },
+  { key:"university",  Icon:GraduationCap, zh:"大學",     vi:"Đại học" },
+  { key:"mall",        Icon:Store,         zh:"百貨公司", vi:"Trung tâm TM" },
+  { key:"nightmarket", Icon:UtensilsCrossed,zh:"夜市",    vi:"Chợ đêm" },
+  { key:"convenience", Icon:Store,         zh:"便利商店", vi:"Cửa hàng tiện lợi" },
 ]
 
 export default function SubmitForm({ editId }: { editId?: string } = {}) {
@@ -540,7 +546,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
 
   if (notOwner) return (
     <div className="text-center py-20">
-      <p className="text-5xl mb-4">🚫</p>
+      <Ban size={48} strokeWidth={1.5} className="mx-auto mb-4 text-gray-300" />
       <p className="text-xl font-bold text-gray-800">
         {lang === "zh" ? "無權限編輯此刊登" : "Bạn không có quyền sửa tin này"}
       </p>
@@ -551,7 +557,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
 
   if (done) return (
     <div className="text-center py-20">
-      <p className="text-5xl mb-4">✅</p>
+      <CheckCircle2 size={48} strokeWidth={1.5} className="mx-auto mb-4 text-green-500" />
       <p className="text-xl font-bold text-gray-800">
         {editId ? (lang === "zh" ? "更新成功！" : "Cập nhật thành công!") : (lang === "zh" ? "刊登成功！" : "Đăng tin thành công!")}
       </p>
@@ -602,7 +608,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
     // Tiện ích xung quanh (chỉ Bán)
     const amenities = form.listing_type === "buy"
       ? NEARBY_FIELDS.filter(nf => form.nearby[nf.key]?.trim())
-          .map(nf => `${nf.icon} ${lang==="zh"?nf.zh:nf.vi}: ${form.nearby[nf.key]}`)
+          .map(nf => ({ Icon: nf.Icon, text: `${lang==="zh"?nf.zh:nf.vi}: ${form.nearby[nf.key]}` }))
       : []
 
     // Chi tiết cho thuê
@@ -616,13 +622,13 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
 
     // Điều kiện
     const conditions = [
-      ...(form.pet          ? [lang==="zh"?"✅ 允許養寵物":"✅ Nuôi thú cưng"] : []),
-      ...(form.household_reg? [lang==="zh"?"✅ 可設戶籍":"✅ Nhập hộ khẩu"] : []),
-      ...(form.subsidy      ? [lang==="zh"?"✅ 可申請政府補貼":"✅ Xin trợ cấp CP"] : []),
-      ...(form.has_parking  ? [lang==="zh"?`✅ 停車位${form.parking_note?" · "+form.parking_note:""}`:
-                                           `✅ Đậu xe${form.parking_note?" · "+form.parking_note:""}`] : []),
-      ...(form.has_furniture? [lang==="zh"?`✅ 附傢俱${form.furniture_note?" · "+form.furniture_note:""}`:
-                                           `✅ Đồ đạc${form.furniture_note?" · "+form.furniture_note:""}`] : []),
+      ...(form.pet          ? [lang==="zh"?"允許養寵物":"Nuôi thú cưng"] : []),
+      ...(form.household_reg? [lang==="zh"?"可設戶籍":"Nhập hộ khẩu"] : []),
+      ...(form.subsidy      ? [lang==="zh"?"可申請政府補貼":"Xin trợ cấp CP"] : []),
+      ...(form.has_parking  ? [lang==="zh"?`停車位${form.parking_note?" · "+form.parking_note:""}`:
+                                           `Đậu xe${form.parking_note?" · "+form.parking_note:""}`] : []),
+      ...(form.has_furniture? [lang==="zh"?`附傢俱${form.furniture_note?" · "+form.furniture_note:""}`:
+                                           `Đồ đạc${form.furniture_note?" · "+form.furniture_note:""}`] : []),
     ]
 
     return (
@@ -668,7 +674,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
               ? (lang==="zh" ? `NT$${parseFloat(form.price).toLocaleString()}/月` : `NT$${parseFloat(form.price).toLocaleString()}/tháng`)
               : (lang==="zh" ? `${parseFloat(form.price).toLocaleString()}萬` : `${parseFloat(form.price).toLocaleString()} vạn Đài tệ`)}
           </p>
-          <p className="text-sm text-gray-500">📍 {form.address}{form.district?`, ${form.district}`:""}{city?`, ${lang==="zh"?city:cityVi}`:""}</p>
+          <p className="text-sm text-gray-500 flex items-center gap-1"><MapPin size={13} strokeWidth={2.2} /> {form.address}{form.district?`, ${form.district}`:""}{city?`, ${lang==="zh"?city:cityVi}`:""}</p>
         </div>
 
         {/* Thông số */}
@@ -707,7 +713,9 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             <p className="text-sm font-bold text-gray-700 mb-2">{lang==="zh"?"周邊設施":"Tiện ích xung quanh"}</p>
             <div className="flex flex-wrap gap-2">
               {amenities.map((a,i) => (
-                <span key={i} className="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full">{a}</span>
+                <span key={i} className="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full flex items-center gap-1">
+                  <a.Icon size={12} strokeWidth={2.2} /> {a.text}
+                </span>
               ))}
             </div>
           </div>
@@ -719,7 +727,9 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             <p className="text-sm font-bold text-gray-700 mb-2">{lang==="zh"?"其他條件":"Điều kiện khác"}</p>
             <div className="flex flex-wrap gap-2">
               {conditions.map((c,i) => (
-                <span key={i} className="text-xs bg-green-50 text-green-700 px-3 py-1 rounded-full">{c}</span>
+                <span key={i} className="text-xs bg-green-50 text-green-700 px-3 py-1 rounded-full flex items-center gap-1">
+                  <CheckCircle2 size={12} strokeWidth={2.2} /> {c}
+                </span>
               ))}
             </div>
           </div>
@@ -737,22 +747,24 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         <div className="bg-white border border-gray-100 rounded-2xl p-4">
           <p className="text-sm font-bold text-gray-700 mb-2">{lang==="zh"?"聯絡資訊":"Thông tin liên hệ"}</p>
           <div className="space-y-1.5 text-sm text-gray-600">
-            <p>👤 {form.agent_name}</p>
-            <p>📱 {form.agent_phone}</p>
-            {form.agent_line    && <p>💬 {form.agent_line}</p>}
-            {form.agent_company && <p>🏢 {lang==="zh"?"公司品牌":"Công ty"}: {form.agent_company}</p>}
-            {form.agent_branch  && <p>🏷 {lang==="zh"?"公司名稱":"Chi nhánh"}: {form.agent_branch}</p>}
-            {form.agent_license && <p>📋 {lang==="zh"?"營業員證號":"Giấy phép"}: {form.agent_license}</p>}
-            {form.agent_broker  && <p>📋 {lang==="zh"?"經紀人證號":"Chứng chỉ"}: {form.agent_broker}</p>}
+            <p className="flex items-center gap-1.5"><User size={13} strokeWidth={2.2} /> {form.agent_name}</p>
+            <p className="flex items-center gap-1.5"><Phone size={13} strokeWidth={2.2} /> {form.agent_phone}</p>
+            {form.agent_line    && <p className="flex items-center gap-1.5"><MessageCircle size={13} strokeWidth={2.2} /> {form.agent_line}</p>}
+            {form.agent_company && <p className="flex items-center gap-1.5"><Building2 size={13} strokeWidth={2.2} /> {lang==="zh"?"公司品牌":"Công ty"}: {form.agent_company}</p>}
+            {form.agent_branch  && <p className="flex items-center gap-1.5"><Tag size={13} strokeWidth={2.2} /> {lang==="zh"?"公司名稱":"Chi nhánh"}: {form.agent_branch}</p>}
+            {form.agent_license && <p className="flex items-center gap-1.5"><FileText size={13} strokeWidth={2.2} /> {lang==="zh"?"營業員證號":"Giấy phép"}: {form.agent_license}</p>}
+            {form.agent_broker  && <p className="flex items-center gap-1.5"><FileText size={13} strokeWidth={2.2} /> {lang==="zh"?"經紀人證號":"Chứng chỉ"}: {form.agent_broker}</p>}
           </div>
         </div>
 
         {/* Nút */}
         <button onClick={handleSubmit} disabled={loading}
-          className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition text-base">
-          {loading ? (lang==="zh"?"上傳中...":"⏳ Đang xử lý...") : editId
-            ? (lang==="zh"?"💾 儲存變更":"💾 Lưu thay đổi")
-            : (lang==="zh"?"🚀 立即刊登":"🚀 Xác nhận đăng tin")}
+          className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition text-base flex items-center justify-center gap-2">
+          {loading
+            ? <><Loader2 size={18} strokeWidth={2.5} className="animate-spin" /> {lang==="zh"?"上傳中...":"Đang xử lý..."}</>
+            : editId
+              ? <><Save size={18} strokeWidth={2.2} /> {lang==="zh"?"儲存變更":"Lưu thay đổi"}</>
+              : <><Rocket size={18} strokeWidth={2.2} /> {lang==="zh"?"立即刊登":"Xác nhận đăng tin"}</>}
         </button>
         <button onClick={() => setPreview(false)}
           className="w-full bg-gray-100 text-gray-600 font-bold py-3 rounded-xl text-sm">
@@ -770,8 +782,8 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
     <div className="space-y-6">
       {/* Tiêu đề */}
       <div>
-        <h1 className="text-2xl font-black text-gray-900">
-          🏠 {editId ? (lang === "zh" ? "編輯刊登" : "Sửa tin đăng") : (lang === "zh" ? "刊登物件" : "Đăng tin bất động sản")}
+        <h1 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+          <Home size={22} strokeWidth={2.2} className="text-red-500" /> {editId ? (lang === "zh" ? "編輯刊登" : "Sửa tin đăng") : (lang === "zh" ? "刊登物件" : "Đăng tin bất động sản")}
         </h1>
         <p className="text-gray-500 text-sm mt-1">
           {editId ? (lang === "zh" ? "更新物件資料" : "Cập nhật thông tin căn nhà của bạn") : (lang === "zh" ? "請填寫物件資料" : "Điền thông tin căn nhà của bạn")}
@@ -837,7 +849,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             onBlur={e => autoTranslate(lang === "zh" ? "title_zh" : "title_vi", e.target.value, lang === "zh" ? "zh" : "vi")}
             placeholder={lang === "zh" ? "例：近捷運3房透天厝..." : "VD: Nhà phố 3 tầng gần Metro..."}
             className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400" />
-          {translating && <p className="text-xs text-blue-500 mt-1">⏳ {lang === "zh" ? "翻譯中..." : "Đang dịch..."}</p>}
+          {translating && <p className="text-xs text-blue-500 mt-1 flex items-center gap-1"><Loader2 size={12} strokeWidth={2.5} className="animate-spin" /> {lang === "zh" ? "翻譯中..." : "Đang dịch..."}</p>}
         </div>
         <div>
           <label className="text-sm font-semibold text-gray-700 mb-1 block">
@@ -947,7 +959,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             <div className="grid grid-cols-2 gap-2">
               {NEARBY_FIELDS.map(nf => (
                 <div key={nf.key}>
-                  <label className="text-xs text-gray-500 mb-1 block">{nf.icon} {lang==="zh"?nf.zh:nf.vi}</label>
+                  <label className="text-xs text-gray-500 mb-1 flex items-center gap-1"><nf.Icon size={12} strokeWidth={2.2} /> {lang==="zh"?nf.zh:nf.vi}</label>
                   <input value={form.nearby[nf.key] || ""}
                     onChange={e => setForm(f => ({...f, nearby: {...f.nearby, [nf.key]: e.target.value}}))}
                     placeholder={lang==="zh" ? "選填" : "Không bắt buộc"}
@@ -1025,16 +1037,16 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
           rows={5}
           placeholder={lang === "zh" ? "詳細描述物件特色..." : "Mô tả chi tiết về căn nhà..."}
           className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-red-400 resize-none" />
-        {translating && <p className="text-xs text-blue-500 mt-1">⏳ {lang === "zh" ? "翻譯中..." : "Đang dịch..."}</p>}
+        {translating && <p className="text-xs text-blue-500 mt-1 flex items-center gap-1"><Loader2 size={12} strokeWidth={2.5} className="animate-spin" /> {lang === "zh" ? "翻譯中..." : "Đang dịch..."}</p>}
       </div>
 
       {/* Upload ảnh */}
       <div>
-        <label className="text-sm font-semibold text-gray-700 mb-2 block">
-          📸 {lang === "zh" ? "上傳照片（最多20張）" : "Upload ảnh (tối đa 20 ảnh)"}
+        <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+          <Camera size={16} strokeWidth={2.2} /> {lang === "zh" ? "上傳照片（最多20張）" : "Upload ảnh (tối đa 20 ảnh)"}
         </label>
         <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-red-400 transition">
-          <span className="text-2xl mb-1">📁</span>
+          <FolderOpen size={26} strokeWidth={1.8} className="mb-1 text-gray-400" />
           <span className="text-sm text-gray-500">
             {lang === "zh" ? "點擊選擇照片" : "Chọn ảnh từ máy tính"}
           </span>
@@ -1046,8 +1058,8 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
               <div key={src} className="relative">
                 <img src={src} className="w-full h-20 object-cover rounded-lg" />
                 <button type="button" onClick={() => setExistingImages(imgs => imgs.filter((_, idx) => idx !== i))}
-                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-gray-900/80 text-white rounded-full text-xs flex items-center justify-center">
-                  ✕
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-gray-900/80 text-white rounded-full flex items-center justify-center">
+                  <X size={11} strokeWidth={2.5} />
                 </button>
               </div>
             ))}
@@ -1064,14 +1076,14 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
 
       {/* Video nhà */}
       <div>
-        <label className="text-sm font-semibold text-gray-700 mb-2 block">
-          🎬 {lang === "zh" ? "上傳影片" : "Video nhà"}
+        <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+          <Video size={16} strokeWidth={2.2} /> {lang === "zh" ? "上傳影片" : "Video nhà"}
           <span className="text-gray-400 font-normal"> ({lang === "zh" ? "選填，單個影片≤500MB，時長≤10分鐘" : "không bắt buộc, ≤500MB, ≤10 phút"})</span>
         </label>
 
         {!videoPreview && !form.video_url && (
           <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-red-400 transition">
-            <span className="text-2xl mb-1">🎬</span>
+            <Video size={26} strokeWidth={1.8} className="mb-1 text-gray-400" />
             <span className="text-sm text-gray-500">
               {lang === "zh" ? "點擊選擇影片" : "Chọn video từ máy tính"}
             </span>
@@ -1080,15 +1092,15 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         )}
 
         {videoError && (
-          <p className="text-xs text-red-500 mt-1.5">⚠️ {videoError}</p>
+          <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1"><AlertTriangle size={13} strokeWidth={2.2} /> {videoError}</p>
         )}
 
         {(videoPreview || form.video_url) && (
           <div className="relative mt-1">
             <video src={videoPreview || form.video_url} controls className="w-full max-h-64 rounded-xl bg-black" />
             <button type="button" onClick={removeVideo}
-              className="absolute -top-2 -right-2 w-6 h-6 bg-gray-900/80 text-white rounded-full text-xs flex items-center justify-center">
-              ✕
+              className="absolute -top-2 -right-2 w-6 h-6 bg-gray-900/80 text-white rounded-full flex items-center justify-center">
+              <X size={13} strokeWidth={2.5} />
             </button>
           </div>
         )}
@@ -1096,8 +1108,8 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
 
       {/* Thông tin liên hệ */}
       <div>
-        <label className="text-sm font-semibold text-gray-700 mb-2 block">
-          👤 {lang === "zh" ? "聯絡資訊" : "Thông tin liên hệ"}
+        <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+          <User size={16} strokeWidth={2.2} /> {lang === "zh" ? "聯絡資訊" : "Thông tin liên hệ"}
         </label>
         <div className="space-y-2">
           {[
@@ -1125,8 +1137,8 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         setPreview(true)
         window.scrollTo({ top: 0, behavior: "smooth" })
       }}
-        className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition text-base">
-        {lang==="zh" ? "👁 預覽刊登內容" : "👁 Xem trước tin đăng"}
+        className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition text-base flex items-center justify-center gap-2">
+        <Eye size={18} strokeWidth={2.2} /> {lang==="zh" ? "預覽刊登內容" : "Xem trước tin đăng"}
       </button>
       <button onClick={() => { localStorage.removeItem("taiwanhome_user"); router.push("/login") }}
         className="w-full text-xs text-gray-400 border border-gray-200 rounded-xl py-2.5 hover:text-red-500 hover:bg-gray-50 transition">
