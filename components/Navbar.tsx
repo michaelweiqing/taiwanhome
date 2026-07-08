@@ -3,6 +3,7 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useLang } from "@/context/LangContext"
 import { Home, KeyRound, Plus, Heart, User, MessageCircle } from "lucide-react"
+import ShareButton from "@/components/ShareButton"
 
 export default function Navbar() {
   const { lang, setLang, t } = useLang()
@@ -65,6 +66,9 @@ export default function Navbar() {
             className="hidden sm:flex items-center gap-1 text-xs text-green-600 border border-green-200 rounded-lg px-2.5 py-1.5 hover:bg-green-50 transition whitespace-nowrap">
             <MessageCircle size={14} strokeWidth={2.2} /> LINE
           </a>
+
+          {/* Chia sẻ trang web */}
+          <ShareButton />
 
           {/* Language toggle */}
           <div className="flex bg-gray-100 rounded-lg p-0.5">
