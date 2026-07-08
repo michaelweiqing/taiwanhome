@@ -8,9 +8,25 @@ import BottomTabBar from "@/components/BottomTabBar"
 import PwaInstall from "@/components/PwaInstall"
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://8386.tw"),
   title: "台灣找房網 | Nhà Đẹp Đài Loan",
   description: "Tìm nhà mua bán và cho thuê tại Đài Loan – Song ngữ Trung-Việt",
   manifest: "/manifest.json",
+  openGraph: {
+    title: "台灣找房網 | Nhà Đẹp Đài Loan",
+    description: "Tìm nhà mua bán và cho thuê tại Đài Loan – Song ngữ Trung-Việt",
+    url: "https://8386.tw",
+    siteName: "8386找房網",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "8386找房網" }],
+    locale: "zh_TW",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "台灣找房網 | Nhà Đẹp Đài Loan",
+    description: "Tìm nhà mua bán và cho thuê tại Đài Loan – Song ngữ Trung-Việt",
+    images: ["/og-image.png"],
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
