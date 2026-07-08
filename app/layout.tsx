@@ -8,7 +8,7 @@ import BottomTabBar from "@/components/BottomTabBar"
 import PwaInstall from "@/components/PwaInstall"
 
 export const metadata: Metadata = {
-  title: "台灣好房網 | Nhà Đẹp Đài Loan",
+  title: "台灣找房網 | Nhà Đẹp Đài Loan",
   description: "Tìm nhà mua bán và cho thuê tại Đài Loan – Song ngữ Trung-Việt",
   manifest: "/manifest.json",
   icons: {
