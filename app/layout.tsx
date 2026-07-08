@@ -11,6 +11,15 @@ export const metadata: Metadata = {
   title: "台灣好房網 | Nhà Đẹp Đài Loan",
   description: "Tìm nhà mua bán và cho thuê tại Đài Loan – Song ngữ Trung-Việt",
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icons/icon-192x192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icons/icon-512x512.png", type: "image/png", sizes: "512x512" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/icons/icon-192x192.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
