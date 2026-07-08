@@ -35,9 +35,19 @@ export default function ShareButton() {
     return { url, title, text }
   }
 
+  function isMobileViewport() {
+    if (typeof window === "undefined") return false
+    // Khớp với breakpoint sm (640px) đang dùng để tách UI mobile/desktop bên dưới
+    return window.matchMedia("(max-width: 640px)").matches
+  }
+
   async function handleClick() {
     const data = getShareData()
-    if (typeof navigator !== "undefined" && navigator.share) {
+    // Chỉ dùng share sheet của hệ điều hành trên màn hình mobile thật sự.
+    // Trên desktop (Windows/macOS), navigator.share có thể tồn tại nhưng mở
+    // ra bảng share hệ thống trống rồi tự đóng nếu máy chưa cài app nhận chia sẻ
+    // → luôn dùng bảng dropdown riêng của web để chắc chắn có Facebook/LINE/Copy link.
+    if (isMobileViewport() && typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share(data)
       } catch {
