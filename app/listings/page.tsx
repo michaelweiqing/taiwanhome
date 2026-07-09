@@ -47,6 +47,14 @@ export default async function ListingsPage({
     <ListingsClient
       initialProperties={properties}
       searchQuery={searchQuery}
+      rawParams={{
+        type: params.type,
+        city: params.city,
+        district: params.district,
+        property_type: params.property_type,
+        price: params.price,
+        sort: params.sort,
+      }}
     />
   )
 }

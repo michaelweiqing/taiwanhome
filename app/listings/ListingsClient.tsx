@@ -1,29 +1,47 @@
 "use client"
 import { useState, useMemo } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import type { Property } from "@/lib/data"
 import PropertyCard from "@/components/PropertyCard"
 import { useLang } from "@/context/LangContext"
-import { Search, Home } from "lucide-react"
+import { Search, Home, X } from "lucide-react"
 
 interface Props {
   initialProperties: Property[]
   searchQuery?: string   // ← MỚI: từ khoá tìm text (q=...) lọc phía client
+  rawParams?: Record<string, string | undefined>  // ← các param khác trên URL (city, district, type...) để giữ nguyên khi sửa q
 }
 
-export default function ListingsClient({ initialProperties, searchQuery }: Props) {
+export default function ListingsClient({ initialProperties, searchQuery, rawParams }: Props) {
   const { lang, t } = useLang()
   const router = useRouter()
+  const pathname = usePathname()
   const [typeFilter, setTypeFilter] = useState<"all"|"rent"|"buy">("all")
   const [sortBy, setSortBy]         = useState<"newest"|"price_asc"|"price_desc">("newest")
+  // Ô tìm kiếm ngay trên toolbar — khởi tạo từ q= trên URL, cho phép sửa tại chỗ
+  const [query, setQuery] = useState(searchQuery ?? "")
+
+  function syncUrl(nextQuery: string) {
+    const params = new URLSearchParams()
+    Object.entries(rawParams ?? {}).forEach(([k, v]) => {
+      if (v && k !== "q") params.set(k, v)
+    })
+    if (nextQuery) params.set("q", nextQuery)
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+  }
+
+  function handleClearQuery() {
+    setQuery("")
+    syncUrl("")
+  }
 
   const filtered = useMemo(() => {
     let list = [...initialProperties]
 
     // ── Lọc text (q) — tìm theo thành phố, quận/huyện, khu vực, tên tòa nhà,
     //     địa chỉ đường/số nhà, tiện ích xung quanh, mã ID nhà đăng ──
-    if (searchQuery) {
-      const sqRaw = searchQuery.trim()
+    if (query.trim()) {
+      const sqRaw = query.trim()
       const sq = sqRaw.toLowerCase()
 
       // So khớp chính xác mã ID (không phân biệt hoa/thường) — ưu tiên tuyệt đối
@@ -82,7 +100,7 @@ export default function ListingsClient({ initialProperties, searchQuery }: Props
     )
 
     return list
-  }, [initialProperties, typeFilter, sortBy, searchQuery])
+  }, [initialProperties, typeFilter, sortBy, query])
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -117,12 +135,23 @@ export default function ListingsClient({ initialProperties, searchQuery }: Props
             <option value="price_desc">{t.sortPriceDesc}</option>
           </select>
 
-          {/* Hiển thị từ khoá đang tìm */}
-          {searchQuery && (
-            <span className="text-sm text-gray-500 bg-red-50 border border-red-100 px-3 py-1.5 rounded-full flex items-center gap-1.5">
-              <Search size={13} strokeWidth={2.2} /> <span className="text-red-600 font-medium">{searchQuery}</span>
-            </span>
-          )}
+          {/* Ô tìm kiếm tại chỗ — sửa từ khoá mà không cần quay lại trang chủ */}
+          <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 min-w-[180px] flex-1 sm:flex-none sm:w-64 focus-within:border-red-300">
+            <Search size={15} strokeWidth={2.2} className="text-gray-400 shrink-0" />
+            <input
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && syncUrl(query)}
+              onBlur={() => syncUrl(query)}
+              placeholder={lang === "zh" ? "搜尋地址、社區、ID..." : "Tìm địa chỉ, tòa nhà, mã ID..."}
+              className="flex-1 text-sm outline-none bg-transparent text-gray-900 placeholder-gray-400 min-w-0"
+            />
+            {query && (
+              <button onClick={handleClearQuery} className="text-gray-300 hover:text-gray-500 shrink-0" aria-label="clear">
+                <X size={14} strokeWidth={2.2} />
+              </button>
+            )}
+          </div>
 
           {/* Đếm kết quả */}
           <span className="text-gray-400 text-sm ml-auto">
