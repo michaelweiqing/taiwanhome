@@ -20,15 +20,9 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0 min-w-0">
-          <div className="flex flex-col items-center justify-center shrink-0 rounded-lg"
-            style={{ background:"#c8102e", width:44, height:40 }}>
-            <span style={{ fontFamily:"Georgia,serif", fontSize:16, fontWeight:700, color:"#fff", letterSpacing:0.5, lineHeight:1 }}>
-              8386
-            </span>
-            <span style={{ fontSize:7, fontWeight:600, letterSpacing:1, color:"#f5c518", marginTop:2, lineHeight:1 }}>
-              找房網
-            </span>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icons/icon-192x192.png" alt="8386找房網" width={40} height={40}
+            className="rounded-lg shrink-0" style={{ objectFit:"contain" }} />
           <div style={{ width:2, height:34, background:"#e8b800", borderRadius:2, flexShrink:0 }} />
           <div className="flex flex-col justify-center min-w-0" style={{ gap:2 }}>
             <div style={{ lineHeight:1, whiteSpace:"nowrap" }}>
