@@ -20,21 +20,55 @@ export default function ListingsClient({ initialProperties, searchQuery }: Props
   const filtered = useMemo(() => {
     let list = [...initialProperties]
 
-    // ── Lọc text (q) — tìm trong title, district, city, MRT ──
+    // ── Lọc text (q) — tìm theo thành phố, quận/huyện, khu vực, tên tòa nhà,
+    //     địa chỉ đường/số nhà, tiện ích xung quanh, mã ID nhà đăng ──
     if (searchQuery) {
-      const sq = searchQuery.toLowerCase()
-      list = list.filter(p =>
-        p.title_vi?.toLowerCase().includes(sq)       ||
-        p.title_zh?.toLowerCase().includes(sq)       ||
-        p.district_vi?.toLowerCase().includes(sq)    ||
-        p.district?.toLowerCase().includes(sq)       ||
-        p.city_vi?.toLowerCase().includes(sq)        ||
-        p.city?.toLowerCase().includes(sq)           ||
-        p.near_mrt_vi?.toLowerCase().includes(sq)    ||
-        p.near_mrt?.toLowerCase().includes(sq)       ||
-        p.features_vi?.some(f => f.toLowerCase().includes(sq)) ||
-        p.features?.some(f => f.toLowerCase().includes(sq))
-      )
+      const sqRaw = searchQuery.trim()
+      const sq = sqRaw.toLowerCase()
+
+      // So khớp chính xác mã ID (không phân biệt hoa/thường) — ưu tiên tuyệt đối
+      const idMatch = list.filter(p => p.id?.toLowerCase() === sq)
+
+      if (idMatch.length > 0) {
+        list = idMatch
+      } else {
+        list = list.filter(p => {
+          // Mã ID (khớp một phần, cho phép gõ thiếu)
+          if (p.id?.toLowerCase().includes(sq)) return true
+
+          // Tiêu đề / tòa nhà / cộng đồng
+          if (p.title_vi?.toLowerCase().includes(sq)) return true
+          if (p.title_zh?.toLowerCase().includes(sq)) return true
+          if (p.community_name?.toLowerCase().includes(sq)) return true
+
+          // Thành phố / quận huyện
+          if (p.district_vi?.toLowerCase().includes(sq)) return true
+          if (p.district?.toLowerCase().includes(sq)) return true
+          if (p.city_vi?.toLowerCase().includes(sq)) return true
+          if (p.city?.toLowerCase().includes(sq)) return true
+
+          // Địa chỉ đường / số nhà
+          if (p.address?.toLowerCase().includes(sq)) return true
+          if (p.address_vi?.toLowerCase().includes(sq)) return true
+
+          // Ga MRT / khu vực gần
+          if (p.near_mrt_vi?.toLowerCase().includes(sq)) return true
+          if (p.near_mrt?.toLowerCase().includes(sq)) return true
+
+          // Tiện ích / đặc điểm
+          if (p.features_vi?.some(f => f.toLowerCase().includes(sq))) return true
+          if (p.features?.some(f => f.toLowerCase().includes(sq))) return true
+
+          // Tiện ích xung quanh (nearby: {"bus": "...", "market": "..."} — chỉ có tiếng Trung)
+          if (p.nearby) {
+            for (const val of Object.values(p.nearby)) {
+              if (typeof val === "string" && val.toLowerCase().includes(sq)) return true
+            }
+          }
+
+          return false
+        })
+      }
     }
 
     // ── Lọc loại giao dịch (rent/buy) — từ toolbar ──
