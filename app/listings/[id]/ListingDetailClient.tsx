@@ -331,8 +331,8 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                   {features.map(f => {
                     const Icon = FEAT_ICONS[f] ?? CheckCircle2
                     return (
-                      <span key={f} className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-full">
-                        <Icon size={13} strokeWidth={2} className="text-red-500" />
+                      <span key={f} className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 text-gray-700 text-sm px-3 py-1.5 rounded-full">
+                        <Icon size={16} strokeWidth={2} className="text-red-500" />
                         <span>{f}</span>
                       </span>
                     )
