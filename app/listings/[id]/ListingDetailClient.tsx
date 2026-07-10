@@ -126,7 +126,12 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
   const address  = lang==="zh" ? (p.address  || p.address_vi) : (p.address_vi || p.address)
   const district = lang==="zh" ? (p.district || p.district_vi) : (p.district_vi || p.district)
   const cityName = lang==="zh" ? (p.city     || p.city_vi)     : (p.city_vi     || p.city)
-  const fullAddress = [cityName, district, address].filter(Boolean).join(", ")
+  // Nếu địa chỉ đã có sẵn thành phố + quận huyện trong đó thì không lặp lại phía trước
+  const addressHasCityDistrict = !!address && !!cityName && !!district
+    && address.includes(cityName) && address.includes(district)
+  const fullAddress = addressHasCityDistrict
+    ? address
+    : [cityName, district, address].filter(Boolean).join(", ")
 
   // description: ưu tiên đúng ngôn ngữ, fallback sang ngôn ngữ kia
   const rawDescZh = p.description_zh
