@@ -1,11 +1,12 @@
 "use client"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import type { Property } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
+import { createClient } from "@/lib/supabase-browser"
 import PropertyCard from "@/components/PropertyCard"
-import { Search, MessageCircle, Building2, Moon, Plane, Microscope, Building, Wheat, Landmark, Waves } from "lucide-react"
+import { Search, MessageCircle, Building2, Moon, Plane, Microscope, Building, Wheat, Landmark, Waves, Eye } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 interface Props { featured: Property[]; newest: Property[] }
@@ -110,6 +111,32 @@ export default function HomeClient({ featured, newest }: Props) {
   const [selectedDistrict, setSelectedDistrict] = useState("")
   const [selectedType, setSelectedType] = useState("")
   const [selectedPrice, setSelectedPrice] = useState("")
+  const [todayVisits, setTodayVisits] = useState<number | null>(null)
+
+  // Đếm lượt truy cập trang web hôm nay — mỗi trình duyệt chỉ tính 1 lần/ngày
+  useEffect(() => {
+    const supabase = createClient()
+    const today = new Date().toISOString().slice(0, 10)
+    const flagKey = `taiwanhome_visited_${today}`
+
+    const run = async () => {
+      try {
+        if (!localStorage.getItem(flagKey)) {
+          const { data, error } = await supabase.rpc("increment_site_visit")
+          if (!error && typeof data === "number") setTodayVisits(data)
+          localStorage.setItem(flagKey, "1")
+        } else {
+          const { data } = await supabase
+            .from("site_visits")
+            .select("count")
+            .eq("visit_date", today)
+            .maybeSingle()
+          if (data) setTodayVisits(data.count)
+        }
+      } catch {}
+    }
+    run()
+  }, [])
 
   function handleSearch() {
     const params = new URLSearchParams()
@@ -349,6 +376,14 @@ export default function HomeClient({ featured, newest }: Props) {
           <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10" />
           <div className="absolute -bottom-4 -left-4 w-20 h-20 rounded-full bg-white/10" />
           <div className="relative">
+            {todayVisits !== null && (
+              <div className="inline-flex items-center gap-1.5 bg-white/15 text-white text-xs font-medium px-3 py-1 rounded-full mb-3">
+                <Eye size={12} strokeWidth={2.2} />
+                {lang==="zh"
+                  ? `今日 ${todayVisits.toLocaleString()} 人次造訪`
+                  : `Hôm nay đã có ${todayVisits.toLocaleString()} lượt truy cập`}
+              </div>
+            )}
             <h2 className="text-white font-bold text-xl mb-2">
               {lang==="zh" ? "想刊登物件？" : "Bạn muốn đăng bán nhà?"}
             </h2>
