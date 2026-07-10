@@ -158,6 +158,9 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
     water:         "",
     parking_fee:   "",
     parking:       false,
+    parking_type:       "",
+    parking_type_other: "",
+    parking_number:     "",
     // Chỉ dùng khi Bán
     area_main_ping:    "",
     area_balcony_ping: "",
@@ -250,6 +253,9 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
           water:         data.water || "",
           parking_fee:   data.parking_fee || "",
           parking:       !!data.parking,
+          parking_type:       data.parking_type || "",
+          parking_type_other: data.parking_type_other || "",
+          parking_number:     data.parking_number || "",
           area_main_ping:     data.area_main_ping != null ? String(data.area_main_ping) : "",
           area_balcony_ping:  data.area_balcony_ping != null ? String(data.area_balcony_ping) : "",
           area_common_ping:   data.area_common_ping != null ? String(data.area_common_ping) : "",
@@ -476,6 +482,9 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         water:         form.water || null,
         parking_fee:   form.parking_fee || null,
         parking:       form.parking,
+        parking_type:       form.parking ? (form.parking_type || null) : null,
+        parking_type_other: form.parking && form.parking_type === "other" ? (form.parking_type_other || null) : null,
+        parking_number:     form.parking ? (form.parking_number || null) : null,
         area_main_ping:    form.area_main_ping    ? parseFloat(form.area_main_ping)    : null,
         area_balcony_ping: form.area_balcony_ping ? parseFloat(form.area_balcony_ping) : null,
         area_common_ping:  form.area_common_ping  ? parseFloat(form.area_common_ping)  : null,
@@ -950,6 +959,38 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
                 </button>
               ))}
             </div>
+            {form.parking && (
+              <>
+                {/* 停車方式 */}
+                <div className="mt-3 flex gap-2">
+                  <select value={form.parking_type}
+                    onChange={e => setForm(f => ({...f, parking_type: e.target.value, parking_type_other: e.target.value === "other" ? f.parking_type_other : ""}))}
+                    className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-red-400">
+                    <option value="">{lang==="zh" ? "停車方式（請選擇）" : "Hình thức đỗ xe (chọn)"}</option>
+                    {[
+                      {v:"flat",             zh:"平面式停車位",    vi:"Bãi đỗ mặt bằng"},
+                      {v:"mechanical",       zh:"機械式停車位",    vi:"Bãi đỗ cơ giới"},
+                      {v:"flat_mechanical",  zh:"平面式+機械式",   vi:"Mặt bằng + Cơ giới"},
+                      {v:"other",            zh:"其他",           vi:"Khác"},
+                    ].map(o => (
+                      <option key={o.v} value={o.v}>{lang==="zh" ? o.zh : o.vi}</option>
+                    ))}
+                  </select>
+                  {form.parking_type === "other" && (
+                    <input value={form.parking_type_other}
+                      onChange={e => setForm(f => ({...f, parking_type_other: e.target.value}))}
+                      placeholder={lang==="zh" ? "請輸入車位類型（必填）" : "Nhập loại chỗ đậu (bắt buộc)"}
+                      className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-red-400" />
+                  )}
+                </div>
+
+                {/* 車位編號 */}
+                <input value={form.parking_number}
+                  onChange={e => setForm(f => ({...f, parking_number: e.target.value}))}
+                  placeholder={lang==="zh" ? "車位編號，例：B1-081" : "Số chỗ đậu, VD: B1-081"}
+                  className="w-full mt-2 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-red-400" />
+              </>
+            )}
             {form.parking && (
               <input value={form.parking_note} onChange={e => setForm(f => ({...f, parking_note: e.target.value}))}
                 placeholder={lang==="zh" ? "例：地下室B1，含產權車位" : "VD: Hầm B1, chỗ đậu có sổ riêng"}

@@ -159,6 +159,18 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ? (lang==="zh" ? "✓ 有停車位" : "✓ Có chỗ đậu xe")
     : (lang==="zh" ? "✗ 無停車位" : "✗ Không có")
 
+  const PARKING_TYPE_LABELS: Record<string, { zh: string; vi: string }> = {
+    flat:            { zh: "平面式停車位",  vi: "Bãi đỗ mặt bằng" },
+    mechanical:      { zh: "機械式停車位",  vi: "Bãi đỗ cơ giới" },
+    flat_mechanical: { zh: "平面式+機械式", vi: "Mặt bằng + Cơ giới" },
+    other:           { zh: "其他",         vi: "Khác" },
+  }
+  const parkingTypeDisplay = p.parking_type
+    ? (p.parking_type === "other"
+        ? (p.parking_type_other || (lang==="zh" ? "其他" : "Khác"))
+        : (lang==="zh" ? PARKING_TYPE_LABELS[p.parking_type]?.zh : PARKING_TYPE_LABELS[p.parking_type]?.vi) || p.parking_type)
+    : null
+
   // floor: translate 整棟 if VI
   const FLOOR_VI: Record<string,string> = { "整棟":"Cả căn", "全層":"Toàn tầng" }
   const floorLabel = (() => {
@@ -186,6 +198,8 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ...(p.units_per_floor ? [{ label: lang==="zh"?"同層戶數":"Số căn mỗi tầng", value: `${p.units_per_floor}${lang==="zh"?"戶":"căn"}` }] : []),
     ...(p.elevator_count  ? [{ label: lang==="zh"?"電梯數":"Số thang máy",      value: `${p.elevator_count}${lang==="zh"?"部":"thang"}` }] : []),
     ...((p as any).has_parking == null ? [{ label: lang==="zh"?"停車位":"Chỗ đậu xe", value: parkingDisplay }] : []),
+    ...(p.parking && parkingTypeDisplay ? [{ label: lang==="zh"?"停車方式":"Hình thức đỗ xe", value: parkingTypeDisplay }] : []),
+    ...(p.parking && p.parking_number   ? [{ label: lang==="zh"?"車位編號":"Số chỗ đậu",     value: p.parking_number }] : []),
     ...((p as any).deposit == undefined ? [{ label: lang==="zh"?"管理費":"Phí quản lý", value: mgmtFeeDisplay }] : []),
     // Các field từ user_listings (cho thuê)
     ...((p as any).deposit     ? [{ label: lang==="zh"?"押金":"Tiền cọc",          value: `${(p as any).deposit} ${lang==="zh"?"個月":"tháng"}` }] : []),

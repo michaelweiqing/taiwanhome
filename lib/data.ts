@@ -45,6 +45,9 @@ export interface Property {
   is_new: boolean
   is_featured: boolean
   parking: boolean
+  parking_type?: string | null        // 停車方式: flat | mechanical | flat_mechanical | other
+  parking_type_other?: string | null  // Khi parking_type = "other"
+  parking_number?: string | null      // 車位編號
   management_fee: number | null
   views: number
   posted_at: string
