@@ -985,16 +985,14 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
                 </div>
 
                 {/* 車位編號 */}
-                <input value={form.parking_number}
-                  onChange={e => setForm(f => ({...f, parking_number: e.target.value}))}
-                  placeholder={lang==="zh" ? "車位編號，例：B1-081" : "Số chỗ đậu, VD: B1-081"}
-                  className="w-full mt-2 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-red-400" />
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-sm text-gray-700 shrink-0">{lang==="zh" ? "車位編號" : "Số chỗ đậu"}</span>
+                  <input value={form.parking_number}
+                    onChange={e => setForm(f => ({...f, parking_number: e.target.value}))}
+                    placeholder={lang==="zh" ? "例：B1-081" : "VD: B1-081"}
+                    className="flex-1 border border-gray-200 rounded-xl px-3 py-1.5 text-sm focus:outline-none focus:border-red-400" />
+                </div>
               </>
-            )}
-            {form.parking && (
-              <input value={form.parking_note} onChange={e => setForm(f => ({...f, parking_note: e.target.value}))}
-                placeholder={lang==="zh" ? "例：地下室B1，含產權車位" : "VD: Hầm B1, chỗ đậu có sổ riêng"}
-                className="w-full mt-2 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-red-400" />
             )}
           </div>
         )}
