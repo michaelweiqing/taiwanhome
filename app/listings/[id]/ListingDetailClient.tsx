@@ -212,6 +212,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ...((p as any).subsidy     ? [{ label: lang==="zh"?"政府補貼":"Trợ cấp CP",    value: lang==="zh"?"✓ 可申請":"✓ Được đăng ký" }] : []),
     ...((p as any).business_license ? [{ label: lang==="zh"?"營業登記":"Giấy phép kinh doanh", value: lang==="zh"?"✓ 可營業登記":"✓ Được đăng ký" }] : []),
     ...((p as any).has_parking ? [{ label: lang==="zh"?"停車位":"Đậu xe",          value: (p as any).parking_note || (lang==="zh"?"✓ 有":"✓ Có") }] : []),
+    ...((p as any).can_cook    ? [{ label: lang==="zh"?"開伙":"Nấu ăn",            value: lang==="zh"?"✓ 可開伙":"✓ Được nấu ăn" }] : []),
     ...((p as any).has_furniture ? [{ label: lang==="zh"?"附傢俱家電":"Đồ đạc đi kèm", value: (p as any).furniture_note || (lang==="zh"?"✓ 有":"✓ Có") }] : []),
   ]
 

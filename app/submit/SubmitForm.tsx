@@ -178,6 +178,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
     business_license: false,
     has_parking:   false,
     parking_note:  "",
+    can_cook:      false,
     has_furniture: false,
     furniture_note:"",
     description_vi: "",
@@ -272,6 +273,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
           business_license: !!data.business_license,
           has_parking:   !!data.has_parking,
           parking_note:  data.parking_note || "",
+          can_cook:      !!data.can_cook,
           has_furniture: !!data.has_furniture,
           furniture_note:data.furniture_note || "",
           description_vi: data.description_vi || "",
@@ -503,6 +505,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         business_license: form.business_license,
         has_parking:   form.has_parking,
         parking_note:  form.parking_note  || null,
+        can_cook:      form.can_cook,
         has_furniture: form.has_furniture,
         furniture_note:form.furniture_note || null,
         price_per_ping: parseFloat(form.area_ping) > 0
@@ -642,6 +645,7 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
       ...(form.business_license ? [lang==="zh"?"可營業登記":"Đăng ký giấy phép kinh doanh"] : []),
       ...(form.has_parking  ? [lang==="zh"?`停車位${form.parking_note?" · "+form.parking_note:""}`:
                                            `Đậu xe${form.parking_note?" · "+form.parking_note:""}`] : []),
+      ...(form.can_cook     ? [lang==="zh"?"開伙":"Nấu ăn"] : []),
       ...(form.has_furniture? [lang==="zh"?`附傢俱${form.furniture_note?" · "+form.furniture_note:""}`:
                                            `Đồ đạc${form.furniture_note?" · "+form.furniture_note:""}`] : []),
     ]
@@ -1069,18 +1073,61 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             )}
           </div>
 
-          {/* Đồ đạc đi kèm */}
-          <div className="flex items-center gap-3">
-            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition shrink-0 cursor-pointer ${
-              form.has_furniture ? "bg-red-600 border-red-600" : "border-gray-300 hover:border-red-400"
-            }`} onClick={() => setForm(f => ({...f, has_furniture: !f.has_furniture, furniture_note: f.has_furniture ? "" : f.furniture_note}))}>
-              {form.has_furniture && <span className="text-white text-xs font-bold">✓</span>}
+          {/* Nấu ăn / 開伙 */}
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition shrink-0 ${
+              form.can_cook ? "bg-red-600 border-red-600" : "border-gray-300 group-hover:border-red-400"
+            }`} onClick={() => setForm(f => ({...f, can_cook: !f.can_cook}))}>
+              {form.can_cook && <span className="text-white text-xs font-bold">✓</span>}
             </div>
-            <span className="text-sm text-gray-700 shrink-0">{lang==="zh" ? "附傢俱家電" : "Đồ đạc đi kèm"}</span>
+            <span className="text-sm text-gray-700">{lang==="zh" ? "開伙" : "Nấu ăn"}</span>
+          </label>
+
+          {/* Đồ đạc đi kèm */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition shrink-0 cursor-pointer ${
+                form.has_furniture ? "bg-red-600 border-red-600" : "border-gray-300 hover:border-red-400"
+              }`} onClick={() => setForm(f => ({...f, has_furniture: !f.has_furniture, furniture_note: f.has_furniture ? "" : f.furniture_note}))}>
+                {form.has_furniture && <span className="text-white text-xs font-bold">✓</span>}
+              </div>
+              <span className="text-sm text-gray-700 shrink-0">{lang==="zh" ? "附傢俱家電" : "Đồ đạc đi kèm"}</span>
+            </div>
             {form.has_furniture && (
-              <input value={form.furniture_note} onChange={e => setForm(f => ({...f, furniture_note: e.target.value}))}
-                placeholder={lang==="zh" ? "例：冷氣、洗衣機、床" : "VD: Điều hoà, máy giặt, giường"}
-                className="flex-1 border border-gray-200 rounded-xl px-3 py-1.5 text-sm focus:outline-none focus:border-red-400" />
+              <div className="flex flex-wrap gap-2 pl-8">
+                {[
+                  {zh:"洗衣機",   vi:"Máy giặt"},
+                  {zh:"冰箱",     vi:"Tủ lạnh"},
+                  {zh:"電視",     vi:"Tivi"},
+                  {zh:"冷氣",     vi:"Điều hoà"},
+                  {zh:"熱水器",   vi:"Bình nóng lạnh"},
+                  {zh:"網路",     vi:"Wifi/Internet"},
+                  {zh:"天然瓦斯", vi:"Gas thiên nhiên"},
+                  {zh:"瓦斯桶",   vi:"Bình gas"},
+                  {zh:"瓦斯爐",   vi:"Bếp gas"},
+                  {zh:"床墊",     vi:"Nệm"},
+                  {zh:"床底",     vi:"Khung giường"},
+                  {zh:"衣櫃",     vi:"Tủ quần áo"},
+                  {zh:"沙發",     vi:"Sofa"},
+                  {zh:"桌子",     vi:"Bàn"},
+                  {zh:"椅子",     vi:"Ghế"},
+                ].map(item => {
+                  const selected = form.furniture_note.split("、").filter(Boolean).includes(item.zh)
+                  return (
+                    <button key={item.zh} type="button"
+                      onClick={() => setForm(f => {
+                        const list = f.furniture_note.split("、").filter(Boolean)
+                        const next = list.includes(item.zh) ? list.filter(x => x !== item.zh) : [...list, item.zh]
+                        return { ...f, furniture_note: next.join("、") }
+                      })}
+                      className={`py-1.5 px-3 rounded-full text-xs font-medium border transition ${
+                        selected ? "bg-red-600 border-red-600 text-white" : "bg-gray-50 text-gray-600 border-gray-200 hover:border-red-300"
+                      }`}>
+                      {lang==="zh" ? item.zh : item.vi}
+                    </button>
+                  )
+                })}
+              </div>
             )}
           </div>
         </div>
