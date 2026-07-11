@@ -171,6 +171,19 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
         : (lang==="zh" ? PARKING_TYPE_LABELS[p.parking_type]?.zh : PARKING_TYPE_LABELS[p.parking_type]?.vi) || p.parking_type)
     : null
 
+  // Đồ đạc đi kèm — dịch từng món sang tiếng Việt khi ở chế độ VI
+  const FURNITURE_VI: Record<string,string> = {
+    "洗衣機":"Máy giặt", "冰箱":"Tủ lạnh", "電視":"Tivi", "冷氣":"Điều hoà",
+    "熱水器":"Bình nóng lạnh", "網路":"Wifi/Internet", "天然瓦斯":"Gas thiên nhiên",
+    "瓦斯桶":"Bình gas", "瓦斯爐":"Bếp gas", "床墊":"Nệm", "床底":"Khung giường",
+    "衣櫃":"Tủ quần áo", "沙發":"Sofa", "桌子":"Bàn", "椅子":"Ghế",
+  }
+  const furnitureDisplay = (p as any).furniture_note
+    ? (lang==="zh"
+        ? (p as any).furniture_note
+        : (p as any).furniture_note.split("、").filter(Boolean).map((x: string) => FURNITURE_VI[x] || x).join(", "))
+    : null
+
   // floor: translate 整棟 if VI
   const FLOOR_VI: Record<string,string> = { "整棟":"Cả căn", "全層":"Toàn tầng" }
   const floorLabel = (() => {
@@ -213,7 +226,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     ...((p as any).business_license ? [{ label: lang==="zh"?"營業登記":"Giấy phép kinh doanh", value: lang==="zh"?"✓ 可營業登記":"✓ Được đăng ký" }] : []),
     ...((p as any).has_parking ? [{ label: lang==="zh"?"停車位":"Đậu xe",          value: (p as any).parking_note || (lang==="zh"?"✓ 有":"✓ Có") }] : []),
     ...((p as any).can_cook    ? [{ label: lang==="zh"?"開伙":"Nấu ăn",            value: lang==="zh"?"✓ 可開伙":"✓ Được nấu ăn" }] : []),
-    ...((p as any).has_furniture ? [{ label: lang==="zh"?"附傢俱家電":"Đồ đạc đi kèm", value: (p as any).furniture_note || (lang==="zh"?"✓ 有":"✓ Có") }] : []),
+    ...((p as any).has_furniture ? [{ label: lang==="zh"?"附傢俱家電":"Đồ đạc đi kèm", value: furnitureDisplay || (lang==="zh"?"✓ 有":"✓ Có") }] : []),
   ]
 
   return (
