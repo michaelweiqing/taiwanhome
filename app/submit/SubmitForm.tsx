@@ -1262,10 +1262,10 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
             {name:"agent_name",    ph: lang==="zh"?"姓名 *":"Họ tên *"},
             {name:"agent_phone",   ph: lang==="zh"?"電話 *":"Số điện thoại *"},
             {name:"agent_line",    ph: lang==="zh"?"LINE ID（選填）":"LINE ID (không bắt buộc)"},
-            {name:"agent_company", ph: lang==="zh"?"公司品牌（選填）":"Công ty (không bắt buộc)"},
-            {name:"agent_branch",  ph: lang==="zh"?"公司名稱（選填）":"Chi nhánh (không bắt buộc)"},
-            {name:"agent_license", ph: lang==="zh"?"營業員證號（選填）":"Giấy phép hành nghề (không bắt buộc)"},
-            {name:"agent_broker",  ph: lang==="zh"?"經紀人證號（選填）":"Số chứng chỉ môi giới (không bắt buộc)"},
+            {name:"agent_company", ph: form.agent_is_professional ? (lang==="zh"?"公司品牌 *":"Công ty *") : (lang==="zh"?"公司品牌（選填）":"Công ty (không bắt buộc)")},
+            {name:"agent_branch",  ph: form.agent_is_professional ? (lang==="zh"?"公司名稱 *":"Chi nhánh *") : (lang==="zh"?"公司名稱（選填）":"Chi nhánh (không bắt buộc)")},
+            {name:"agent_license", ph: form.agent_is_professional ? (lang==="zh"?"營業員證號 *":"Giấy phép hành nghề *") : (lang==="zh"?"營業員證號（選填）":"Giấy phép hành nghề (không bắt buộc)")},
+            {name:"agent_broker",  ph: form.agent_is_professional ? (lang==="zh"?"經紀人證號 *":"Số chứng chỉ môi giới *") : (lang==="zh"?"經紀人證號（選填）":"Số chứng chỉ môi giới (không bắt buộc)")},
           ].map(f => (
             <input key={f.name} name={f.name} value={(form as any)[f.name]}
               onChange={handleChange} placeholder={f.ph}
@@ -1278,6 +1278,12 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
       <button onClick={() => {
         if (!form.title_vi || !form.price || !form.address) {
           alert(lang==="zh" ? "請填寫必填欄位：標題、地址、價格" : "Vui lòng điền: Tiêu đề, Địa chỉ và Giá")
+          return
+        }
+        if (form.agent_is_professional && (!form.agent_company || !form.agent_branch || !form.agent_license || !form.agent_broker)) {
+          alert(lang==="zh"
+            ? "您已選擇「仲介」，請填寫必填欄位：公司品牌、公司名稱、營業員證號、經紀人證號"
+            : "Bạn đã chọn \"Môi giới\", vui lòng điền: Công ty, Chi nhánh, Giấy phép hành nghề, Số chứng chỉ môi giới")
           return
         }
         setPreview(true)
