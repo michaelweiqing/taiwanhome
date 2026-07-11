@@ -474,7 +474,7 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
           {/* Cột phải */}
           <div className="space-y-4">
             <div className="bg-white rounded-2xl p-5 border border-gray-100 sticky top-20">
-              <SectionTitle>{lang==="zh" ? "聯絡仲介" : "Liên hệ môi giới"}</SectionTitle>
+              <SectionTitle>{p.agent_is_professional ? (lang==="zh" ? "聯絡仲介" : "Liên hệ môi giới") : (lang==="zh" ? "聯絡" : "Liên hệ")}</SectionTitle>
               <ContactForm
                 agentName={lang === "zh" ? p.agent_name : (p.agent_name_vi || p.agent_name)}
                 agentPhone={p.agent_phone}

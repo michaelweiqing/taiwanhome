@@ -1233,21 +1233,22 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         </label>
 
         {/* 仲介 + 服務費 */}
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-          <button type="button"
-            onClick={() => setForm(f => ({...f, agent_is_professional: !f.agent_is_professional, charges_service_fee: f.agent_is_professional ? null : f.charges_service_fee}))}
-            className={`py-2 px-4 rounded-xl text-sm font-semibold border transition ${
-              form.agent_is_professional ? "bg-red-600 border-red-600 text-white" : "border-gray-200 text-gray-500 hover:border-red-300"
-            }`}>
-            {lang==="zh" ? "仲介" : "Môi giới"}
-          </button>
+        <div className="mb-3 space-y-2">
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition shrink-0 ${
+              form.agent_is_professional ? "bg-red-600 border-red-600" : "border-gray-300 group-hover:border-red-400"
+            }`} onClick={() => setForm(f => ({...f, agent_is_professional: !f.agent_is_professional, charges_service_fee: f.agent_is_professional ? null : f.charges_service_fee}))}>
+              {form.agent_is_professional && <span className="text-white text-xs font-bold">✓</span>}
+            </div>
+            <span className="text-sm text-gray-700">{lang==="zh" ? "仲介" : "Môi giới"}</span>
+          </label>
           {form.agent_is_professional && (
-            <div className="flex gap-2">
+            <div className="flex gap-2 pl-8">
               {[{v:true, zh:"收取服務費", vi:"Có phí dịch vụ"}, {v:false, zh:"不須服務費", vi:"Không phí dịch vụ"}].map(o => (
                 <button key={String(o.v)} type="button"
                   onClick={() => setForm(f => ({...f, charges_service_fee: o.v}))}
-                  className={`py-2 px-3 rounded-xl text-xs font-semibold border transition ${
-                    form.charges_service_fee === o.v ? "bg-red-600 border-red-600 text-white" : "border-gray-200 text-gray-500 hover:border-red-300"
+                  className={`py-1.5 px-3 rounded-full text-xs font-medium border transition ${
+                    form.charges_service_fee === o.v ? "bg-red-600 border-red-600 text-white" : "bg-gray-50 text-gray-600 border-gray-200 hover:border-red-300"
                   }`}>
                   {lang==="zh" ? o.zh : o.vi}
                 </button>
