@@ -191,6 +191,8 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
     agent_branch:  "",
     agent_license: "",
     agent_broker:  "",
+    agent_is_professional: false,
+    charges_service_fee: null as boolean | null,
   })
 
   const [translating, setTranslating] = useState(false)
@@ -286,6 +288,8 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
           agent_branch:  data.agent_branch || "",
           agent_license: data.agent_license || "",
           agent_broker:  data.agent_broker || "",
+          agent_is_professional: !!data.agent_is_professional,
+          charges_service_fee: data.charges_service_fee ?? null,
         }))
         setInitialLoading(false)
       })
@@ -473,6 +477,8 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         agent_branch:  form.agent_branch  || null,
         agent_license: form.agent_license || null,
         agent_broker:  form.agent_broker  || null,
+        agent_is_professional: form.agent_is_professional,
+        charges_service_fee: form.agent_is_professional ? form.charges_service_fee : null,
         description_vi: finalDescVi ? finalDescVi : null,
         description_zh: finalDescZh ? finalDescZh : (finalDescVi ? finalDescVi : null),
         video_url:     finalVideoUrl,
@@ -1225,6 +1231,31 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
         <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
           <User size={16} strokeWidth={2.2} /> {lang === "zh" ? "聯絡資訊" : "Thông tin liên hệ"}
         </label>
+
+        {/* 仲介 + 服務費 */}
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <button type="button"
+            onClick={() => setForm(f => ({...f, agent_is_professional: !f.agent_is_professional, charges_service_fee: f.agent_is_professional ? null : f.charges_service_fee}))}
+            className={`py-2 px-4 rounded-xl text-sm font-semibold border transition ${
+              form.agent_is_professional ? "bg-red-600 border-red-600 text-white" : "border-gray-200 text-gray-500 hover:border-red-300"
+            }`}>
+            {lang==="zh" ? "仲介" : "Môi giới"}
+          </button>
+          {form.agent_is_professional && (
+            <div className="flex gap-2">
+              {[{v:true, zh:"收取服務費", vi:"Có phí dịch vụ"}, {v:false, zh:"不須服務費", vi:"Không phí dịch vụ"}].map(o => (
+                <button key={String(o.v)} type="button"
+                  onClick={() => setForm(f => ({...f, charges_service_fee: o.v}))}
+                  className={`py-2 px-3 rounded-xl text-xs font-semibold border transition ${
+                    form.charges_service_fee === o.v ? "bg-red-600 border-red-600 text-white" : "border-gray-200 text-gray-500 hover:border-red-300"
+                  }`}>
+                  {lang==="zh" ? o.zh : o.vi}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className="space-y-2">
           {[
             {name:"agent_name",    ph: lang==="zh"?"姓名 *":"Họ tên *"},
