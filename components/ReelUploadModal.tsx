@@ -14,7 +14,7 @@ interface Props {
 }
 
 const MAX_REEL_SECONDS = 90
-const MAX_REEL_BYTES = 350 * 1024 * 1024 // 350MB — đủ cho clip 90s chất lượng cao
+const MAX_REEL_BYTES = 350 * 1024 * 1024 // 350MB — đủ cho clip 90s 4K trước khi nén
 
 export default function ReelUploadModal({ propertyId, propertySource, phone, listingType, onClose, onUploaded }: Props) {
   const { lang } = useLang()
@@ -26,6 +26,7 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
   const [duration, setDuration] = useState<number | null>(null)
   const [error, setError] = useState("")
   const [uploading, setUploading] = useState(false)
+  const [uploadPct, setUploadPct] = useState(0)
   const [done, setDone] = useState(false)
 
   function handlePick(e: React.ChangeEvent<HTMLInputElement>) {
@@ -61,60 +62,60 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
     vid.src = url
   }
 
-  // Chụp 1 khung hình ở giây thứ 1 làm ảnh thumbnail
-  async function captureThumbnail(videoEl: HTMLVideoElement): Promise<Blob | null> {
-    return new Promise(resolve => {
-      const canvas = document.createElement("canvas")
-      canvas.width = videoEl.videoWidth
-      canvas.height = videoEl.videoHeight
-      const ctx = canvas.getContext("2d")
-      if (!ctx) { resolve(null); return }
-      ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height)
-      canvas.toBlob(blob => resolve(blob), "image/jpeg", 0.85)
-    })
-  }
+  // Upload trực tiếp từ trình duyệt lên Cloudinary (không qua server, tránh giới hạn
+  // dung lượng của Vercel serverless function). Cloudinary tự nén video xuống tối đa
+  // 1080p (xem transformation "eager" được ký ở /api/cloudinary-signature).
+  function uploadToCloudinary(sig: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const form = new FormData()
+      form.append("file", file as File)
+      form.append("api_key", sig.apiKey)
+      form.append("timestamp", String(sig.timestamp))
+      form.append("signature", sig.signature)
+      form.append("folder", sig.folder)
+      form.append("eager", sig.eager)
+      form.append("eager_async", sig.eagerAsync)
 
-  function grabFrameForThumbnail(): Promise<Blob | null> {
-    return new Promise(resolve => {
-      if (!preview) { resolve(null); return }
-      const v = document.createElement("video")
-      v.src = preview
-      v.muted = true
-      v.playsInline = true
-      v.onloadeddata = () => { v.currentTime = Math.min(1, (duration || 1) / 2) }
-      v.onseeked = async () => resolve(await captureThumbnail(v))
-      v.onerror = () => resolve(null)
+      const xhr = new XMLHttpRequest()
+      xhr.open("POST", `https://api.cloudinary.com/v1_1/${sig.cloudName}/video/upload`)
+      xhr.upload.onprogress = ev => {
+        if (ev.lengthComputable) setUploadPct(Math.round((ev.loaded / ev.total) * 100))
+      }
+      xhr.onload = () => {
+        try {
+          const json = JSON.parse(xhr.responseText)
+          if (xhr.status >= 200 && xhr.status < 300) resolve(json)
+          else reject(new Error(json?.error?.message || "Cloudinary upload thất bại"))
+        } catch {
+          reject(new Error("Cloudinary upload thất bại"))
+        }
+      }
+      xhr.onerror = () => reject(new Error("Lỗi kết nối khi tải video lên Cloudinary"))
+      xhr.send(form)
     })
   }
 
   async function handleSubmit() {
     if (!file) return
     setUploading(true)
+    setUploadPct(0)
     setError("")
     try {
-      const ext = (file.name.split(".").pop() || "mp4").toLowerCase()
-      const contentType = ext === "mov" ? "video/quicktime"
-        : ext === "webm" ? "video/webm"
-        : ext === "mkv"  ? "video/x-matroska"
-        : "video/mp4"
       const subFolder = listingType === "rent" ? "rent" : "sell"
-      const stamp = `${Date.now()}-${Math.random().toString(36).slice(2)}`
-      const path = `reels/${subFolder}/${stamp}.${ext}`
 
-      const { error: upErr } = await supabase.storage
-        .from("user_video").upload(path, file, { upsert: true, contentType })
-      if (upErr) throw new Error(upErr.message)
-      const { data: urlData } = supabase.storage.from("user_video").getPublicUrl(path)
-      const videoUrl = urlData.publicUrl
+      const sigRes = await fetch("/api/cloudinary-signature", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subFolder }),
+      })
+      const sig = await sigRes.json()
+      if (!sigRes.ok) throw new Error(sig.error || "Không lấy được chữ ký Cloudinary")
 
-      let thumbUrl: string | null = null
-      const thumbBlob = await grabFrameForThumbnail()
-      if (thumbBlob) {
-        const thumbPath = `reels/${subFolder}/${stamp}-thumb.jpg`
-        const { error: thumbErr } = await supabase.storage
-          .from("user_video").upload(thumbPath, thumbBlob, { upsert: true, contentType: "image/jpeg" })
-        if (!thumbErr) thumbUrl = supabase.storage.from("user_video").getPublicUrl(thumbPath).data.publicUrl
-      }
+      const result = await uploadToCloudinary(sig)
+      const videoUrl: string = result.eager?.[0]?.secure_url || result.secure_url
+      const publicId: string = result.public_id
+      // Cloudinary tự trích 1 khung hình ở giây thứ 1 làm thumbnail, resize sẵn cho card 9:16
+      const thumbUrl = `https://res.cloudinary.com/${sig.cloudName}/video/upload/so_1,w_400,h_711,c_fill,q_auto/${publicId}.jpg`
 
       const { error: rpcErr } = await supabase.rpc("insert_property_reel", {
         p_property_id: propertyId,
@@ -173,7 +174,7 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
                   {lang === "zh" ? "選擇影片檔案" : "Chọn file video"}
                 </span>
                 <span className="text-[11px] text-gray-400">
-                  {lang === "zh" ? `最長 ${MAX_REEL_SECONDS} 秒 · 支援 4K` : `Tối đa ${MAX_REEL_SECONDS} giây · Hỗ trợ 4K`}
+                  {lang === "zh" ? `最長 ${MAX_REEL_SECONDS} 秒 · 支援 4K（自動壓縮為 1080p）` : `Tối đa ${MAX_REEL_SECONDS} giây · Hỗ trợ 4K (tự nén xuống 1080p)`}
                 </span>
               </button>
             ) : (
@@ -192,7 +193,9 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
                 </button>
                 <button onClick={handleSubmit} disabled={uploading}
                   className="flex-1 flex items-center justify-center gap-1.5 text-sm font-bold text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-xl py-2.5 transition">
-                  {uploading ? <><Loader2 size={15} className="animate-spin" /> {lang === "zh" ? "上傳中..." : "Đang tải..."}</> : (lang === "zh" ? "送出" : "Gửi video")}
+                  {uploading
+                    ? <><Loader2 size={15} className="animate-spin" /> {lang === "zh" ? `上傳中 ${uploadPct}%` : `Đang tải ${uploadPct}%`}</>
+                    : (lang === "zh" ? "送出" : "Gửi video")}
                 </button>
               </div>
             )}
