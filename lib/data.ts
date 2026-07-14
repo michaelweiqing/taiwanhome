@@ -62,6 +62,36 @@ export interface Property {
   source?: "admin" | "user"           // Nguồn tin: admin đăng hay khách tự đăng
 }
 
+export interface PropertyReel {
+  id: string
+  property_id: string
+  property_source: "admin" | "user"
+  video_url: string
+  thumbnail_url: string | null
+  duration_seconds: number | null
+  title_vi: string | null
+  title_zh: string | null
+  price: number | null
+  listing_type: "rent" | "buy" | null
+  city: string | null
+  city_vi: string | null
+  uploader_type: "admin" | "user"
+  status: "pending" | "approved" | "rejected"
+  views: number
+  created_at: string
+}
+
+export async function getApprovedReels(): Promise<PropertyReel[]> {
+  const { data, error } = await supabase
+    .from("property_reels")
+    .select("*")
+    .eq("status", "approved")
+    .order("created_at", { ascending: false })
+    .limit(30)
+  if (error) { console.error("Supabase reels:", error.message); return [] }
+  return data as PropertyReel[]
+}
+
 export async function getAllProperties(): Promise<Property[]> {
   const [r1, r2] = await Promise.all([
     supabase.from("properties").select("*").order("posted_at", { ascending: false }),

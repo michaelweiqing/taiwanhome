@@ -6,10 +6,12 @@ import type { Property } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
 import { createClient } from "@/lib/supabase-browser"
 import PropertyCard from "@/components/PropertyCard"
+import ReelsSection from "@/components/ReelsSection"
+import type { PropertyReel } from "@/lib/data"
 import { Search, MessageCircle, Building2, Moon, Plane, Microscope, Building, Wheat, Landmark, Waves, Eye } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
-interface Props { featured: Property[]; newest: Property[] }
+interface Props { featured: Property[]; newest: Property[]; reels: PropertyReel[] }
 
 const CITIES: { zh: string; vi: string; Icon: LucideIcon; n: number; slug: string }[] = [
   { zh:"台北市", vi:"Đài Bắc",   Icon:Building2,   n:5234, slug:"台北市" },
@@ -102,7 +104,7 @@ const DISTRICTS: Record<string, { zh: string; vi: string }[]> = {
   ],
 }
 
-export default function HomeClient({ featured, newest }: Props) {
+export default function HomeClient({ featured, newest, reels }: Props) {
   const { lang, t } = useLang()
   const router = useRouter()
   const [tab, setTab] = useState<"rent"|"buy">("rent")
@@ -297,21 +299,8 @@ export default function HomeClient({ featured, newest }: Props) {
         </div>
       </div>
 
-      {/* ── Stats bar ── */}
-      <div className="bg-white border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-around text-center">
-          {[
-            { n:"12,847", label: lang==="zh"?"租屋物件":"Nhà cho thuê" },
-            { n:"8,392",  label: lang==="zh"?"售屋物件":"Nhà mua bán" },
-            { n:"486",    label: lang==="zh"?"今日新增":"Mới hôm nay" },
-          ].map(s => (
-            <div key={s.label}>
-              <div className="text-red-600 font-bold text-lg leading-none">{s.n}</div>
-              <div className="text-gray-400 text-[11px] mt-0.5">{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* ── Reels: Video ngắn nhà đất ── */}
+      <ReelsSection reels={reels} />
 
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-10">
 
