@@ -41,9 +41,10 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
     setError("")
 
     if (f.size > MAX_REEL_BYTES) {
+      const actualMb = (f.size / (1024 * 1024)).toFixed(1)
       setError(lang === "zh"
-        ? "影片大小不可超過 95MB（4K 影片通常過大，建議以 1080p 拍攝）"
-        : "Video không được vượt quá 95MB (video 4K thường quá nặng, nên quay ở 1080p)")
+        ? `影片實際大小為 ${actualMb}MB，超過 95MB 上限（iOS 有時會將 HEVC 影片自動轉為 H.264，體積會變大許多）`
+        : `Video thực tế nặng ${actualMb}MB, vượt giới hạn 95MB (iOS đôi khi tự chuyển HEVC sang H.264 khi tải lên, làm dung lượng tăng đáng kể so với Photos hiển thị)`)
       return
     }
 
