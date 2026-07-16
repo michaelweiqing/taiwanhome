@@ -1,6 +1,6 @@
 "use client"
 import { useState, useRef, useEffect } from "react"
-import { Share2, Link2, Check } from "lucide-react"
+import { Link2, Check } from "lucide-react"
 import { useLang } from "@/context/LangContext"
 
 interface Props {
@@ -108,14 +108,24 @@ export default function ReelShareButton({ url, title, text }: Props) {
     </svg>
   )
 
+  // Icon nút chia sẻ chính — mũi tên "share" + khung video/play, nền gradient cam
+  const ShareVideoIcon = (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8.2 15.3c0-3.6 2.6-6.3 6-6.3h.9V5.6l5.2 4.6-5.2 4.6v-3.4h-.9c-2.3 0-4.1 1.9-4.1 4.2v.9"
+        stroke="white" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+      <rect x="5.6" y="15.3" width="9.2" height="6.3" rx="1.4" fill="white"/>
+      <path d="M8.9 17.1v2.7l2.7-1.35-2.7-1.35z" fill="#EA580C"/>
+    </svg>
+  )
+
   return (
     <div className="relative" ref={ref}>
       <button
         onClick={handleToggle}
         aria-label={lang === "zh" ? "分享影片" : "Chia sẻ video"}
-        className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 text-white/90 hover:bg-white/20 transition"
+        className="flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 shadow-md shadow-orange-900/30 hover:brightness-105 active:scale-95 transition"
       >
-        <Share2 size={17} strokeWidth={2.2} />
+        {ShareVideoIcon}
       </button>
 
       {open && (
