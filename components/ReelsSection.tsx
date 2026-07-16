@@ -66,8 +66,9 @@ function ReelViewer({ reels, startIndex, onClose }: { reels: PropertyReel[]; sta
     const vid = videoRef.current
     if (!vid) return
     vid.currentTime = 0
+    vid.muted = muted
     vid.play().catch(() => {})
-  }, [index])
+  }, [index, muted])
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
