@@ -58,7 +58,7 @@ function ReelCard({ reel, lang, onOpen }: { reel: PropertyReel; lang: "zh" | "vi
 function ReelViewer({ reels, startIndex, onClose }: { reels: PropertyReel[]; startIndex: number; onClose: () => void }) {
   const { lang } = useLang()
   const [index, setIndex] = useState(startIndex)
-  const [muted, setMuted] = useState(true)
+  const [muted, setMuted] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const reel = reels[index]
 
@@ -67,7 +67,16 @@ function ReelViewer({ reels, startIndex, onClose }: { reels: PropertyReel[]; sta
     if (!vid) return
     vid.currentTime = 0
     vid.muted = muted
-    vid.play().catch(() => {})
+    // Cố phát có tiếng theo yêu cầu (mở video = hành động click chủ động của khách).
+    // Một số trình duyệt vẫn có thể chặn autoplay có âm thanh (chính sách tùy trình duyệt/thiết bị)
+    // → nếu bị chặn, tự động fallback về tắt tiếng để video vẫn phát được thay vì đứng im.
+    vid.play().catch(() => {
+      if (!vid.muted) {
+        vid.muted = true
+        setMuted(true)
+        vid.play().catch(() => {})
+      }
+    })
   }, [index, muted])
 
   useEffect(() => {
