@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useLang } from "@/context/LangContext"
 import type { PropertyReel } from "@/lib/data"
 import HlsVideo from "@/components/HlsVideo"
+import ReelShareButton from "@/components/ReelShareButton"
 import { Play, Volume2, VolumeX, X, ChevronLeft, ChevronRight, Clapperboard, Plus } from "lucide-react"
 
 interface Props { reels: PropertyReel[] }
@@ -92,6 +93,9 @@ function ReelViewer({ reels, startIndex, onClose }: { reels: PropertyReel[]; sta
   if (!reel) return null
   const title = lang === "zh" ? (reel.title_zh || reel.title_vi) : (reel.title_vi || reel.title_zh)
   const listingId = reel.property_id
+  const shareUrl = typeof window !== "undefined"
+    ? `${window.location.origin}/listings/${listingId}` : `/listings/${listingId}`
+  const shareText = reel.price != null ? formatReelPrice(reel, lang) : (title || "")
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center" onClick={onClose}>
@@ -130,6 +134,10 @@ function ReelViewer({ reels, startIndex, onClose }: { reels: PropertyReel[]; sta
           className="absolute top-4 left-4 text-white/90 bg-white/10 rounded-full p-2">
           {muted ? <VolumeX size={18} strokeWidth={2.2} /> : <Volume2 size={18} strokeWidth={2.2} />}
         </button>
+
+        <div className="absolute top-4 right-16 sm:right-4 sm:top-16" onClick={e => e.stopPropagation()}>
+          <ReelShareButton url={shareUrl} title={title || "8386找房網"} text={shareText} />
+        </div>
 
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/85 to-transparent">
           {reel.price != null && (
