@@ -63,8 +63,8 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
   }
 
   // Upload trực tiếp từ trình duyệt lên Cloudinary (không qua server, tránh giới hạn
-  // dung lượng của Vercel serverless function). Cloudinary tự nén video xuống tối đa
-  // 1080p (xem transformation "eager" được ký ở /api/cloudinary-signature).
+  // dung lượng của Vercel serverless function). Chỉ đẩy file gốc lên — việc nén xuống
+  // 1080p diễn ra on-the-fly khi phát (qua URL transformation), không chặn lúc upload.
   function uploadToCloudinary(sig: any): Promise<any> {
     return new Promise((resolve, reject) => {
       const form = new FormData()
@@ -73,8 +73,6 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
       form.append("timestamp", String(sig.timestamp))
       form.append("signature", sig.signature)
       form.append("folder", sig.folder)
-      form.append("eager", sig.eager)
-      form.append("eager_async", sig.eagerAsync)
 
       const xhr = new XMLHttpRequest()
       xhr.open("POST", `https://api.cloudinary.com/v1_1/${sig.cloudName}/video/upload`)
@@ -112,9 +110,10 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
       if (!sigRes.ok) throw new Error(sig.error || "Không lấy được chữ ký Cloudinary")
 
       const result = await uploadToCloudinary(sig)
-      const videoUrl: string = result.eager?.[0]?.secure_url || result.secure_url
       const publicId: string = result.public_id
-      // Cloudinary tự trích 1 khung hình ở giây thứ 1 làm thumbnail, resize sẵn cho card 9:16
+      // Nén xuống tối đa 1080p on-the-fly khi phát (Cloudinary transform qua URL, cache ở CDN sau lần đầu)
+      const videoUrl = `https://res.cloudinary.com/${sig.cloudName}/video/upload/c_limit,w_1080,h_1920,q_auto,vc_h264/${publicId}.mp4`
+      // Thumbnail: 1 khung hình ở giây thứ 1, resize sẵn cho card 9:16
       const thumbUrl = `https://res.cloudinary.com/${sig.cloudName}/video/upload/so_1,w_400,h_711,c_fill,q_auto/${publicId}.jpg`
 
       const { error: rpcErr } = await supabase.rpc("insert_property_reel", {
