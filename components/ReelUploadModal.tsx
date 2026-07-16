@@ -14,8 +14,8 @@ interface Props {
 }
 
 const MAX_REEL_SECONDS = 90
-// Bucket "user_video" trên Supabase cho phép tới 500MB/file — để dư khoảng đệm an toàn.
-const MAX_REEL_BYTES = 300 * 1024 * 1024 // 300MB
+// Bucket "user_video" trên Supabase cho phép tới 1GB/file — để dư khoảng đệm an toàn.
+const MAX_REEL_BYTES = 800 * 1024 * 1024 // 800MB
 
 export default function ReelUploadModal({ propertyId, propertySource, phone, listingType, onClose, onUploaded }: Props) {
   const { lang } = useLang()
@@ -38,8 +38,8 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
     if (f.size > MAX_REEL_BYTES) {
       const actualMb = (f.size / (1024 * 1024)).toFixed(1)
       setError(lang === "zh"
-        ? `影片實際大小為 ${actualMb}MB，超過 300MB 上限`
-        : `Video thực tế nặng ${actualMb}MB, vượt giới hạn 300MB`)
+        ? `影片實際大小為 ${actualMb}MB，超過 800MB 上限`
+        : `Video thực tế nặng ${actualMb}MB, vượt giới hạn 800MB`)
       return
     }
 
@@ -178,7 +178,7 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
                   {lang === "zh" ? "選擇影片檔案" : "Chọn file video"}
                 </span>
                 <span className="text-[11px] text-gray-400">
-                  {lang === "zh" ? `最長 ${MAX_REEL_SECONDS} 秒 · 檔案 ≤300MB` : `Tối đa ${MAX_REEL_SECONDS} giây · Dung lượng ≤300MB`}
+                  {lang === "zh" ? `最長 ${MAX_REEL_SECONDS} 秒 · 檔案 ≤800MB` : `Tối đa ${MAX_REEL_SECONDS} giây · Dung lượng ≤800MB`}
                 </span>
               </button>
             ) : (
