@@ -14,7 +14,12 @@ interface Props {
 }
 
 const MAX_REEL_SECONDS = 90
-const MAX_REEL_BYTES = 350 * 1024 * 1024 // 350MB — đủ cho clip 90s 4K trước khi nén
+// Gói Cloudinary Free giới hạn cứng 100MB/video (kể cả upload chunked) — để dư khoảng
+// đệm an toàn. Quay 4K 90s thường vượt mốc này rất nhiều; khuyến nghị người dùng quay 1080p.
+const MAX_REEL_BYTES = 95 * 1024 * 1024 // 95MB
+// Cloudinary chỉ cho phép nén/transform video on-the-fly (miễn phí) với file ≤40MB.
+// File lớn hơn mốc này sẽ phát bản gốc (không resize) để tránh lỗi hiển thị.
+const TRANSFORM_SAFE_BYTES = 35 * 1024 * 1024 // 35MB
 
 export default function ReelUploadModal({ propertyId, propertySource, phone, listingType, onClose, onUploaded }: Props) {
   const { lang } = useLang()
@@ -36,7 +41,9 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
     setError("")
 
     if (f.size > MAX_REEL_BYTES) {
-      setError(lang === "zh" ? "影片大小不可超過 350MB" : "Video không được vượt quá 350MB")
+      setError(lang === "zh"
+        ? "影片大小不可超過 95MB（4K 影片通常過大，建議以 1080p 拍攝）"
+        : "Video không được vượt quá 95MB (video 4K thường quá nặng, nên quay ở 1080p)")
       return
     }
 
@@ -88,7 +95,11 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
           reject(new Error("Cloudinary upload thất bại"))
         }
       }
-      xhr.onerror = () => reject(new Error("Lỗi kết nối khi tải video lên Cloudinary"))
+      xhr.onerror = () => reject(new Error(
+        lang === "zh"
+          ? "上傳中斷 — 檔案可能過大或網路不穩，請嘗試較短或較低畫質的影片"
+          : "Kết nối bị ngắt khi tải lên — có thể do file còn quá nặng hoặc mạng yếu, thử quay ngắn/nhẹ hơn"
+      ))
       xhr.send(form)
     })
   }
@@ -111,10 +122,15 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
 
       const result = await uploadToCloudinary(sig)
       const publicId: string = result.public_id
-      // Nén xuống tối đa 1080p on-the-fly khi phát (Cloudinary transform qua URL, cache ở CDN sau lần đầu)
-      const videoUrl = `https://res.cloudinary.com/${sig.cloudName}/video/upload/c_limit,w_1080,h_1920,q_auto,vc_h264/${publicId}.mp4`
-      // Thumbnail: 1 khung hình ở giây thứ 1, resize sẵn cho card 9:16
-      const thumbUrl = `https://res.cloudinary.com/${sig.cloudName}/video/upload/so_1,w_400,h_711,c_fill,q_auto/${publicId}.jpg`
+      const withinTransformLimit = file.size <= TRANSFORM_SAFE_BYTES
+      // Cloudinary chỉ nén/trích thumbnail on-the-fly miễn phí cho file ≤40MB — dùng bản
+      // resize khi an toàn, còn lại phát thẳng bản gốc và bỏ qua thumbnail (video vẫn ≤95MB nên tải ổn).
+      const videoUrl = withinTransformLimit
+        ? `https://res.cloudinary.com/${sig.cloudName}/video/upload/c_limit,w_1080,h_1920,q_auto,vc_h264/${publicId}.mp4`
+        : (result.secure_url as string)
+      const thumbUrl = withinTransformLimit
+        ? `https://res.cloudinary.com/${sig.cloudName}/video/upload/so_1,w_400,h_711,c_fill,q_auto/${publicId}.jpg`
+        : null
 
       const { error: rpcErr } = await supabase.rpc("insert_property_reel", {
         p_property_id: propertyId,
@@ -173,7 +189,7 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
                   {lang === "zh" ? "選擇影片檔案" : "Chọn file video"}
                 </span>
                 <span className="text-[11px] text-gray-400">
-                  {lang === "zh" ? `最長 ${MAX_REEL_SECONDS} 秒 · 支援 4K（自動壓縮為 1080p）` : `Tối đa ${MAX_REEL_SECONDS} giây · Hỗ trợ 4K (tự nén xuống 1080p)`}
+                  {lang === "zh" ? `最長 ${MAX_REEL_SECONDS} 秒 · 建議以 1080p 拍攝，檔案 ≤95MB` : `Tối đa ${MAX_REEL_SECONDS} giây · Nên quay ở 1080p, dung lượng ≤95MB`}
                 </span>
               </button>
             ) : (
