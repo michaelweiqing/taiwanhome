@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { useLang } from "@/context/LangContext"
 import type { PropertyReel } from "@/lib/data"
+import HlsVideo from "@/components/HlsVideo"
 import { Play, Volume2, VolumeX, X, ChevronLeft, ChevronRight, Clapperboard, Plus } from "lucide-react"
 
 interface Props { reels: PropertyReel[] }
@@ -36,7 +37,7 @@ function ReelCard({ reel, lang, onOpen }: { reel: PropertyReel; lang: "zh" | "vi
   return (
     <button ref={wrapRef} onClick={onOpen}
       className="relative shrink-0 w-[124px] h-[220px] rounded-2xl overflow-hidden bg-gray-900 snap-start text-left shadow-md active:scale-[0.97] transition">
-      <video ref={videoRef} src={reel.video_url} poster={reel.thumbnail_url || undefined}
+      <HlsVideo ref={videoRef} src={reel.video_url} poster={reel.thumbnail_url || undefined}
         muted loop playsInline preload="metadata" className="w-full h-full object-cover" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/10 pointer-events-none" />
       <div className="absolute top-2 left-2 bg-white/90 rounded-full p-1">
@@ -112,7 +113,7 @@ function ReelViewer({ reels, startIndex, onClose }: { reels: PropertyReel[]; sta
           if (diff > 50 && index > 0) setIndex(i => i - 1)
         }}
       >
-        <video ref={videoRef} src={reel.video_url} muted={muted} playsInline autoPlay loop
+        <HlsVideo ref={videoRef} src={reel.video_url} muted={muted} playsInline autoPlay loop
           className="w-full h-full object-contain bg-black" onClick={() => setMuted(m => !m)} />
 
         <button onClick={() => setMuted(m => !m)}

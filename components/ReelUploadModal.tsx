@@ -65,67 +65,29 @@ export default function ReelUploadModal({ propertyId, propertySource, phone, lis
     vid.src = url
   }
 
-  // Chụp 1 khung hình ở giây thứ 1 làm ảnh thumbnail (Supabase Storage không tự sinh
-  // thumbnail như Cloudinary, nên cần chụp thủ công phía client).
-  async function captureThumbnail(videoEl: HTMLVideoElement): Promise<Blob | null> {
-    return new Promise(resolve => {
-      const canvas = document.createElement("canvas")
-      canvas.width = videoEl.videoWidth
-      canvas.height = videoEl.videoHeight
-      const ctx = canvas.getContext("2d")
-      if (!ctx) { resolve(null); return }
-      ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height)
-      canvas.toBlob(blob => resolve(blob), "image/jpeg", 0.85)
-    })
-  }
-
-  function grabFrameForThumbnail(): Promise<Blob | null> {
-    return new Promise(resolve => {
-      if (!preview) { resolve(null); return }
-      const v = document.createElement("video")
-      v.src = preview
-      v.muted = true
-      v.playsInline = true
-      v.onloadeddata = () => { v.currentTime = Math.min(1, (duration || 1) / 2) }
-      v.onseeked = async () => resolve(await captureThumbnail(v))
-      v.onerror = () => resolve(null)
-    })
-  }
-
   async function handleSubmit() {
     if (!file) return
     setUploading(true)
     setError("")
     try {
-      const ext = (file.name.split(".").pop() || "mp4").toLowerCase()
-      const contentType = ext === "mov" ? "video/quicktime"
-        : ext === "webm" ? "video/webm"
-        : ext === "mkv"  ? "video/x-matroska"
-        : ext === "3gp"  ? "video/3gpp"
-        : "video/mp4"
       const subFolder = listingType === "rent" ? "rent" : "sell"
       const stamp = `${Date.now()}-${Math.random().toString(36).slice(2)}`
-      const path = `reels/${subFolder}/${stamp}.${ext}`
 
-      const { error: upErr } = await supabase.storage
-        .from("user_video").upload(path, file, { upsert: true, contentType })
-      if (upErr) throw new Error(upErr.message)
-      const videoUrl = supabase.storage.from("user_video").getPublicUrl(path).data.publicUrl
+      // Upload lên Bunny Stream qua API route (API key giữ ở server, không lộ ra client).
+      // Bunny tự encode HLS + tự sinh thumbnail, không cần capture frame thủ công nữa.
+      const uploadForm = new FormData()
+      uploadForm.append("file", file)
+      uploadForm.append("title", `reel-${subFolder}-${stamp}`)
 
-      let thumbUrl: string | null = null
-      const thumbBlob = await grabFrameForThumbnail()
-      if (thumbBlob) {
-        const thumbPath = `reels/${subFolder}/${stamp}-thumb.jpg`
-        const { error: thumbErr } = await supabase.storage
-          .from("user_video").upload(thumbPath, thumbBlob, { upsert: true, contentType: "image/jpeg" })
-        if (!thumbErr) thumbUrl = supabase.storage.from("user_video").getPublicUrl(thumbPath).data.publicUrl
-      }
+      const uploadRes = await fetch("/api/video/upload", { method: "POST", body: uploadForm })
+      const uploadData = await uploadRes.json()
+      if (!uploadRes.ok) throw new Error(uploadData.error || "Tải video lên Bunny thất bại")
 
       const { error: rpcErr } = await supabase.rpc("insert_property_reel", {
         p_property_id: propertyId,
         p_property_source: propertySource,
-        p_video_url: videoUrl,
-        p_thumbnail_url: thumbUrl,
+        p_video_url: uploadData.videoUrl,
+        p_thumbnail_url: uploadData.thumbnailUrl,
         p_duration_seconds: duration,
         p_phone: phone,
       })

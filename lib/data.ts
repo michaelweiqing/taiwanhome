@@ -34,6 +34,7 @@ export interface Property {
   nearby?: Record<string, string> | null
   images: string[]
   video_url?: string | null
+  video_thumbnail_url?: string | null
   agent_name: string
   agent_name_vi?: string
   agent_phone: string
