@@ -193,7 +193,12 @@ export interface FilterOptions {
   minPrice?: number
   maxPrice?: number
   minArea?: number
-  bedrooms?: number
+  maxArea?: number
+  bedrooms?: number      // khớp đúng số phòng (1,2,3,4)
+  bedroomsMin?: number   // từ N phòng trở lên (dùng cho "5房以上")
+  minAge?: number
+  maxAge?: number
+  parking?: boolean
   sortBy?: "newest" | "price_asc" | "price_desc"
 }
 
@@ -208,7 +213,12 @@ export async function searchProperties(filters: FilterOptions): Promise<Property
     if (filters.minPrice)     query = query.gte("price",        filters.minPrice)
     if (filters.maxPrice)     query = query.lte("price",        filters.maxPrice)
     if (filters.minArea)      query = query.gte("area_ping",    filters.minArea)
+    if (filters.maxArea)      query = query.lte("area_ping",    filters.maxArea)
     if (filters.bedrooms)     query = query.eq("bedrooms",      filters.bedrooms)
+    if (filters.bedroomsMin)  query = query.gte("bedrooms",     filters.bedroomsMin)
+    if (filters.minAge != null) query = query.gte("age",        filters.minAge)
+    if (filters.maxAge != null) query = query.lte("age",        filters.maxAge)
+    if (filters.parking != null) query = query.eq("parking",    filters.parking)
     if (filters.sortBy === "price_asc")
       query = query.order("price", { ascending: true })
     else if (filters.sortBy === "price_desc")

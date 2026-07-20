@@ -10,9 +10,24 @@ interface Props {
   initialProperties: Property[]
   searchQuery?: string   // ← MỚI: từ khoá tìm text (q=...) lọc phía client
   rawParams?: Record<string, string | undefined>  // ← các param khác trên URL (city, district, type...) để giữ nguyên khi sửa q
+  floorFilter?: string   // ← "1" | "2-6" | "6-12" | "12+" | "basement" | "whole" — cột floor là text nên lọc phía client
 }
 
-export default function ListingsClient({ initialProperties, searchQuery, rawParams }: Props) {
+function matchesFloor(floorRaw: string | null | undefined, category: string): boolean {
+  const s = (floorRaw || "").trim()
+  if (!s) return false
+  if (category === "whole") return s.includes("整")
+  if (category === "basement") return s.includes("地下") || /^b\s*-?\d/i.test(s)
+  const num = parseInt(s.replace(/[^0-9]/g, ""), 10)
+  if (isNaN(num)) return false
+  if (category === "1")     return num === 1
+  if (category === "2-6")   return num >= 2 && num <= 6
+  if (category === "6-12")  return num >= 6 && num <= 12
+  if (category === "12+")   return num >= 12
+  return false
+}
+
+export default function ListingsClient({ initialProperties, searchQuery, rawParams, floorFilter }: Props) {
   const { lang, t } = useLang()
   const router = useRouter()
   const pathname = usePathname()
@@ -92,6 +107,9 @@ export default function ListingsClient({ initialProperties, searchQuery, rawPara
     // ── Lọc loại giao dịch (rent/buy) — từ toolbar ──
     if (typeFilter !== "all") list = list.filter(p => p.listing_type === typeFilter)
 
+    // ── Lọc tầng lầu (cột floor là text tự do nên lọc phía client) ──
+    if (floorFilter) list = list.filter(p => matchesFloor(p.floor, floorFilter))
+
     // ── Sắp xếp ──
     if (sortBy === "price_asc")  list.sort((a, b) => a.price - b.price)
     if (sortBy === "price_desc") list.sort((a, b) => b.price - a.price)
@@ -100,7 +118,7 @@ export default function ListingsClient({ initialProperties, searchQuery, rawPara
     )
 
     return list
-  }, [initialProperties, typeFilter, sortBy, query])
+  }, [initialProperties, typeFilter, sortBy, query, floorFilter])
 
   return (
     <div className="bg-gray-50 min-h-screen">

@@ -113,6 +113,11 @@ export default function HomeClient({ featured, newest, reels }: Props) {
   const [selectedDistrict, setSelectedDistrict] = useState("")
   const [selectedType, setSelectedType] = useState("")
   const [selectedPrice, setSelectedPrice] = useState("")
+  const [selectedRooms, setSelectedRooms] = useState("")
+  const [selectedArea, setSelectedArea] = useState("")
+  const [selectedAge, setSelectedAge] = useState("")
+  const [selectedFloor, setSelectedFloor] = useState("")
+  const [selectedParking, setSelectedParking] = useState("")
   const [todayVisits, setTodayVisits] = useState<number | null>(null)
 
   // Đếm lượt truy cập trang web hôm nay — mỗi trình duyệt chỉ tính 1 lần/ngày
@@ -147,6 +152,13 @@ export default function HomeClient({ featured, newest, reels }: Props) {
     if (selectedCity) params.set("city", selectedCity)
     if (selectedDistrict) params.set("district", selectedDistrict)
     if (selectedType) params.set("property_type", selectedType)
+    if (tab === "buy") {
+      if (selectedRooms) params.set("rooms", selectedRooms)
+      if (selectedArea) params.set("area", selectedArea)
+      if (selectedAge) params.set("age", selectedAge)
+      if (selectedFloor) params.set("floor", selectedFloor)
+      if (selectedParking) params.set("parking", selectedParking)
+    }
     if (selectedPrice) params.set("price", selectedPrice)
     router.push(`/listings?${params.toString()}`)
   }
@@ -178,6 +190,46 @@ export default function HomeClient({ featured, newest, reels }: Props) {
         { val:"2000-3000",  zh:"2000~3000萬",       vi:"2.000 - 3.000 vạn Đài tệ" },
         { val:"3000-0",     zh:"3000萬以上",        vi:"Trên 3.000 vạn Đài tệ" },
       ]
+
+  // Các bộ lọc chỉ dùng cho tab Mua nhà
+  const ROOM_OPTIONS = [
+    { val:"1",  zh:"1房",    vi:"1 phòng ngủ" },
+    { val:"2",  zh:"2房",    vi:"2 phòng ngủ" },
+    { val:"3",  zh:"3房",    vi:"3 phòng ngủ" },
+    { val:"4",  zh:"4房",    vi:"4 phòng ngủ" },
+    { val:"5+", zh:"5房以上", vi:"Từ 5 phòng ngủ" },
+  ]
+  const AREA_OPTIONS = [
+    { val:"0-20",   zh:"20坪以下",    vi:"Dưới 20 bình" },
+    { val:"20-30",  zh:"20-30坪",     vi:"20 - 30 bình" },
+    { val:"30-40",  zh:"30-40坪",     vi:"30 - 40 bình" },
+    { val:"40-50",  zh:"40-50坪",     vi:"40 - 50 bình" },
+    { val:"50-60",  zh:"50-60坪",     vi:"50 - 60 bình" },
+    { val:"60-100", zh:"60-100坪",    vi:"60 - 100 bình" },
+    { val:"100-0",  zh:"100坪以上",   vi:"Trên 100 bình" },
+  ]
+  const AGE_OPTIONS = [
+    { val:"0-5",   zh:"5年以下",   vi:"Dưới 5 năm" },
+    { val:"5-10",  zh:"5-10年",    vi:"5 - 10 năm" },
+    { val:"10-20", zh:"10-20年",   vi:"10 - 20 năm" },
+    { val:"20-30", zh:"20-30年",   vi:"20 - 30 năm" },
+    { val:"30-40", zh:"30-40年",   vi:"30 - 40 năm" },
+    { val:"40-0",  zh:"40年以上",  vi:"Trên 40 năm" },
+  ]
+  const FLOOR_OPTIONS = [
+    { val:"1",        zh:"1樓",     vi:"Tầng 1" },
+    { val:"2-6",       zh:"2-6樓",   vi:"Tầng 2 - 6" },
+    { val:"6-12",      zh:"6-12樓",  vi:"Tầng 6 - 12" },
+    { val:"12+",       zh:"12樓以上", vi:"Trên tầng 12" },
+    { val:"basement",  zh:"地下樓",  vi:"Tầng hầm" },
+    { val:"whole",     zh:"整棟",    vi:"Cả tòa nhà" },
+  ]
+  const PARKING_OPTIONS = [
+    { val:"yes", zh:"有車位", vi:"Có chỗ đậu xe" },
+    { val:"no",  zh:"無車位", vi:"Không có chỗ đậu xe" },
+  ]
+
+  const selCls = "w-full appearance-none bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none focus:border-red-400 cursor-pointer pr-8"
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -261,13 +313,13 @@ export default function HomeClient({ featured, newest, reels }: Props) {
               </button>
             </div>
 
-            {/* Property type + Price row */}
-            <div className="flex items-center gap-2 px-3 pb-3">
+            {/* Property type row */}
+            <div className="flex items-center gap-2 px-3 pb-2">
               <div className="relative flex-1">
                 <select
                   value={selectedType}
                   onChange={e => setSelectedType(e.target.value)}
-                  className="w-full appearance-none bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none focus:border-red-400 cursor-pointer pr-8"
+                  className={selCls}
                 >
                   <option value="">{lang==="zh" ? "形態（不限）" : "Loại nhà (Tất cả)"}</option>
                   {PROPERTY_TYPES.map(pt => (
@@ -278,23 +330,78 @@ export default function HomeClient({ featured, newest, reels }: Props) {
                 </select>
                 <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
               </div>
-
-              <div className="relative flex-1">
-                <select
-                  value={selectedPrice}
-                  onChange={e => setSelectedPrice(e.target.value)}
-                  className="w-full appearance-none bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none focus:border-red-400 cursor-pointer pr-8"
-                >
-                  <option value="">{lang==="zh" ? "售價（不限）" : "Giá (Tất cả)"}</option>
-                  {PRICE_RANGES.map(pr => (
-                    <option key={pr.val} value={pr.val}>
-                      {lang==="zh" ? pr.zh : pr.vi}
-                    </option>
-                  ))}
-                </select>
-                <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
-              </div>
+              {tab === "rent" && (
+                <div className="relative flex-1">
+                  <select
+                    value={selectedPrice}
+                    onChange={e => setSelectedPrice(e.target.value)}
+                    className={selCls}
+                  >
+                    <option value="">{lang==="zh" ? "售價（不限）" : "Giá (Tất cả)"}</option>
+                    {PRICE_RANGES.map(pr => (
+                      <option key={pr.val} value={pr.val}>
+                        {lang==="zh" ? pr.zh : pr.vi}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
+                </div>
+              )}
             </div>
+
+            {/* Các bộ lọc riêng cho Mua nhà: Số phòng, Diện tích, Tuổi nhà, Tầng lầu, Chỗ đậu xe, rồi mới đến Giá */}
+            {tab === "buy" && (
+              <>
+                <div className="grid grid-cols-2 gap-2 px-3 pb-2">
+                  <div className="relative">
+                    <select value={selectedRooms} onChange={e => setSelectedRooms(e.target.value)} className={selCls}>
+                      <option value="">{lang==="zh" ? "格局（不限）" : "Số phòng (Tất cả)"}</option>
+                      {ROOM_OPTIONS.map(o => <option key={o.val} value={o.val}>{lang==="zh" ? o.zh : o.vi}</option>)}
+                    </select>
+                    <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
+                  </div>
+                  <div className="relative">
+                    <select value={selectedArea} onChange={e => setSelectedArea(e.target.value)} className={selCls}>
+                      <option value="">{lang==="zh" ? "坪數（不限）" : "Diện tích (Tất cả)"}</option>
+                      {AREA_OPTIONS.map(o => <option key={o.val} value={o.val}>{lang==="zh" ? o.zh : o.vi}</option>)}
+                    </select>
+                    <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2 px-3 pb-2">
+                  <div className="relative">
+                    <select value={selectedAge} onChange={e => setSelectedAge(e.target.value)} className={selCls}>
+                      <option value="">{lang==="zh" ? "屋齡（不限）" : "Tuổi nhà (Tất cả)"}</option>
+                      {AGE_OPTIONS.map(o => <option key={o.val} value={o.val}>{lang==="zh" ? o.zh : o.vi}</option>)}
+                    </select>
+                    <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
+                  </div>
+                  <div className="relative">
+                    <select value={selectedFloor} onChange={e => setSelectedFloor(e.target.value)} className={selCls}>
+                      <option value="">{lang==="zh" ? "樓層（不限）" : "Tầng lầu (Tất cả)"}</option>
+                      {FLOOR_OPTIONS.map(o => <option key={o.val} value={o.val}>{lang==="zh" ? o.zh : o.vi}</option>)}
+                    </select>
+                    <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2 px-3 pb-2">
+                  <div className="relative">
+                    <select value={selectedParking} onChange={e => setSelectedParking(e.target.value)} className={selCls}>
+                      <option value="">{lang==="zh" ? "車位（不限）" : "Chỗ đậu xe (Tất cả)"}</option>
+                      {PARKING_OPTIONS.map(o => <option key={o.val} value={o.val}>{lang==="zh" ? o.zh : o.vi}</option>)}
+                    </select>
+                    <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
+                  </div>
+                  <div className="relative">
+                    <select value={selectedPrice} onChange={e => setSelectedPrice(e.target.value)} className={selCls}>
+                      <option value="">{lang==="zh" ? "售價（不限）" : "Giá (Tất cả)"}</option>
+                      {PRICE_RANGES.map(pr => <option key={pr.val} value={pr.val}>{lang==="zh" ? pr.zh : pr.vi}</option>)}
+                    </select>
+                    <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
