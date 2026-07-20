@@ -177,21 +177,21 @@ export default function ProfileClient() {
               const title = lang === "zh" ? (p.title_zh || p.title_vi) : (p.title_vi || p.title_zh)
               const img = p.images?.[0]
               return (
-                <div key={p.id} className="bg-gray-50 border border-gray-200 rounded-2xl p-3 flex gap-3">
-                  <div className="w-20 h-20 rounded-xl bg-gray-100 overflow-hidden flex items-center justify-center shrink-0 grayscale opacity-70">
+                <div key={p.id} className="bg-orange-50 border border-orange-100 rounded-2xl p-3 flex gap-3 shadow-sm">
+                  <div className="w-20 h-20 rounded-xl bg-gray-100 overflow-hidden flex items-center justify-center shrink-0">
                     {img ? <img src={img} className="w-full h-full object-cover" /> : <Home size={22} strokeWidth={1.8} className="text-gray-300" />}
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col">
                     <div className="flex items-center gap-1.5 mb-1">
-                      <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded-full bg-gray-400">
+                      <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded-full bg-orange-400">
                         {lang==="zh" ? "已下架" : "Đã gỡ"}
                       </span>
-                      <span className="text-[10px] text-gray-300">
+                      <span className="text-[10px] text-gray-400">
                         {new Date(p.posted_at).toLocaleDateString(lang==="zh"?"zh-TW":"vi-VN")}
                       </span>
                     </div>
-                    <p className="text-sm font-semibold text-gray-500 line-clamp-1">{title}</p>
-                    <p className="text-gray-500 font-bold text-sm mt-0.5">{formatPrice(p, lang)}</p>
+                    <p className="text-sm font-semibold text-gray-700 line-clamp-1">{title}</p>
+                    <p className="text-orange-600 font-bold text-sm mt-0.5">{formatPrice(p, lang)}</p>
                     <div className="mt-auto flex items-center justify-end gap-3 pt-1">
                       <button onClick={() => handleToggleActive(p.id, true)} disabled={togglingId === p.id}
                         className="text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 disabled:opacity-40 transition flex items-center gap-0.5">
