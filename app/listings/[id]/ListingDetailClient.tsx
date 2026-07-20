@@ -160,9 +160,9 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
     : (lang==="zh" ? "✗ 無停車位" : "✗ Không có")
 
   const PARKING_TYPE_LABELS: Record<string, { zh: string; vi: string }> = {
-    flat:            { zh: "平面式停車位",  vi: "Bãi đỗ mặt bằng" },
-    mechanical:      { zh: "機械式停車位",  vi: "Bãi đỗ cơ giới" },
-    flat_mechanical: { zh: "平面式+機械式", vi: "Mặt bằng + Cơ giới" },
+    flat:            { zh: "平面式停車位",  vi: "Bãi đỗ mặt bằng（平面車位）" },
+    mechanical:      { zh: "機械式停車位",  vi: "Bãi đỗ cơ giới（機械車位）" },
+    flat_mechanical: { zh: "平面式+機械式", vi: "Mặt bằng + Cơ giới（平面+機械）" },
     other:           { zh: "其他",         vi: "Khác" },
   }
   const parkingTypeDisplay = p.parking_type

@@ -978,9 +978,9 @@ export default function SubmitForm({ editId }: { editId?: string } = {}) {
                     className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-red-400">
                     <option value="">{lang==="zh" ? "停車方式（請選擇）" : "Hình thức đỗ xe (chọn)"}</option>
                     {[
-                      {v:"flat",             zh:"平面式停車位",    vi:"Bãi đỗ mặt bằng"},
-                      {v:"mechanical",       zh:"機械式停車位",    vi:"Bãi đỗ cơ giới"},
-                      {v:"flat_mechanical",  zh:"平面式+機械式",   vi:"Mặt bằng + Cơ giới"},
+                      {v:"flat",             zh:"平面式停車位",    vi:"Bãi đỗ mặt bằng（平面車位）"},
+                      {v:"mechanical",       zh:"機械式停車位",    vi:"Bãi đỗ cơ giới（機械車位）"},
+                      {v:"flat_mechanical",  zh:"平面式+機械式",   vi:"Mặt bằng + Cơ giới（平面+機械）"},
                       {v:"other",            zh:"其他",           vi:"Khác"},
                     ].map(o => (
                       <option key={o.v} value={o.v}>{lang==="zh" ? o.zh : o.vi}</option>
