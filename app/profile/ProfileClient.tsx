@@ -6,8 +6,7 @@ import { createClient } from "@/lib/supabase-browser"
 import { formatPrice } from "@/lib/data"
 import type { Property } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
-import { Smartphone, Plus, Home, Inbox, Eye, Pencil, Trash2, Clapperboard } from "lucide-react"
-import ReelUploadModal from "@/components/ReelUploadModal"
+import { Smartphone, Plus, Home, Inbox, Eye, Pencil, Trash2 } from "lucide-react"
 
 interface UserSession { phone: string; name: string }
 
@@ -20,7 +19,6 @@ export default function ProfileClient() {
   const [listings, setListings] = useState<Property[]>([])
   const [loading, setLoading]   = useState(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [reelListing, setReelListing] = useState<Property | null>(null)
 
   useEffect(() => {
     const stored = localStorage.getItem("taiwanhome_user")
@@ -131,10 +129,6 @@ export default function ProfileClient() {
                     <div className="mt-auto flex items-center justify-between pt-1">
                       <span className="text-[11px] text-gray-400 flex items-center gap-0.5"><Eye size={12} strokeWidth={2.2} /> {p.views || 0} {lang==="zh"?"次瀏覽":"lượt xem"}</span>
                       <div className="flex items-center gap-3">
-                        <button onClick={() => setReelListing(p)}
-                          className="text-[11px] text-gray-400 hover:text-red-500 transition flex items-center gap-0.5">
-                          <Clapperboard size={11} strokeWidth={2.2} /> {lang==="zh" ? "影片" : "Video"}
-                        </button>
                         <Link href={`/submit/edit/${p.id}`}
                           className="text-[11px] text-gray-400 hover:text-blue-600 transition flex items-center gap-0.5">
                           <Pencil size={11} strokeWidth={2.2} /> {lang==="zh" ? "編輯" : "Sửa"}
@@ -152,16 +146,6 @@ export default function ProfileClient() {
           </div>
         )}
       </div>
-
-      {reelListing && user && (
-        <ReelUploadModal
-          propertyId={reelListing.id}
-          propertySource="user"
-          phone={user.phone}
-          listingType={reelListing.listing_type}
-          onClose={() => setReelListing(null)}
-        />
-      )}
     </div>
   )
 }

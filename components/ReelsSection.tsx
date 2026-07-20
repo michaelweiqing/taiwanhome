@@ -5,7 +5,7 @@ import { useLang } from "@/context/LangContext"
 import type { PropertyReel } from "@/lib/data"
 import HlsVideo from "@/components/HlsVideo"
 import ReelShareButton from "@/components/ReelShareButton"
-import { Play, Volume2, VolumeX, X, ChevronLeft, ChevronRight, Clapperboard, Plus } from "lucide-react"
+import { Play, Volume2, VolumeX, X, ChevronLeft, ChevronRight, Clapperboard } from "lucide-react"
 
 interface Props { reels: PropertyReel[] }
 
@@ -157,12 +157,6 @@ function ReelViewer({ reels, startIndex, onClose }: { reels: PropertyReel[]; sta
 export default function ReelsSection({ reels }: Props) {
   const { lang } = useLang()
   const [openIndex, setOpenIndex] = useState<number | null>(null)
-  const [uploadHref, setUploadHref] = useState("/login")
-
-  useEffect(() => {
-    const stored = localStorage.getItem("taiwanhome_user")
-    setUploadHref(stored ? "/profile" : "/login")
-  }, [])
 
   return (
     <div className="bg-white border-b border-gray-100">
@@ -172,23 +166,17 @@ export default function ReelsSection({ reels }: Props) {
             <Clapperboard size={17} strokeWidth={2.2} className="text-red-500" />
             {lang === "zh" ? "房屋短影音" : "Video ngắn về nhà"}
           </h2>
-          <Link href={uploadHref} className="text-xs text-red-600 hover:underline font-semibold">
-            {lang === "zh" ? "+ 上傳影片" : "+ Đăng video"}
-          </Link>
         </div>
 
         {reels.length === 0 ? (
-          <Link href={uploadHref}
-            className="flex items-center gap-3 bg-gray-50 border border-dashed border-gray-200 rounded-2xl px-4 py-5 hover:border-red-300 hover:bg-red-50/40 transition">
+          <div className="flex items-center gap-3 bg-gray-50 border border-dashed border-gray-200 rounded-2xl px-4 py-5">
             <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
-              <Plus size={18} strokeWidth={2.4} />
+              <Clapperboard size={18} strokeWidth={2.2} />
             </div>
             <p className="text-sm text-gray-600">
-              {lang === "zh"
-                ? "尚無短影音，成為第一個上傳房屋影片的人！"
-                : "Chưa có video nào — hãy là người đầu tiên đăng video nhà!"}
+              {lang === "zh" ? "尚無短影音" : "Chưa có video nào"}
             </p>
-          </Link>
+          </div>
         ) : (
           <div className="flex gap-3 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
             {reels.map((reel, i) => (
