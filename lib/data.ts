@@ -61,6 +61,7 @@ export interface Property {
   units_per_floor?: number | null     // 同層戶數
   elevator_count?: number | null      // 電梯數
   source?: "admin" | "user"           // Nguồn tin: admin đăng hay khách tự đăng
+  is_active?: boolean                 // Chỉ áp dụng cho tin khách đăng — false = đã gỡ/tắt quảng cáo
 }
 
 export interface PropertyReel {
@@ -96,7 +97,7 @@ export async function getApprovedReels(): Promise<PropertyReel[]> {
 export async function getAllProperties(): Promise<Property[]> {
   const [r1, r2] = await Promise.all([
     supabase.from("properties").select("*").order("posted_at", { ascending: false }),
-    supabase.from("user_listings").select("*").order("posted_at", { ascending: false }),
+    supabase.from("user_listings").select("*").eq("is_active", true).order("posted_at", { ascending: false }),
   ])
   const admin = (r1.data || []).map(p => ({ ...p, source: "admin" as const }))
   const user  = (r2.data || []).map(p => ({ ...p, source: "user" as const }))
@@ -120,7 +121,7 @@ export async function getPropertyById(id: string): Promise<Property | null> {
   // Tìm trong properties trước, sau đó user_listings
   const { data: p1 } = await supabase.from("properties").select("*").eq("id", id).maybeSingle()
   if (p1) return { ...p1, source: "admin" } as Property
-  const { data: p2 } = await supabase.from("user_listings").select("*").eq("id", id).maybeSingle()
+  const { data: p2 } = await supabase.from("user_listings").select("*").eq("id", id).eq("is_active", true).maybeSingle()
   if (p2) return { ...p2, source: "user" } as Property
   return null
 }
@@ -140,7 +141,7 @@ export async function getSimilarProperties(
   ): Promise<Property[]> {
     const [r1, r2] = await Promise.all([
       build(supabase.from("properties").select("*")).order("posted_at", { ascending: false }).limit(take),
-      build(supabase.from("user_listings").select("*")).order("posted_at", { ascending: false }).limit(take),
+      build(supabase.from("user_listings").select("*").eq("is_active", true)).order("posted_at", { ascending: false }).limit(take),
     ])
     const admin = (r1.data || []).map((p: any) => ({ ...p, source: "admin" as const }))
     const user  = (r2.data || []).map((p: any) => ({ ...p, source: "user"  as const }))
@@ -199,6 +200,7 @@ export interface FilterOptions {
 export async function searchProperties(filters: FilterOptions): Promise<Property[]> {
   function buildQuery(table: string) {
     let query = supabase.from(table).select("*")
+    if (table === "user_listings") query = query.eq("is_active", true)
     if (filters.listingType)  query = query.eq("listing_type",  filters.listingType)
     if (filters.city)         query = query.eq("city",          filters.city)
     if (filters.district)     query = query.eq("district",      filters.district)
