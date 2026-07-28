@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { getPropertyById, getSimilarProperties, formatPrice } from "@/lib/data"
 import ListingDetailClient from "./ListingDetailClient"
+import { ListingJsonLd } from "@/components/ListingJsonLd"
 
 export async function generateMetadata({
   params,
@@ -68,7 +69,12 @@ export default async function ListingDetailPage({
       price:        Number(property.price),
     })
 
-    return <ListingDetailClient property={property} similar={similar} />
+    return (
+      <>
+        <ListingJsonLd property={property} />
+        <ListingDetailClient property={property} similar={similar} />
+      </>
+    )
   } catch (err) {
     console.error("ListingDetail error:", err)
     notFound()
