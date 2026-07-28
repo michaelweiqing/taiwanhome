@@ -48,6 +48,7 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-1 text-sm flex-1">
           <Link href="/listings?type=buy" className="px-3 py-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition">{t.buy}</Link>
           <Link href="/listings?type=rent" className="px-3 py-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition">{t.rent}</Link>
+          <Link href="/blog" className="px-3 py-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition">{lang==="zh" ? "文章" : "Blog"}</Link>
         </nav>
 
         {/* Right */}
@@ -96,6 +97,10 @@ export default function Navbar() {
           <Link href="/listings?type=rent" onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
             <KeyRound size={18} strokeWidth={2.2} /> {t.rent}
+          </Link>
+          <Link href="/blog" onClick={()=>setOpen(false)}
+            className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
+            <MessageCircle size={18} strokeWidth={2.2} /> {lang==="zh" ? "文章" : "Blog"}
           </Link>
           <Link href="/submit" onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl bg-red-600 text-white font-bold">
