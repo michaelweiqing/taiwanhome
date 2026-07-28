@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next"
 import { supabase } from "@/lib/supabase"
+import { SEO_LANDING_PAGES } from "@/lib/seoLandingPages"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://8386.tw"
@@ -19,12 +20,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
+  const seoLandingUrls: MetadataRoute.Sitemap = SEO_LANDING_PAGES.map((p) => ({
+    url: `${baseUrl}/${p.slug}`,
+    changeFrequency: "daily",
+    priority: p.city ? 0.85 : 0.95,
+  }))
+
   const staticUrls: MetadataRoute.Sitemap = [
     { url: baseUrl, changeFrequency: "daily", priority: 1.0 },
-    { url: `${baseUrl}/listings?type=buy`, changeFrequency: "daily", priority: 0.9 },
-    { url: `${baseUrl}/listings?type=rent`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${baseUrl}/listings`, changeFrequency: "daily", priority: 0.7 },
     { url: `${baseUrl}/submit`, changeFrequency: "weekly", priority: 0.5 },
   ]
 
-  return [...staticUrls, ...listingUrls]
+  return [...staticUrls, ...seoLandingUrls, ...listingUrls]
 }

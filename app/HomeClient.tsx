@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase-browser"
 import PropertyCard from "@/components/PropertyCard"
 import ReelsSection from "@/components/ReelsSection"
 import type { PropertyReel } from "@/lib/data"
+import { SEO_LANDING_PAGES } from "@/lib/seoLandingPages"
 import { Search, MessageCircle, Building2, Moon, Plane, Microscope, Building, Wheat, Landmark, Waves, Eye } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
@@ -444,6 +445,22 @@ export default function HomeClient({ featured, newest, reels }: Props) {
                 <div className="text-xs text-red-500 mt-1">
                   {c.n.toLocaleString()} {lang==="zh" ? "件" : "căn"}
                 </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Tìm nhà theo khu vực (internal link cho SEO) ── */}
+        <section>
+          <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span className="w-1 h-5 bg-red-500 rounded-full inline-block" />
+            {lang==="zh" ? "依地區找房" : "Tìm nhà theo khu vực"}
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {SEO_LANDING_PAGES.map(p => (
+              <Link key={p.slug} href={`/${p.slug}`}
+                className="bg-white hover:bg-red-50 hover:text-red-600 text-gray-600 text-xs px-3 py-1.5 rounded-full border border-gray-100 transition">
+                {lang==="zh" ? p.title_zh.split(" - ")[0].split(" | ")[0] : p.h1_vi}
               </Link>
             ))}
           </div>
