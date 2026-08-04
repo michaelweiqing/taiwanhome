@@ -111,6 +111,14 @@ export default async function SeoLandingPage({
         <p className="text-gray-400 text-xs leading-relaxed max-w-3xl">
           {config.intro_zh}
         </p>
+        {config.type === "buy" && (
+          <p className="text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs leading-relaxed max-w-3xl">
+            ⚠️ Lưu ý: Theo nguyên tắc bình đẳng tương hỗ (Điều 18 Luật Đất đai Đài Loan), Việt Nam hiện chưa nằm trong danh sách quốc gia được phép đứng tên mua bất động sản tại Đài Loan. Người Việt đã nhập tịch Đài Loan (phổ biến qua diện kết hôn) có thể mua nhà bình thường như công dân Đài. Trường hợp khác nên tham khảo luật sư/chuyên viên địa chính trước khi tiến hành —{" "}
+            <Link href="/blog/thu-tuc-mua-nha-dai-loan-nguoi-nuoc-ngoai" className="underline font-medium">
+              xem chi tiết tại đây
+            </Link>.
+          </p>
+        )}
       </header>
 
       {/* Cross-link mua/thuê + link xem toàn bộ với filter đầy đủ */}

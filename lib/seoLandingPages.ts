@@ -47,7 +47,7 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     metaDescription_vi:
       "Mua nhà tại Đài Loan: chung cư, nhà phố, biệt thự, đất, mặt bằng kinh doanh tại 8 thành phố lớn. Thông tin song ngữ Trung-Việt, giá theo 萬/坪, tư vấn thủ tục mua nhà cho người nước ngoài tại Đài Loan.",
     intro_vi:
-      "Người Việt sinh sống lâu dài tại Đài Loan — đặc biệt là những ai đã kết hôn với người Đài hoặc làm việc ổn định nhiều năm — ngày càng quan tâm đến việc mua nhà thay vì thuê dài hạn. 8386找房網 tổng hợp tin bán nhà từ khắp Đài Loan: chung cư thang máy, nhà phố (透天厝), biệt thự, đất nền và mặt bằng kinh doanh, kèm thông tin diện tích, giá mỗi bình (坪), tuổi nhà, và liên hệ trực tiếp môi giới hoặc chủ nhà. Người nước ngoài (bao gồm người Việt) hoàn toàn có thể đứng tên mua nhà tại Đài Loan theo quy định hiện hành, chỉ cần thực hiện đúng thủ tục công chứng và đăng ký quyền sở hữu.",
+      "Người Việt sinh sống lâu dài tại Đài Loan — đặc biệt là những ai đã kết hôn với người Đài và hoàn tất thủ tục nhập quốc tịch — ngày càng quan tâm đến việc mua nhà thay vì thuê dài hạn. Lưu ý quan trọng: theo nguyên tắc bình đẳng tương hỗ của Đài Loan, người mang quốc tịch Việt Nam (chưa nhập tịch Đài) hiện không nằm trong danh sách được phép đứng tên mua bất động sản; trường hợp phổ biến để sở hữu nhà hợp pháp là đã nhập tịch Đài Loan hoặc đứng tên qua vợ/chồng người Đài. 8386找房網 tổng hợp tin bán nhà từ khắp Đài Loan: chung cư thang máy, nhà phố (透天厝), biệt thự, đất nền và mặt bằng kinh doanh, kèm thông tin diện tích, giá mỗi bình (坪), tuổi nhà, và liên hệ trực tiếp môi giới hoặc chủ nhà.",
     intro_zh:
       "8386找房網彙整全台售屋資訊，包含公寓大廈、透天厝、別墅、土地及店面，中越雙語呈現物件詳細資訊與每坪單價，協助在台越南朋友了解購屋流程與物件選擇。",
   },

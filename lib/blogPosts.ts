@@ -55,17 +55,18 @@ export const BLOG_POSTS: BlogPost[] = [
 
   {
     slug: "thu-tuc-mua-nha-dai-loan-nguoi-nuoc-ngoai",
-    title_vi: "Thủ tục mua nhà tại Đài Loan cho người nước ngoài",
-    title_zh: "外國人在台灣購屋流程",
+    title_vi: "Người Việt mua nhà tại Đài Loan: Điều kiện và thủ tục cần biết",
+    title_zh: "越南人在台灣購屋的條件與流程",
     description_vi:
-      "Người nước ngoài có được mua nhà tại Đài Loan không? Các bước mua nhà, chi phí phát sinh, và lưu ý về vay ngân hàng cho người Việt tại Đài Loan.",
+      "Người Việt có được mua nhà tại Đài Loan không? Giải thích nguyên tắc bình đẳng tương hỗ, trường hợp đã nhập tịch, các bước mua nhà và chi phí phát sinh.",
     publishedAt: "2026-07-22",
     category: "mua-nha",
     sections: [
       {
-        heading_vi: "Người nước ngoài có được đứng tên mua nhà tại Đài Loan không?",
+        heading_vi: "Người Việt có được đứng tên mua nhà tại Đài Loan không?",
         paragraphs_vi: [
-          "Về nguyên tắc, người nước ngoài (bao gồm người Việt) được phép mua và đứng tên sở hữu bất động sản tại Đài Loan theo nguyên tắc có đi có lại (reciprocity) giữa Đài Loan và quốc gia của người mua, với một số loại đất/khu vực có hạn chế riêng (ví dụ đất nông nghiệp, khu vực an ninh quốc phòng). Trước khi tiến hành, nên hỏi trực tiếp văn phòng địa chính (地政事務所) hoặc luật sư/môi giới có kinh nghiệm để xác nhận trường hợp cụ thể của mình.",
+          "Đây là điều quan trọng nhất cần biết trước khi tính đến chuyện mua nhà: theo nguyên tắc \"bình đẳng tương hỗ\" (Điều 18 Luật Đất đai Đài Loan), một quốc gia chỉ được mua bất động sản tại Đài Loan nếu Đài Loan cũng được mua đất tại quốc gia đó. Việt Nam hiện KHÔNG nằm trong danh sách quốc gia bình đẳng tương hỗ với Đài Loan (cùng nhóm với Indonesia, Myanmar, Ma Cao) — do đó người mang quốc tịch Việt Nam (chưa nhập tịch Đài Loan) về nguyên tắc không được phép đứng tên mua bất động sản tại Đài Loan.",
+          "Trường hợp phổ biến nhất mà người Việt vẫn mua được nhà tại Đài Loan là khi đã nhập tịch Đài Loan — thường qua diện kết hôn với người Đài Loan và hoàn tất thủ tục nhập quốc tịch. Khi đó, về mặt pháp lý người đó là công dân Đài Loan và mua bán nhà đất hoàn toàn bình thường như người bản xứ, không còn bị giới hạn bởi nguyên tắc tương hỗ. Nếu chưa nhập tịch, một số gia đình lựa chọn đứng tên nhà dưới tên người vợ/chồng Đài Loan — cách này cần tư vấn kỹ với luật sư hoặc chuyên viên địa chính để đảm bảo quyền lợi rõ ràng cho cả hai bên trước khi thực hiện.",
         ],
       },
       {
