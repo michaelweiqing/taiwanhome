@@ -254,7 +254,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title_vi: "Phong thủy nhà đất tại Đài Loan: Hướng nhà, hướng cửa, hướng ban công",
     title_zh: "台灣房屋風水：座向、大門方位與陽台朝向",
     description_vi:
-      "Người Đài Loan coi trọng phong thủy khi mua nhà như thế nào? Giải thích hướng nhà, hướng đất, hướng cửa chính, hướng cửa sổ, hướng ban công theo quan niệm phổ biến tại Đài Loan.",
+      "Người Đài Loan coi trọng phong thủy khi mua nhà như thế nào? Giải thích hướng nhà, hướng cửa, hướng ban công, sát khí công trình xung quanh, số tầng số nhà, và khái niệm nhà hung trạch tại Đài Loan.",
     publishedAt: "2026-08-01",
     category: "kien-thuc",
     sections: [
@@ -286,6 +286,42 @@ export const BLOG_POSTS: BlogPost[] = [
         heading_vi: "Hướng tòa nhà và các lưu ý khác",
         paragraphs_vi: [
           "Ngoài hướng nhà, một số yếu tố khác cũng thường được người mua nhà tại Đài Loan cân nhắc: tránh nhà gần nghĩa trang, đền miếu lớn, hoặc nằm ở góc cụt cuối hẻm (không có lối thoát thứ hai). Tuy nhiên, đây đều là yếu tố tham khảo theo quan niệm văn hóa — người mua nên cân bằng giữa yếu tố phong thủy và các tiêu chí thực tế như giá cả, vị trí, chất lượng xây dựng khi ra quyết định cuối cùng.",
+        ],
+      },
+      {
+        heading_vi: "Các loại \"sát khí\" từ công trình xung quanh (外煞)",
+        paragraphs_vi: [
+          "壁刀煞 (bích đao sát) — Khi cạnh tường của tòa nhà đối diện chĩa thẳng vào nhà mình như một lưỡi dao, thường xảy ra ở nhà đối diện góc một tòa nhà cao tầng. Nhiều người Đài Loan tránh mua/thuê nhà ở vị trí này.",
+          "反弓煞 (phản cung sát) — Nhà nằm ở mặt ngoài của một khúc cua đường hoặc sông (đường/sông cong ra xa nhà), khác với vị trí \"ôm\" vào trong khúc cua vốn được xem là tốt hơn.",
+          "三角窗 (tam giác song) — Nhà ở vị trí đất hình tam giác do nằm ngay góc giao giữa hai con đường; tuy có lợi thế 2 mặt tiền cho kinh doanh nhưng theo phong thủy truyền thống lại bị xem là hình dạng đất không vuông vắn, dễ \"tán khí\".",
+          "無尾巷 / 死巷 (vô vĩ hạng) — Nhà nằm cuối hẻm cụt, không có lối ra thứ hai, vừa bị xem là bất lợi phong thủy (khí không lưu thông) vừa bất tiện thực tế khi có hỏa hoạn hoặc cần thoát hiểm khẩn cấp.",
+        ],
+      },
+      {
+        heading_vi: "Bố cục bên trong nhà cần lưu ý",
+        paragraphs_vi: [
+          "穿堂煞 (xuyên đường sát) — Cửa chính nhìn thẳng thông ra cửa sau hoặc cửa sổ lớn phía đối diện mà không có vật che chắn (bình phong, tủ giày, vách ngăn) ở giữa; theo quan niệm phong thủy, khí vào nhà sẽ đi thẳng ra ngoài luôn thay vì tụ lại.",
+          "橫樑壓頂 (hoành lương áp đỉnh) — Xà nhà lộ ra nằm ngay phía trên giường ngủ, bàn ăn, hoặc bàn làm việc, bị xem là tạo cảm giác đè nén. Cách hóa giải phổ biến là dùng trần thạch cao che xà hoặc sắp xếp lại vị trí kê giường/bàn.",
+          "缺角 (khuyết giác) — Phòng hoặc tổng thể căn nhà có hình dạng méo, thiếu góc thay vì vuông vắn; theo quan niệm truyền thống mỗi góc tượng trưng cho một phương diện cuộc sống (sự nghiệp, sức khỏe, tài lộc...), thiếu góc bị xem là khiếm khuyết ở phương diện tương ứng.",
+          "鏡子對床 (kính tử đối sàng) — Gương đặt đối diện trực tiếp giường ngủ, theo quan niệm phong thủy dân gian được cho là ảnh hưởng đến giấc ngủ và tinh thần người nằm.",
+        ],
+      },
+      {
+        heading_vi: "Số tầng và số nhà",
+        paragraphs_vi: [
+          "Số 4 (四) phát âm gần giống với chữ \"tử\" (死 - chết) trong tiếng Trung nên thường bị tránh — nhiều chung cư tại Đài Loan không đặt tầng 4, 14, 24 hoặc đánh số phòng có chữ số 4. Ngược lại, số 8 (八) phát âm gần giống \"phát\" (發 - phát tài) nên được ưa chuộng, các căn hộ/tầng có số 8 thường được cho là bán/thuê nhanh hơn và đôi khi có giá nhỉnh hơn một chút so với căn tương đương không có số 8.",
+        ],
+      },
+      {
+        heading_vi: "Nhà gần các công trình đặc biệt",
+        paragraphs_vi: [
+          "Nhà gần bệnh viện (đặc biệt gần khoa cấp cứu, nhà tang lễ), nghĩa trang, đồn cảnh sát, hoặc trạm biến áp điện cao thế thường bị nhiều người Đài Loan cân nhắc kỹ hoặc tránh, một phần theo quan niệm phong thủy (\"âm khí nặng\"), một phần vì lý do thực tế như tiếng ồn xe cứu thương, ám ảnh tâm lý, hoặc lo ngại về sóng điện từ. Đây là yếu tố khiến giá nhà ở các vị trí này thường thấp hơn khu vực xung quanh.",
+        ],
+      },
+      {
+        heading_vi: "Nhà \"hung trạch\" (凶宅) — điều cần biết vì có liên quan đến pháp lý",
+        paragraphs_vi: [
+          "Khác với các yếu tố phong thủy mang tính quan niệm ở trên, \"hung trạch\" là khái niệm có ý nghĩa thực tế và liên quan đến pháp lý tại Đài Loan: đây là nhà từng xảy ra cái chết bất thường (tự tử, án mạng, tai nạn chết người) ngay trong phạm vi căn nhà. Theo quy định, chủ nhà/môi giới có nghĩa vụ phải thông báo cho người mua hoặc thuê biết nếu căn nhà thuộc diện này, việc giấu thông tin có thể dẫn đến tranh chấp pháp lý sau này. Nhà hung trạch thường có giá bán/thuê thấp hơn đáng kể so với nhà cùng khu vực. Người Việt khi mua hoặc thuê nhà tại Đài Loan nên hỏi thẳng agent/chủ nhà về lịch sử căn nhà, đặc biệt với nhà giá rẻ bất thường so với mặt bằng chung quanh khu vực.",
         ],
       },
     ],
