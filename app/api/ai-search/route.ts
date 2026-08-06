@@ -100,8 +100,14 @@ async function callClaude(message: string): Promise<ParsedFilters> {
     }),
   })
   const data = await res.json()
+  if (data?.type === "error") {
+    throw new Error(`Anthropic API: ${data.error?.message || data.error?.type || "unknown error"}`)
+  }
   const toolUse = data?.content?.find((b: any) => b.type === "tool_use")
-  return (toolUse?.input || {}) as ParsedFilters
+  if (!toolUse) {
+    throw new Error("Anthropic API không trả về tool_use hợp lệ")
+  }
+  return (toolUse.input || {}) as ParsedFilters
 }
 
 function clean(p: ParsedFilters): ParsedFilters {
