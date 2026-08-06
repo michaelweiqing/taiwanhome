@@ -7,6 +7,7 @@ import { useLang } from "@/context/LangContext"
 import { createClient } from "@/lib/supabase-browser"
 import PropertyCard from "@/components/PropertyCard"
 import ReelsSection from "@/components/ReelsSection"
+import AiSearchBox from "@/components/AiSearchBox"
 import type { PropertyReel } from "@/lib/data"
 import { SEO_LANDING_PAGES } from "@/lib/seoLandingPages"
 import { Search, MessageCircle, Building2, Moon, Plane, Microscope, Building, Wheat, Landmark, Waves, Eye } from "lucide-react"
@@ -404,6 +405,9 @@ export default function HomeClient({ featured, newest, reels }: Props) {
               </>
             )}
           </div>
+
+          {/* ── 8386 AI: Trợ lý tìm nhà bằng tiếng Việt ── */}
+          <AiSearchBox />
         </div>
       </div>
 
