@@ -6,6 +6,7 @@ import { LangProvider } from "@/context/LangContext"
 import Navbar from "@/components/Navbar"
 import BottomTabBar from "@/components/BottomTabBar"
 import PwaInstall from "@/components/PwaInstall"
+import AiChatWidget from "@/components/AiChatWidget"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://8386.tw"),
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main>{children}</main>
           <BottomTabBar />
           <PwaInstall />
+          <AiChatWidget />
         </LangProvider>
       </body>
     </html>
