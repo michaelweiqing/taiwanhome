@@ -33,14 +33,18 @@ Không tự trả lời khách, không tự bịa ra nhà, không giải thích 
 
 ${locationsPromptBlock()}
 
-QUY TẮC QUY ĐỔI GIÁ (RẤT QUAN TRỌNG, người Việt ở Đài Loan có thói quen nói riêng):
-1) THUÊ NHÀ (listingType=rent): giá lưu là số TWD/tháng thực tế.
-   - Khi khách nói "nghìn" hoặc "triệu" cho tiền thuê, cả hai đều có nghĩa là NGHÌN Đài tệ (thói quen nói của người Việt tại Đài Loan), KHÔNG PHẢI triệu theo nghĩa đen.
-     Ví dụ: "khoảng 10 nghìn" = "khoảng 10 triệu" = 10000 TWD/tháng. "15 triệu Đài" = 15000 TWD/tháng.
-   - Nếu khách ghi rõ số đầy đủ có dấu phẩy/chấm như "15.000" hoặc "15000" thì giữ nguyên là TWD.
-2) MUA NHÀ (listingType=buy): giá lưu theo đơn vị 萬 (vạn Đài tệ = 10.000 TWD).
-   - "X vạn" hoặc "X triệu Đài tệ" khi nói về MUA nhà: nếu khách nói thẳng đơn vị "vạn" thì lấy đúng số đó làm price (vd "1000 vạn" -> 1000).
-   - Nếu khách nói tổng giá trị đầy đủ bằng TWD (vd "15 triệu Đài tệ" = 15.000.000 TWD) thì chia cho 10.000 để ra đơn vị vạn (-> 1500).
+QUY TẮC QUY ĐỔI GIÁ (RẤT QUAN TRỌNG - hiểu theo NGHĨA ĐEN của con số, không phải cách nói lóng):
+- "nghìn" (hoặc "ngàn") = x1.000 TWD. Ví dụ: "15 nghìn" = 15.000 TWD.
+- "vạn" = x10.000 TWD. Ví dụ: "1 vạn rưỡi" = 15.000 TWD. "1000 vạn" = 10.000.000 TWD.
+- "triệu" = x1.000.000 TWD theo ĐÚNG nghĩa đen. TUYỆT ĐỐI KHÔNG hiểu "triệu" thành "nghìn". Ví dụ: "15 triệu" = 15.000.000 TWD (không phải 15.000 TWD).
+- Bảng quy đổi tham khảo: 10 nghìn = 1 vạn Đài tệ = 10.000 TWD | 100 nghìn = 10 vạn Đài tệ = 100.000 TWD | 1 triệu = 100 vạn Đài tệ = 1.000.000 TWD.
+- Nếu khách ghi số đầy đủ có dấu phẩy/chấm như "15.000" hoặc "15000" thì hiểu thẳng là TWD, không nhân thêm.
+
+Sau khi tính ra số TWD thực tế theo bảng trên, điền vào minPrice/maxPrice theo đúng loại giao dịch:
+1) THUÊ NHÀ (listingType=rent): minPrice/maxPrice = đúng số TWD/tháng vừa tính được.
+   Ví dụ: "khoảng 15 nghìn" -> 15000. "khoảng 1 vạn rưỡi" -> 15000.
+2) MUA NHÀ (listingType=buy): giá lưu trong database theo đơn vị 萬 (vạn Đài tệ = 10.000 TWD), nên sau khi tính ra số TWD thực tế phải CHIA CHO 10.000 rồi mới điền vào minPrice/maxPrice.
+   Ví dụ: "khoảng 1000 vạn" -> 10.000.000 TWD -> price=1000. "khoảng 15 triệu Đài tệ" (mua nhà) -> 15.000.000 TWD -> price=1500.
 
 QUY TẮC KHÁC:
 - Diện tích (minArea/maxArea) tính theo đơn vị 坪 (ping). Nếu khách nói m², tự đổi: 1 ping ≈ 3.3 m² (chia số m² cho 3.3).
