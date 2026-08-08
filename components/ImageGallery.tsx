@@ -1,5 +1,6 @@
 "use client"
 import { useState, useCallback, useEffect } from "react"
+import Image from "next/image"
 import { Home, X } from "lucide-react"
 
 interface Props { images: string[]; title: string }
@@ -59,11 +60,14 @@ export default function ImageGallery({ images, title }: Props) {
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
           onClick={() => setLightbox(true)}>
-          <img
+          <Image
             key={active}
             src={images[active]}
             alt={`${title} ${active + 1}`}
-            className="w-full h-full object-cover"
+            fill
+            priority={active === 0}
+            sizes="(max-width: 768px) 100vw, 800px"
+            className="object-cover"
           />
           <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full">
             {active + 1} / {len}
@@ -92,11 +96,11 @@ export default function ImageGallery({ images, title }: Props) {
             <div className="flex gap-2 pb-1" style={{ width: "max-content" }}>
               {images.map((src, i) => (
                 <button key={i} onClick={() => setActive(i)}
-                  className={`shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
+                  className={`shrink-0 rounded-lg overflow-hidden border-2 transition-all relative ${
                     active === i ? "border-red-500 shadow" : "border-transparent opacity-60 hover:opacity-100"
                   }`}
                   style={{ width: 64, height: 48 }}>
-                  <img src={src} alt="" className="w-full h-full object-cover" />
+                  <Image src={src} alt="" fill sizes="64px" className="object-cover" />
                 </button>
               ))}
             </div>
@@ -121,11 +125,13 @@ export default function ImageGallery({ images, title }: Props) {
 
           {/* Ảnh fullscreen */}
           <div className="flex-1 relative flex items-center justify-center overflow-hidden">
-            <img
+            <Image
               key={active}
               src={images[active]}
               alt={`${title} ${active + 1}`}
-              className="max-w-full max-h-full object-contain select-none"
+              fill
+              sizes="100vw"
+              className="object-contain select-none"
             />
 
             {len > 1 && (
@@ -149,11 +155,11 @@ export default function ImageGallery({ images, title }: Props) {
               <div className="flex gap-2" style={{ width: "max-content" }}>
                 {images.map((src, i) => (
                   <button key={i} onClick={() => setActive(i)}
-                    className={`shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
+                    className={`shrink-0 rounded-lg overflow-hidden border-2 transition-all relative ${
                       active === i ? "border-red-500" : "border-transparent opacity-50 hover:opacity-80"
                     }`}
                     style={{ width: 56, height: 42 }}>
-                    <img src={src} alt="" className="w-full h-full object-cover" />
+                    <Image src={src} alt="" fill sizes="56px" className="object-cover" />
                   </button>
                 ))}
               </div>

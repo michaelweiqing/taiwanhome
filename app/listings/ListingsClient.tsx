@@ -1,5 +1,5 @@
 "use client"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import type { Property } from "@/lib/data"
 import PropertyCard from "@/components/PropertyCard"
@@ -33,6 +33,7 @@ export default function ListingsClient({ initialProperties, searchQuery, rawPara
   const pathname = usePathname()
   const [typeFilter, setTypeFilter] = useState<"all"|"rent"|"buy">("all")
   const [sortBy, setSortBy]         = useState<"newest"|"price_asc"|"price_desc">("newest")
+  const [visibleCount, setVisibleCount] = useState(12)
   // Ô tìm kiếm ngay trên toolbar — khởi tạo từ q= trên URL, cho phép sửa tại chỗ
   const [query, setQuery] = useState(searchQuery ?? "")
 
@@ -120,6 +121,12 @@ export default function ListingsClient({ initialProperties, searchQuery, rawPara
     return list
   }, [initialProperties, typeFilter, sortBy, query, floorFilter])
 
+  // Reset về trang đầu mỗi khi bộ lọc/tìm kiếm thay đổi
+  useEffect(() => { setVisibleCount(12) }, [typeFilter, sortBy, query, floorFilter])
+
+  const visible = filtered.slice(0, visibleCount)
+  const hasMore = visibleCount < filtered.length
+
   return (
     <div className="bg-gray-50 min-h-screen">
 
@@ -187,7 +194,15 @@ export default function ListingsClient({ initialProperties, searchQuery, rawPara
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filtered.map(p => <PropertyCard key={p.id} property={p} />)}
+            {visible.map(p => <PropertyCard key={p.id} property={p} />)}
+          </div>
+        )}
+        {hasMore && (
+          <div className="flex justify-center mt-6">
+            <button onClick={() => setVisibleCount(c => c + 12)}
+              className="text-sm font-semibold text-red-600 border border-red-200 rounded-xl px-6 py-2.5 hover:bg-red-50 transition">
+              {lang === "zh" ? "顯示更多" : "Xem thêm"} ({filtered.length - visibleCount})
+            </button>
           </div>
         )}
       </div>

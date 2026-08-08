@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react"
+import Image from "next/image"
 import { useLang } from "@/context/LangContext"
 import { createClient } from "@/lib/supabase-browser"
 import { Phone, MessageCircle, CheckCircle2 } from "lucide-react"
@@ -66,11 +67,12 @@ export default function ContactForm({ agentName, agentPhone, agentLine, property
       {/* Thông tin đại lý */}
       <div className="flex flex-col items-center gap-3 py-2">
         {agentAvatar ? (
-          <img
+          <Image
             src={agentAvatar}
             alt={agentName}
+            width={112}
+            height={112}
             className="rounded-full object-cover object-top border-2 border-red-100 shrink-0"
-            style={{ width: 112, height: 112 }}
           />
         ) : (
           <div className="rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-3xl shrink-0"

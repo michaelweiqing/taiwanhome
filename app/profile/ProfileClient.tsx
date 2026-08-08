@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase-browser"
 import { formatPrice } from "@/lib/data"
@@ -119,8 +120,8 @@ export default function ProfileClient() {
               return (
                 <div key={p.id} className="bg-amber-50 border border-amber-100 rounded-2xl p-3 flex gap-3 shadow-sm">
                   <Link href={`/listings/${p.id}`} className="shrink-0">
-                    <div className="w-20 h-20 rounded-xl bg-gray-100 overflow-hidden flex items-center justify-center">
-                      {img ? <img src={img} className="w-full h-full object-cover" /> : <Home size={22} strokeWidth={1.8} className="text-gray-300" />}
+                    <div className="w-20 h-20 rounded-xl bg-gray-100 overflow-hidden flex items-center justify-center relative">
+                      {img ? <Image src={img} alt="" fill sizes="80px" className="object-cover" /> : <Home size={22} strokeWidth={1.8} className="text-gray-300" />}
                     </div>
                   </Link>
                   <div className="flex-1 min-w-0 flex flex-col">
@@ -178,8 +179,8 @@ export default function ProfileClient() {
               const img = p.images?.[0]
               return (
                 <div key={p.id} className="bg-orange-50 border border-orange-100 rounded-2xl p-3 flex gap-3 shadow-sm">
-                  <div className="w-20 h-20 rounded-xl bg-gray-100 overflow-hidden flex items-center justify-center shrink-0">
-                    {img ? <img src={img} className="w-full h-full object-cover" /> : <Home size={22} strokeWidth={1.8} className="text-gray-300" />}
+                  <div className="w-20 h-20 rounded-xl bg-gray-100 overflow-hidden flex items-center justify-center shrink-0 relative">
+                    {img ? <Image src={img} alt="" fill sizes="80px" className="object-cover" /> : <Home size={22} strokeWidth={1.8} className="text-gray-300" />}
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col">
                     <div className="flex items-center gap-1.5 mb-1">

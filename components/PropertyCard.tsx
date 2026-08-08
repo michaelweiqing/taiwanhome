@@ -1,5 +1,6 @@
 "use client"
 import Link from "next/link"
+import Image from "next/image"
 import { useState } from "react"
 import type { Property } from "@/lib/data"
 import { formatPrice, pingToM2 } from "@/lib/data"
@@ -55,8 +56,9 @@ export default function PropertyCard({ property: p }: { property: Property }) {
       <Link href={`/listings/${p.id}`} className="relative block shrink-0">
         <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden relative">
           {img ? (
-            <img src={img} alt={title} onError={() => setImgErr(true)}
-              className="w-full h-full object-cover group-hover:scale-[1.03] transition duration-500" />
+            <Image src={img} alt={title} fill onError={() => setImgErr(true)}
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-cover group-hover:scale-[1.03] transition duration-500" />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center gap-2">
               <Home size={36} strokeWidth={1.5} className="text-gray-200" />
