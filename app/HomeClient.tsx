@@ -461,7 +461,7 @@ export default function HomeClient({ featured, newest, reels, vnCommunities }: P
             {/* Chip khu vực nổi bật */}
             {vnCommunities.length > 0 && (
               <div className="flex gap-2 mt-4 overflow-x-auto pb-1 -mx-1 px-1">
-                {vnCommunities.slice(0, 8).map((c) => (
+                {vnCommunities.map((c) => (
                   <span key={c.slug}
                     className="shrink-0 flex items-center gap-1 bg-white/95 text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
                     📍 {lang==="zh" ? c.name_zh : c.name_vi}
