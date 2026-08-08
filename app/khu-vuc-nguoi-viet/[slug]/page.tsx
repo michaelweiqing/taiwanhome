@@ -10,7 +10,7 @@ import {
 } from "@/lib/vnCommunities"
 import PropertyCard from "@/components/PropertyCard"
 
-export const revalidate = 3600
+export const revalidate = 300
 
 export async function generateStaticParams() {
   const list = await getVnCommunities()

@@ -5,7 +5,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { getVnCommunities } from "@/lib/vnCommunities"
 
-export const revalidate = 3600
+export const revalidate = 300
 
 export const metadata: Metadata = {
   title: "Bản đồ cuộc sống người Việt tại Đài Loan | 越南人生活地圖",
