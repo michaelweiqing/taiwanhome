@@ -1,3 +1,4 @@
+import { cache } from "react"
 import { supabase } from "@/lib/supabase"
 
 export interface Property {
@@ -117,73 +118,54 @@ export async function getFeaturedProperties(): Promise<Property[]> {
   return data as Property[]
 }
 
-export async function getPropertyById(id: string): Promise<Property | null> {
-  // Tìm trong properties trước, sau đó user_listings
-  const { data: p1 } = await supabase.from("properties").select("*").eq("id", id).maybeSingle()
-  if (p1) return { ...p1, source: "admin" } as Property
-  const { data: p2 } = await supabase.from("user_listings").select("*").eq("id", id).eq("is_active", true).maybeSingle()
-  if (p2) return { ...p2, source: "user" } as Property
+export const getPropertyById = cache(async (id: string): Promise<Property | null> => {
+  // Tìm song song trong cả 2 bảng thay vì tuần tự (giảm round-trip)
+  // cache() giúp generateMetadata() và trang component dùng chung 1 lần gọi
+  const [r1, r2] = await Promise.all([
+    supabase.from("properties").select("*").eq("id", id).maybeSingle(),
+    supabase.from("user_listings").select("*").eq("id", id).eq("is_active", true).maybeSingle(),
+  ])
+  if (r1.data) return { ...r1.data, source: "admin" } as Property
+  if (r2.data) return { ...r2.data, source: "user" } as Property
   return null
-}
+})
 
-export async function getSimilarProperties(
+export const getSimilarProperties = cache(async (
   currentId: string,
   listingType: "rent" | "buy",
   limit = 3,
   opts?: { propertyType?: string; district?: string; city?: string; price?: number }
-): Promise<Property[]> {
-  const results: Property[] = []
+): Promise<Property[]> => {
+  // Chỉ 1 round-trip song song (thay vì 3 round-trip tuần tự trước đây):
+  // lấy toàn bộ tin cùng listing_type ở cả 2 bảng, rồi xếp hạng độ liên quan bằng JS.
+  // Dữ liệu hiện tại nhỏ (~80 tin) nên cách này nhanh hơn nhiều so với nhiều round-trip DB.
+  const [r1, r2] = await Promise.all([
+    supabase.from("properties").select("*").eq("listing_type", listingType).neq("id", currentId),
+    supabase.from("user_listings").select("*").eq("listing_type", listingType).eq("is_active", true).neq("id", currentId),
+  ])
+  const admin = (r1.data || []).map((p: any) => ({ ...p, source: "admin" as const }))
+  const user  = (r2.data || []).map((p: any) => ({ ...p, source: "user"  as const }))
+  const pool = [...admin, ...user] as Property[]
 
-  // Chạy cùng 1 điều kiện lọc trên cả 2 bảng (admin + khách đăng), gộp kết quả
-  async function queryBoth(
-    build: (q: any) => any,
-    take: number
-  ): Promise<Property[]> {
-    const [r1, r2] = await Promise.all([
-      build(supabase.from("properties").select("*")).order("posted_at", { ascending: false }).limit(take),
-      build(supabase.from("user_listings").select("*").eq("is_active", true)).order("posted_at", { ascending: false }).limit(take),
-    ])
-    const admin = (r1.data || []).map((p: any) => ({ ...p, source: "admin" as const }))
-    const user  = (r2.data || []).map((p: any) => ({ ...p, source: "user"  as const }))
-    return [...admin, ...user] as Property[]
+  function score(p: Property): number {
+    let s = 0
+    if (opts?.propertyType && p.property_type === opts.propertyType) s += 4
+    if (opts?.district && p.district === opts.district) s += 3
+    else if (opts?.city && p.city === opts.city) s += 1
+    if (opts?.price) {
+      const diff = Math.abs(Number(p.price) - opts.price) / opts.price
+      if (diff <= 0.3) s += 2
+      else if (diff <= 0.6) s += 1
+    }
+    return s
   }
 
-  // Bước 1: cùng loại nhà + cùng quận
-  if (opts?.propertyType && opts?.district) {
-    const data = await queryBoth(q => q
-      .eq("listing_type", listingType)
-      .eq("property_type", opts.propertyType)
-      .eq("district", opts.district)
-      .neq("id", currentId), limit)
-    results.push(...data)
-  }
-
-  // Bước 2: cùng loại nhà + cùng thành phố (bù nếu thiếu)
-  if (results.length < limit && opts?.propertyType && opts?.city) {
-    const existing = [...results.map(r => r.id), currentId]
-    const data = await queryBoth(q => q
-      .eq("listing_type", listingType)
-      .eq("property_type", opts.propertyType)
-      .eq("city", opts.city)
-      .not("id", "in", `(${existing.join(",")})`), limit - results.length)
-    results.push(...data)
-  }
-
-  // Bước 3: cùng listing_type + giá ±30% (fallback)
-  if (results.length < limit && opts?.price) {
-    const existing = [...results.map(r => r.id), currentId]
-    const lo = Math.round(opts.price * 0.7)
-    const hi = Math.round(opts.price * 1.3)
-    const data = await queryBoth(q => q
-      .eq("listing_type", listingType)
-      .gte("price", lo)
-      .lte("price", hi)
-      .not("id", "in", `(${existing.join(",")})`), limit - results.length)
-    results.push(...data)
-  }
-
-  return results.slice(0, limit)
-}
+  return pool
+    .map(p => ({ p, s: score(p) }))
+    .sort((a, b) => b.s - a.s || new Date(b.p.posted_at).getTime() - new Date(a.p.posted_at).getTime())
+    .slice(0, limit)
+    .map(x => x.p)
+})
 
 export interface FilterOptions {
   listingType?: "rent" | "buy"
