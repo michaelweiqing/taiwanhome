@@ -49,6 +49,7 @@ export default function Navbar() {
           <Link href="/listings?type=buy" className="px-3 py-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition">{t.buy}</Link>
           <Link href="/listings?type=rent" className="px-3 py-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition">{t.rent}</Link>
           <Link href="/blog" className="px-3 py-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition">{lang==="zh" ? "文章" : "Blog"}</Link>
+          <Link href="/khu-vuc-nguoi-viet" className="px-3 py-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition">{lang==="zh" ? "越南人地圖" : "Bản đồ người Việt"}</Link>
         </nav>
 
         {/* Right */}
@@ -101,6 +102,10 @@ export default function Navbar() {
           <Link href="/blog" onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
             <MessageCircle size={18} strokeWidth={2.2} /> {lang==="zh" ? "文章" : "Blog"}
+          </Link>
+          <Link href="/khu-vuc-nguoi-viet" onClick={()=>setOpen(false)}
+            className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
+            <Home size={18} strokeWidth={2.2} /> {lang==="zh" ? "越南人生活地圖" : "Bản đồ người Việt"}
           </Link>
           <Link href="/submit" onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl bg-red-600 text-white font-bold">

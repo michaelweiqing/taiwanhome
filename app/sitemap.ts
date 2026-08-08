@@ -2,6 +2,7 @@ import { MetadataRoute } from "next"
 import { supabase } from "@/lib/supabase"
 import { SEO_LANDING_PAGES } from "@/lib/seoLandingPages"
 import { BLOG_POSTS } from "@/lib/blogPosts"
+import { getVnCommunities } from "@/lib/vnCommunities"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://8386.tw"
@@ -39,7 +40,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/listings`, changeFrequency: "daily", priority: 0.7 },
     { url: `${baseUrl}/blog`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${baseUrl}/submit`, changeFrequency: "weekly", priority: 0.5 },
+    { url: `${baseUrl}/khu-vuc-nguoi-viet`, changeFrequency: "weekly", priority: 0.75 },
   ]
 
-  return [...staticUrls, ...seoLandingUrls, ...blogUrls, ...listingUrls]
+  const vnCommunities = await getVnCommunities()
+  const vnCommunityUrls: MetadataRoute.Sitemap = vnCommunities.map((c) => ({
+    url: `${baseUrl}/khu-vuc-nguoi-viet/${c.slug}`,
+    changeFrequency: "weekly",
+    priority: 0.7,
+  }))
+
+  return [...staticUrls, ...seoLandingUrls, ...blogUrls, ...vnCommunityUrls, ...listingUrls]
 }
