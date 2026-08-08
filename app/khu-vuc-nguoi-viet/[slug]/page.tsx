@@ -68,7 +68,7 @@ export default async function VnCommunityDetailPage(
       <nav className="text-xs text-gray-400 flex items-center gap-1.5 flex-wrap">
         <Link href="/" className="hover:text-red-600">Trang chủ</Link>
         <span>/</span>
-        <Link href="/khu-vuc-nguoi-viet" className="hover:text-red-600">Bản đồ người Việt</Link>
+        <Link href="/khu-vuc-nguoi-viet" className="hover:text-red-600">Bản đồ cuộc sống người Việt</Link>
         <span>/</span>
         <span className="text-gray-600">{community.name_vi}</span>
       </nav>

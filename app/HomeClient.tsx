@@ -9,11 +9,12 @@ import PropertyCard from "@/components/PropertyCard"
 import ReelsSection from "@/components/ReelsSection"
 import AiSearchBox from "@/components/AiSearchBox"
 import type { PropertyReel } from "@/lib/data"
+import type { VnCommunity } from "@/lib/vnCommunities"
 import { SEO_LANDING_PAGES } from "@/lib/seoLandingPages"
-import { Search, MessageCircle, Building2, Moon, Plane, Microscope, Building, Wheat, Landmark, Waves, Eye } from "lucide-react"
+import { Search, MessageCircle, Building2, Moon, Plane, Microscope, Building, Wheat, Landmark, Waves, Eye, MapPinned, ShoppingBasket, UtensilsCrossed, Church, HeartPulse, GraduationCap, Factory, ArrowRight } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
-interface Props { featured: Property[]; newest: Property[]; reels: PropertyReel[] }
+interface Props { featured: Property[]; newest: Property[]; reels: PropertyReel[]; vnCommunities: VnCommunity[] }
 
 const CITIES: { zh: string; vi: string; Icon: LucideIcon; n: number; slug: string }[] = [
   { zh:"台北市", vi:"Đài Bắc",   Icon:Building2,   n:5234, slug:"台北市" },
@@ -106,7 +107,7 @@ const DISTRICTS: Record<string, { zh: string; vi: string }[]> = {
   ],
 }
 
-export default function HomeClient({ featured, newest, reels }: Props) {
+export default function HomeClient({ featured, newest, reels, vnCommunities }: Props) {
   const { lang, t } = useLang()
   const router = useRouter()
   const [tab, setTab] = useState<"rent"|"buy">("rent")
@@ -413,6 +414,68 @@ export default function HomeClient({ featured, newest, reels }: Props) {
 
       {/* ── Reels: Video ngắn nhà đất ── */}
       <ReelsSection reels={reels} />
+
+      {/* ── Bản đồ cuộc sống người Việt ── */}
+      <div className="max-w-6xl mx-auto px-4 pt-8">
+        <Link href="/khu-vuc-nguoi-viet" className="group block relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 shadow-xl">
+          <div className="absolute -top-10 -right-10 w-52 h-52 rounded-full bg-white/10" />
+          <div className="absolute -bottom-16 -left-10 w-48 h-48 rounded-full bg-white/10" />
+          <div className="absolute top-4 right-4 text-6xl opacity-20 rotate-12 select-none">🇻🇳</div>
+
+          <div className="relative px-5 py-6 sm:px-8 sm:py-7">
+            <div className="flex items-start justify-between gap-4 flex-wrap">
+              <div className="max-w-xl">
+                <span className="inline-flex items-center gap-1.5 bg-white/20 text-white text-[11px] font-bold px-2.5 py-1 rounded-full mb-3">
+                  <MapPinned size={12} strokeWidth={2.5} /> {lang==="zh" ? "全新功能" : "Tính năng mới"}
+                </span>
+                <h2 className="text-white font-extrabold text-xl sm:text-2xl mb-1.5 flex items-center gap-2">
+                  🗺️ {lang==="zh" ? "越南人生活地圖" : "Bản đồ cuộc sống người Việt"}
+                </h2>
+                <p className="text-emerald-50 text-sm leading-relaxed">
+                  {lang==="zh"
+                    ? "越南人常聚居、生活、工作的區域 — 找房、市場、越南料理、教堂、醫院、學校、工業區，一次全都看到。"
+                    : "Nơi người Việt thường sinh sống, học tập và làm việc — nhà cho thuê, chợ Việt, quán ăn Việt, nhà thờ, bệnh viện, trường học, khu công nghiệp — tất cả trong một trang."}
+                </p>
+              </div>
+              <span className="hidden sm:inline-flex shrink-0 items-center gap-1.5 bg-white text-emerald-700 font-bold text-sm px-4 py-2.5 rounded-xl group-hover:bg-emerald-50 transition shadow-md">
+                {lang==="zh" ? "立即探索" : "Khám phá ngay"} <ArrowRight size={15} strokeWidth={2.5} className="group-hover:translate-x-0.5 transition" />
+              </span>
+            </div>
+
+            {/* Hàng icon chuyên mục */}
+            <div className="flex flex-wrap gap-2 mt-5">
+              {[
+                { Icon: ShoppingBasket,     vi: "Chợ Việt",      zh: "越南市場" },
+                { Icon: UtensilsCrossed,    vi: "Quán ăn Việt",  zh: "越南料理" },
+                { Icon: Church,             vi: "Nhà thờ",       zh: "教堂" },
+                { Icon: HeartPulse,         vi: "Bệnh viện",     zh: "醫院" },
+                { Icon: GraduationCap,      vi: "Trường học",    zh: "大學" },
+                { Icon: Factory,            vi: "Khu công nghiệp", zh: "工業區" },
+              ].map((it) => (
+                <span key={it.vi} className="inline-flex items-center gap-1.5 bg-white/15 text-white text-xs font-medium px-3 py-1.5 rounded-full">
+                  <it.Icon size={13} strokeWidth={2.2} /> {lang==="zh" ? it.zh : it.vi}
+                </span>
+              ))}
+            </div>
+
+            {/* Chip khu vực nổi bật */}
+            {vnCommunities.length > 0 && (
+              <div className="flex gap-2 mt-4 overflow-x-auto pb-1 -mx-1 px-1">
+                {vnCommunities.slice(0, 8).map((c) => (
+                  <span key={c.slug}
+                    className="shrink-0 flex items-center gap-1 bg-white/95 text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
+                    📍 {lang==="zh" ? c.name_zh : c.name_vi}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <span className="sm:hidden inline-flex mt-4 items-center gap-1.5 bg-white text-emerald-700 font-bold text-sm px-4 py-2.5 rounded-xl shadow-md">
+              {lang==="zh" ? "立即探索" : "Khám phá ngay"} <ArrowRight size={15} strokeWidth={2.5} />
+            </span>
+          </div>
+        </Link>
+      </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-10">
 

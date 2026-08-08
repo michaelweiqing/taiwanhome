@@ -8,7 +8,7 @@ import { getVnCommunities } from "@/lib/vnCommunities"
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: "Bản đồ người Việt tại Đài Loan | 台灣越南人生活地圖",
+  title: "Bản đồ cuộc sống người Việt tại Đài Loan | 越南人生活地圖",
   description:
     "Khu vực người Việt thường sinh sống, học tập và làm việc tại Đài Loan — chợ Việt, quán ăn Việt, nhà thờ, bệnh viện, khu công nghiệp gần bạn.",
   alternates: { canonical: "https://8386.tw/khu-vuc-nguoi-viet" },
@@ -39,12 +39,12 @@ export default async function VnCommunitiesPage() {
       <nav className="text-xs text-gray-400 flex items-center gap-1.5">
         <Link href="/" className="hover:text-red-600">Trang chủ</Link>
         <span>/</span>
-        <span className="text-gray-600">Bản đồ người Việt</span>
+        <span className="text-gray-600">Bản đồ cuộc sống người Việt</span>
       </nav>
 
       <header className="space-y-2">
         <h1 className="text-2xl font-bold text-gray-900">
-          🗺️ Bản đồ người Việt tại Đài Loan
+          🗺️ Bản đồ cuộc sống người Việt tại Đài Loan
         </h1>
         <p className="text-sm text-gray-400">台灣越南人生活地圖</p>
         <p className="text-gray-700 text-sm leading-relaxed max-w-3xl">
