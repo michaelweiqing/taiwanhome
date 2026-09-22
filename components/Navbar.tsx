@@ -2,11 +2,11 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useLang } from "@/context/LangContext"
-import { Home, KeyRound, Plus, Heart, User, MessageCircle } from "lucide-react"
+import { Plus, Heart, User, MessageCircle } from "lucide-react"
 import ShareButton from "@/components/ShareButton"
 
 export default function Navbar() {
-  const { lang, setLang, t } = useLang()
+  const { lang, setLang } = useLang()
   const [open, setOpen] = useState(false)
   const [loggedIn, setLoggedIn] = useState(false)
 
@@ -89,21 +89,10 @@ export default function Navbar() {
       {/* Mobile menu */}
       {open && (
         <div className="md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-1">
-          <Link href="/listings?type=buy" onClick={()=>setOpen(false)}
-            className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
-            <Home size={18} strokeWidth={2.2} /> {t.buy}
-          </Link>
-          <Link href="/listings?type=rent" onClick={()=>setOpen(false)}
-            className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
-            <KeyRound size={18} strokeWidth={2.2} /> {t.rent}
-          </Link>
+          {/* Tạm thời gỡ: Mua nhà, Thuê nhà, Bản đồ cuộc sống người Việt */}
           <Link href="/blog" onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
             <MessageCircle size={18} strokeWidth={2.2} /> {lang==="zh" ? "文章" : "Blog"}
-          </Link>
-          <Link href="/khu-vuc-nguoi-viet" onClick={()=>setOpen(false)}
-            className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
-            <Home size={18} strokeWidth={2.2} /> {lang==="zh" ? "越南人生活地圖" : "Bản đồ cuộc sống người Việt"}
           </Link>
           <Link href="/submit" onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl bg-red-600 text-white font-bold">
