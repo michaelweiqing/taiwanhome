@@ -67,7 +67,13 @@ export default function AiChat({ compact = false }: { compact?: boolean }) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => { setHistory(loadHistory()) }, [])
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }) }, [messages, loading])
+  useEffect(() => {
+    // Bỏ qua lần mount đầu tiên (messages rỗng) — nếu không, mỗi lần vào trang chủ
+    // trình duyệt sẽ tự cuộn xuống anchor này, đẩy toàn bộ phần đầu trang (tiêu đề,
+    // bộ lọc, gợi ý AI) ra khỏi khung nhìn ngay khi tải trang.
+    if (messages.length === 0) return
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages, loading])
 
   function uid() { return Math.random().toString(36).slice(2) }
 
