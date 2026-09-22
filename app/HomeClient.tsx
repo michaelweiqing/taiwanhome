@@ -7,7 +7,7 @@ import { useLang } from "@/context/LangContext"
 import { createClient } from "@/lib/supabase-browser"
 import PropertyCard from "@/components/PropertyCard"
 import ReelsSection from "@/components/ReelsSection"
-import AiSearchBox from "@/components/AiSearchBox"
+// import AiSearchBox from "@/components/AiSearchBox" // Tạm thời gỡ bỏ chức năng trợ lý AI
 import type { PropertyReel } from "@/lib/data"
 import type { VnCommunity } from "@/lib/vnCommunities"
 import { SEO_LANDING_PAGES } from "@/lib/seoLandingPages"
@@ -407,8 +407,8 @@ export default function HomeClient({ featured, newest, reels, vnCommunities }: P
             )}
           </div>
 
-          {/* ── 8386 AI: Trợ lý tìm nhà bằng tiếng Việt ── */}
-          <AiSearchBox />
+          {/* ── 8386 AI: Trợ lý tìm nhà bằng tiếng Việt — Tạm thời gỡ bỏ ── */}
+          {/* <AiSearchBox /> */}
         </div>
       </div>
 
