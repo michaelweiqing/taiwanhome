@@ -2,7 +2,14 @@
 // components/DistrictMultiSelect.tsx
 // Dropdown chọn nhiều quận/huyện (tối đa `max`) trong cùng 1 thành phố — dùng chung
 // cho ô tìm kiếm trang chủ (HomeClient) và drawer tìm kiếm mobile (SearchDrawer).
+//
+// Panel được render qua Portal vào document.body (định vị bằng toạ độ thật của nút
+// trigger) thay vì nằm lồng trong DOM tại chỗ — vì khung tìm kiếm ở trang chủ có
+// `overflow-hidden` (để bo góc thẻ trắng), nên nếu render tại chỗ panel sẽ bị cắt
+// cụt/chật chội. Render qua portal giúp panel luôn hiển thị đầy đủ, không bị cha nào
+// clip mất.
 import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 
 interface DistrictOption { zh: string; vi: string }
 
@@ -18,17 +25,42 @@ interface Props {
 
 export default function DistrictMultiSelect({ lang, districts, selected, onChange, disabled, max = 4, className }: Props) {
   const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+  const [pos, setPos] = useState<{ top: number; left: number; width: number } | null>(null)
+  const btnRef   = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
 
+  function updatePosition() {
+    const rect = btnRef.current?.getBoundingClientRect()
+    if (!rect) return
+    setPos({ top: rect.bottom + 6, left: rect.left, width: rect.width })
+  }
+
+  // Cập nhật vị trí panel khi mở, và bám theo khi cuộn trang / đổi kích thước cửa sổ
+  useEffect(() => {
+    if (!open) return
+    updatePosition()
+    const onScrollOrResize = () => updatePosition()
+    window.addEventListener("scroll", onScrollOrResize, true)
+    window.addEventListener("resize", onScrollOrResize)
+    return () => {
+      window.removeEventListener("scroll", onScrollOrResize, true)
+      window.removeEventListener("resize", onScrollOrResize)
+    }
+  }, [open])
+
+  // Đóng khi click ra ngoài cả nút trigger lẫn panel (panel nằm ở portal nên phải kiểm tra riêng)
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+      const target = e.target as Node
+      if (btnRef.current?.contains(target)) return
+      if (panelRef.current?.contains(target)) return
+      setOpen(false)
     }
     document.addEventListener("mousedown", onDocClick)
     return () => document.removeEventListener("mousedown", onDocClick)
   }, [])
 
-  // Đóng dropdown + xoá lựa chọn không còn thuộc thành phố hiện tại khi đổi thành phố
+  // Đóng dropdown khi đổi thành phố (danh sách quận/huyện thay đổi)
   useEffect(() => { setOpen(false) }, [districts])
 
   function toggle(zh: string) {
@@ -47,8 +79,9 @@ export default function DistrictMultiSelect({ lang, districts, selected, onChang
       : (lang === "zh" ? `已選 ${selected.length} 個區域` : `Đã chọn ${selected.length} khu vực`)
 
   return (
-    <div className="relative flex-1" ref={ref}>
+    <div className="relative flex-1">
       <button
+        ref={btnRef}
         type="button"
         onClick={() => !disabled && setOpen(o => !o)}
         disabled={disabled}
@@ -58,14 +91,24 @@ export default function DistrictMultiSelect({ lang, districts, selected, onChang
       </button>
       <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
 
-      {open && !disabled && (
-        <div className="absolute z-20 mt-1 w-full max-h-64 overflow-y-auto bg-white border border-gray-200 rounded-xl shadow-lg py-1">
+      {open && !disabled && pos && typeof document !== "undefined" && createPortal(
+        <div
+          ref={panelRef}
+          style={{
+            position: "fixed",
+            top: pos.top,
+            left: pos.left,
+            width: Math.max(pos.width, 260),
+            maxHeight: "min(70vh, 380px)",
+          }}
+          className="z-[100] overflow-y-auto bg-white border border-gray-200 rounded-xl shadow-xl py-1"
+        >
           {districts.map(d => {
             const checked = selected.includes(d.zh)
             const limitReached = !checked && selected.length >= max
             return (
               <label key={d.zh}
-                className={`flex items-center gap-2 px-3 py-2 text-sm ${limitReached ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:bg-red-50"}`}>
+                className={`flex items-center gap-2 px-3 py-2.5 text-sm ${limitReached ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:bg-red-50"}`}>
                 <input type="checkbox" checked={checked} disabled={limitReached}
                   onChange={() => toggle(d.zh)}
                   className="accent-red-600 w-4 h-4 shrink-0" />
@@ -73,10 +116,11 @@ export default function DistrictMultiSelect({ lang, districts, selected, onChang
               </label>
             )
           })}
-          <div className="px-3 py-1.5 text-xs text-gray-400 border-t border-gray-100 mt-1">
+          <div className="px-3 py-2 text-xs text-gray-400 border-t border-gray-100 mt-1 sticky bottom-0 bg-white">
             {lang === "zh" ? `最多選擇 ${max} 個區域` : `Chọn tối đa ${max} khu vực`}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
