@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useLang } from "@/context/LangContext"
 import { Search } from "lucide-react"
+import DistrictMultiSelect from "@/components/DistrictMultiSelect"
 
 const CITIES = [
   { zh:"台北市", vi:"Đài Bắc",    slug:"台北市" },
@@ -106,7 +107,7 @@ export default function SearchDrawer({ open, onClose }: Props) {
   const [tab, setTab]   = useState<"rent"|"buy">("rent")
   const [q, setQ]       = useState("")
   const [city, setCity] = useState("")
-  const [dist, setDist] = useState("")
+  const [dist, setDist] = useState<string[]>([])
   const [ptype, setPtype] = useState("")
   const [price, setPrice] = useState("")
 
@@ -117,7 +118,7 @@ export default function SearchDrawer({ open, onClose }: Props) {
     params.set("type", tab)
     if (q)     params.set("q", q)
     if (city)  params.set("city", city)
-    if (dist)  params.set("district", dist)
+    if (dist.length) params.set("district", dist.join(","))
     if (ptype) params.set("property_type", ptype)
     if (price) params.set("price", price)
     router.push(`/listings?${params.toString()}`)
@@ -169,19 +170,21 @@ export default function SearchDrawer({ open, onClose }: Props) {
           {/* City + District */}
           <div className="grid grid-cols-2 gap-2">
             <div className="relative">
-              <select value={city} onChange={e => { setCity(e.target.value); setDist("") }} className={sel}>
+              <select value={city} onChange={e => { setCity(e.target.value); setDist([]) }} className={sel}>
                 <option value="">{lang==="zh" ? "選擇城市" : "Chọn thành phố"}</option>
                 {CITIES.map(c => <option key={c.zh} value={c.zh}>{lang==="zh" ? c.zh : c.vi}</option>)}
               </select>
               <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
             </div>
-            <div className="relative">
-              <select value={dist} onChange={e => setDist(e.target.value)} disabled={!city} className={sel + " disabled:opacity-40"}>
-                <option value="">{lang==="zh" ? "選擇區域" : "Chọn quận/huyện"}</option>
-                {districts.map(d => <option key={d.zh} value={d.zh}>{lang==="zh" ? d.zh : d.vi}</option>)}
-              </select>
-              <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
-            </div>
+            <DistrictMultiSelect
+              lang={lang}
+              districts={districts}
+              selected={dist}
+              onChange={setDist}
+              disabled={!city}
+              max={4}
+              className={sel + " disabled:opacity-40"}
+            />
           </div>
 
           {/* Type + Price */}

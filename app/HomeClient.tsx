@@ -6,6 +6,7 @@ import type { Property } from "@/lib/data"
 import { useLang } from "@/context/LangContext"
 import { createClient } from "@/lib/supabase-browser"
 import PropertyCard from "@/components/PropertyCard"
+import DistrictMultiSelect from "@/components/DistrictMultiSelect"
 import ReelsSection from "@/components/ReelsSection"
 // import AiSearchBox from "@/components/AiSearchBox" // Tạm thời gỡ bỏ chức năng trợ lý AI
 import type { PropertyReel } from "@/lib/data"
@@ -113,7 +114,7 @@ export default function HomeClient({ featured, newest, reels, vnCommunities }: P
   const [tab, setTab] = useState<"rent"|"buy">("rent")
   const [q, setQ] = useState("")
   const [selectedCity, setSelectedCity] = useState("")
-  const [selectedDistrict, setSelectedDistrict] = useState("")
+  const [selectedDistricts, setSelectedDistricts] = useState<string[]>([])
   const [selectedType, setSelectedType] = useState("")
   const [selectedPrice, setSelectedPrice] = useState("")
   const [selectedRooms, setSelectedRooms] = useState("")
@@ -153,7 +154,7 @@ export default function HomeClient({ featured, newest, reels, vnCommunities }: P
     params.set("type", tab)
     if (q) params.set("q", q)
     if (selectedCity) params.set("city", selectedCity)
-    if (selectedDistrict) params.set("district", selectedDistrict)
+    if (selectedDistricts.length) params.set("district", selectedDistricts.join(","))
     if (selectedType) params.set("property_type", selectedType)
     if (tab === "buy") {
       if (selectedRooms) params.set("rooms", selectedRooms)
@@ -280,7 +281,7 @@ export default function HomeClient({ featured, newest, reels, vnCommunities }: P
               <div className="relative flex-1">
                 <select
                   value={selectedCity}
-                  onChange={e => { setSelectedCity(e.target.value); setSelectedDistrict("") }}
+                  onChange={e => { setSelectedCity(e.target.value); setSelectedDistricts([]) }}
                   className="w-full appearance-none bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none focus:border-red-400 cursor-pointer pr-8"
                 >
                   <option value="">{lang==="zh" ? "選擇城市" : "Chọn thành phố"}</option>
@@ -293,22 +294,15 @@ export default function HomeClient({ featured, newest, reels, vnCommunities }: P
                 <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
               </div>
 
-              <div className="relative flex-1">
-                <select
-                  value={selectedDistrict}
-                  onChange={e => setSelectedDistrict(e.target.value)}
-                  disabled={!selectedCity}
-                  className="w-full appearance-none bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none focus:border-red-400 cursor-pointer pr-8 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <option value="">{lang==="zh" ? "選擇區域" : "Chọn quận/huyện"}</option>
-                  {districts.map(d => (
-                    <option key={d.zh} value={d.zh}>
-                      {lang==="zh" ? d.zh : `${d.vi} (${d.zh})`}
-                    </option>
-                  ))}
-                </select>
-                <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
-              </div>
+              <DistrictMultiSelect
+                lang={lang}
+                districts={districts}
+                selected={selectedDistricts}
+                onChange={setSelectedDistricts}
+                disabled={!selectedCity}
+                max={4}
+                className="w-full appearance-none bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none focus:border-red-400 cursor-pointer pr-8 disabled:opacity-40 disabled:cursor-not-allowed"
+              />
 
               <button onClick={handleSearch}
                 className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl text-sm font-semibold transition shrink-0">

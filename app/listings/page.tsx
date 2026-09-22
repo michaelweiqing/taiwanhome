@@ -47,10 +47,15 @@ export default async function ListingsPage({
 
   const parking = params.parking === "yes" ? true : params.parking === "no" ? false : undefined
 
+  // district trên URL là chuỗi phân tách bởi dấu phẩy khi chọn nhiều quận/huyện
+  const districtList = params.district
+    ? params.district.split(",").map(d => d.trim()).filter(Boolean)
+    : undefined
+
   const properties = await searchProperties({
     listingType:  params.type as "rent" | "buy" | undefined,
     city:         params.city,
-    district:     params.district,
+    district:     districtList,
     propertyType: params.property_type as "apartment" | "house" | "studio" | "villa" | undefined,
     sortBy:       (params.sort as "newest" | "price_asc" | "price_desc") ?? "newest",
     minPrice, maxPrice, minArea, maxArea, minAge, maxAge, bedrooms, bedroomsMin, parking,

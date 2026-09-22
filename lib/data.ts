@@ -170,7 +170,7 @@ export const getSimilarProperties = cache(async (
 export interface FilterOptions {
   listingType?: "rent" | "buy"
   city?: string
-  district?: string
+  district?: string | string[]   // string[] = lọc nhiều quận/huyện cùng lúc (tối đa 4, ràng buộc ở UI)
   propertyType?: string
   minPrice?: number
   maxPrice?: number
@@ -190,7 +190,11 @@ export async function searchProperties(filters: FilterOptions): Promise<Property
     if (table === "user_listings") query = query.eq("is_active", true)
     if (filters.listingType)  query = query.eq("listing_type",  filters.listingType)
     if (filters.city)         query = query.eq("city",          filters.city)
-    if (filters.district)     query = query.eq("district",      filters.district)
+    if (filters.district) {
+      const districtList = Array.isArray(filters.district) ? filters.district : [filters.district]
+      if (districtList.length === 1) query = query.eq("district", districtList[0])
+      else if (districtList.length > 1) query = query.in("district", districtList)
+    }
     if (filters.propertyType) query = query.eq("property_type", filters.propertyType)
     if (filters.minPrice)     query = query.gte("price",        filters.minPrice)
     if (filters.maxPrice)     query = query.lte("price",        filters.maxPrice)
