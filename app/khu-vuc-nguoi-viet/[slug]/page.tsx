@@ -133,10 +133,19 @@ export default async function VnCommunityDetailPage(
             <h2 className="font-bold text-gray-900">{meta.icon} {meta.vi}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {list.map((p) => (
-                <div key={p.id} className="bg-white border border-gray-100 rounded-xl p-3.5">
-                  <p className="font-semibold text-gray-900 text-sm">
-                    {p.name_vi || p.name_zh}
-                  </p>
+                <div key={p.id} className={`bg-white border rounded-xl p-3.5 ${
+                  p.has_vietnamese_mass ? "border-red-200 ring-1 ring-red-100" : "border-gray-100"
+                }`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-semibold text-gray-900 text-sm">
+                      {p.name_vi || p.name_zh}
+                    </p>
+                    {p.has_vietnamese_mass && (
+                      <span className="shrink-0 inline-flex items-center gap-1 bg-red-50 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                        🇻🇳 Lễ tiếng Việt
+                      </span>
+                    )}
+                  </div>
                   {p.name_vi && (
                     <p className="text-xs text-gray-400">{p.name_zh}</p>
                   )}
@@ -145,6 +154,11 @@ export default async function VnCommunityDetailPage(
                   )}
                   {p.phone && (
                     <p className="text-xs text-gray-500">☎️ {p.phone}</p>
+                  )}
+                  {p.has_vietnamese_mass && p.vietnamese_mass_note && (
+                    <p className="text-xs text-red-600 font-medium mt-1.5 bg-red-50 rounded-lg px-2 py-1">
+                      ⛪ Cộng đoàn giáo dân người Việt · Giờ lễ tiếng Việt: {p.vietnamese_mass_note}
+                    </p>
                   )}
                   {(p.notes_vi || p.notes_zh) && (
                     <p className="text-xs text-gray-400 mt-1 leading-relaxed">

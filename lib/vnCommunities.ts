@@ -40,6 +40,8 @@ export interface VnCommunityPlace {
   notes_zh: string | null
   notes_vi: string | null
   display_order: number
+  has_vietnamese_mass: boolean       // Nhà thờ có thánh lễ tiếng Việt / cộng đoàn giáo dân người Việt sinh hoạt định kỳ
+  vietnamese_mass_note: string | null // Ghi chú ngắn giờ lễ tiếng Việt, vd: "Chủ nhật 19:00 hàng tuần"
 }
 
 export const CATEGORY_META: Record<VnPlaceCategory, { icon: string; zh: string; vi: string }> = {
@@ -83,6 +85,18 @@ export async function getVnCommunityPlaces(communityId: string): Promise<VnCommu
     .order("display_order", { ascending: true })
   if (error) { console.error("getVnCommunityPlaces:", error.message); return [] }
   return data as VnCommunityPlace[]
+}
+
+// Tập community_id có nhà thờ với lễ/cộng đoàn tiếng Việt — dùng để gắn badge 🇻🇳
+// ngay ở trang danh sách khu vực, giúp người dùng không cần bấm vào từng khu vực mới biết.
+export async function getCommunityIdsWithVietnameseMass(): Promise<Set<string>> {
+  const { data, error } = await supabase
+    .from("vn_community_places")
+    .select("community_id")
+    .eq("category", "church")
+    .eq("has_vietnamese_mass", true)
+  if (error) { console.error("getCommunityIdsWithVietnameseMass:", error.message); return new Set() }
+  return new Set((data || []).map(r => r.community_id as string))
 }
 
 // Đếm số tin đang cho thuê/bán + giá trung bình theo quận (khớp với properties.district)

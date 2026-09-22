@@ -3,7 +3,7 @@
 
 import type { Metadata } from "next"
 import Link from "next/link"
-import { getVnCommunities } from "@/lib/vnCommunities"
+import { getVnCommunities, getCommunityIdsWithVietnameseMass } from "@/lib/vnCommunities"
 
 export const revalidate = 300
 
@@ -15,7 +15,10 @@ export const metadata: Metadata = {
 }
 
 export default async function VnCommunitiesPage() {
-  const communities = await getVnCommunities()
+  const [communities, vnMassIds] = await Promise.all([
+    getVnCommunities(),
+    getCommunityIdsWithVietnameseMass(),
+  ])
 
   // Nhóm theo thành phố để dễ mở rộng sau này (hiện chỉ có Đài Trung)
   const byCity = communities.reduce<Record<string, typeof communities>>((acc, c) => {
@@ -61,11 +64,18 @@ export default async function VnCommunitiesPage() {
             {list.map((c) => (
               <Link key={c.slug} href={`/khu-vuc-nguoi-viet/${c.slug}`}
                 className="bg-white border border-gray-100 hover:border-red-300 rounded-2xl p-4 shadow-sm transition group">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-lg">📍</span>
-                  <h3 className="font-bold text-gray-900 group-hover:text-red-600 transition">
-                    {c.name_vi}
-                  </h3>
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-lg">📍</span>
+                    <h3 className="font-bold text-gray-900 group-hover:text-red-600 transition truncate">
+                      {c.name_vi}
+                    </h3>
+                  </div>
+                  {vnMassIds.has(c.id) && (
+                    <span className="shrink-0 inline-flex items-center gap-1 bg-red-50 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                      🇻🇳 Lễ tiếng Việt
+                    </span>
+                  )}
                 </div>
                 <p className="text-xs text-gray-400 mb-2">{c.name_zh} · {c.district}</p>
                 {c.description_vi && (

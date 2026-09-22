@@ -15,6 +15,7 @@ type Place = {
   id: string; community_id: string; category: string
   name_zh: string; name_vi: string | null; address: string | null; phone: string | null
   notes_zh: string | null; notes_vi: string | null; display_order: number
+  has_vietnamese_mass: boolean; vietnamese_mass_note: string | null
 }
 
 const CATEGORIES = [
@@ -37,6 +38,7 @@ const emptyCommunity = (): Partial<Community> => ({
 const emptyPlace = (communityId: string): Partial<Place> => ({
   community_id: communityId, category: "shop",
   name_zh: "", name_vi: "", address: "", phone: "", notes_zh: "", notes_vi: "", display_order: 0,
+  has_vietnamese_mass: false, vietnamese_mass_note: "",
 })
 
 export default function AdminVnAreasClient() {
@@ -136,6 +138,8 @@ export default function AdminVnAreasClient() {
       p_name_zh: p.name_zh, p_name_vi: p.name_vi || null, p_address: p.address || null,
       p_phone: p.phone || null, p_lat: null, p_lng: null,
       p_notes_zh: p.notes_zh || null, p_notes_vi: p.notes_vi || null, p_display_order: p.display_order ?? 0,
+      p_has_vietnamese_mass: p.has_vietnamese_mass ?? false,
+      p_vietnamese_mass_note: p.vietnamese_mass_note || null,
     })
     setSaving(false)
     if (error) { alert(error.message); return }
@@ -262,9 +266,19 @@ export default function AdminVnAreasClient() {
                         <p className="text-[10px] font-bold text-red-500 uppercase mb-0.5">
                           {CATEGORIES.find(c => c.val === p.category)?.label || p.category}
                         </p>
-                        <p className="font-semibold text-gray-900 text-sm">{p.name_vi || p.name_zh}</p>
+                        <p className="font-semibold text-gray-900 text-sm">
+                          {p.name_vi || p.name_zh}
+                          {p.category === "church" && p.has_vietnamese_mass && (
+                            <span className="ml-1.5 inline-block bg-red-50 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full align-middle">
+                              🇻🇳 Lễ tiếng Việt
+                            </span>
+                          )}
+                        </p>
                         {p.address && <p className="text-xs text-gray-500">📍 {p.address}</p>}
                         {p.phone && <p className="text-xs text-gray-500">☎️ {p.phone}</p>}
+                        {p.category === "church" && p.has_vietnamese_mass && p.vietnamese_mass_note && (
+                          <p className="text-xs text-red-600">🕊️ {p.vietnamese_mass_note}</p>
+                        )}
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
                         <button onClick={() => setEditingPlace(p)}
@@ -337,6 +351,22 @@ export default function AdminVnAreasClient() {
               <Field label="Điện thoại"><input value={editingPlace.phone || ""} onChange={e => setEditingPlace({ ...editingPlace, phone: e.target.value })} className="ipt" /></Field>
               <Field label="Ghi chú (vi)"><textarea value={editingPlace.notes_vi || ""} onChange={e => setEditingPlace({ ...editingPlace, notes_vi: e.target.value })} className="ipt" rows={2} /></Field>
               <Field label="Ghi chú (zh)"><textarea value={editingPlace.notes_zh || ""} onChange={e => setEditingPlace({ ...editingPlace, notes_zh: e.target.value })} className="ipt" rows={2} /></Field>
+              {editingPlace.category === "church" && (
+                <div className="bg-red-50/60 border border-red-100 rounded-xl p-3 space-y-2">
+                  <label className="flex items-center gap-2 text-sm text-gray-700 font-medium">
+                    <input type="checkbox" checked={editingPlace.has_vietnamese_mass ?? false}
+                      onChange={e => setEditingPlace({ ...editingPlace, has_vietnamese_mass: e.target.checked })} />
+                    🇻🇳 Có lễ tiếng Việt / cộng đoàn giáo dân người Việt
+                  </label>
+                  {editingPlace.has_vietnamese_mass && (
+                    <Field label="Giờ lễ tiếng Việt (vd: Chủ nhật 19:00 hàng tuần)">
+                      <input value={editingPlace.vietnamese_mass_note || ""}
+                        onChange={e => setEditingPlace({ ...editingPlace, vietnamese_mass_note: e.target.value })}
+                        className="ipt" />
+                    </Field>
+                  )}
+                </div>
+              )}
             </div>
             <button onClick={savePlace} disabled={saving || !editingPlace.name_zh}
               className="w-full mt-4 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold py-2.5 rounded-xl text-sm transition">
