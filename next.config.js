@@ -10,6 +10,9 @@ const nextConfig = {
     deviceSizes: [360, 414, 640, 750, 828, 1080, 1200, 1920],
     imageSizes: [64, 96, 128, 256, 384],
     formats: ["image/webp"],
+    // Next.js 16 chỉ cho phép các mức quality có trong danh sách này (mặc định chỉ [75]).
+    // Thêm 85/90 để ImageGallery/PropertyCard dùng ảnh nét hơn cho ảnh chính.
+    qualities: [75, 85, 90],
   },
 };
 

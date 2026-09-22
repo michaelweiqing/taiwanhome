@@ -66,6 +66,7 @@ export default function ImageGallery({ images, title }: Props) {
             alt={`${title} ${active + 1}`}
             fill
             priority={active === 0}
+            quality={90}
             sizes="(max-width: 768px) 100vw, 800px"
             className="object-cover"
           />
@@ -130,6 +131,7 @@ export default function ImageGallery({ images, title }: Props) {
               src={images[active]}
               alt={`${title} ${active + 1}`}
               fill
+              quality={90}
               sizes="100vw"
               className="object-contain select-none"
             />

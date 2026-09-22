@@ -57,6 +57,7 @@ export default function PropertyCard({ property: p }: { property: Property }) {
         <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden relative">
           {img ? (
             <Image src={img} alt={title} fill onError={() => setImgErr(true)}
+              quality={85}
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               className="object-cover group-hover:scale-[1.03] transition duration-500" />
           ) : (
