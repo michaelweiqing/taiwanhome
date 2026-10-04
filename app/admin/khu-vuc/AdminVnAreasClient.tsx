@@ -20,6 +20,7 @@ type Place = {
 
 const CATEGORIES = [
   { val: "market", label: "🛒 Chợ / Siêu thị" },
+  { val: "cafe", label: "☕ Quán nước / Cà phê" },
   { val: "restaurant", label: "🍜 Quán ăn Việt" },
   { val: "shop", label: "🏪 Cửa hàng Việt" },
   { val: "church", label: "⛪ Nhà thờ" },

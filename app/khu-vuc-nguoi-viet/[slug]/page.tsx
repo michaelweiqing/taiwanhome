@@ -50,7 +50,7 @@ export default async function VnCommunityDetailPage(
     return acc
   }, {})
   const CATEGORY_ORDER: VnPlaceCategory[] = [
-    "market", "restaurant", "shop", "church", "hospital", "university", "industrial_zone", "bus_stop",
+    "market", "restaurant", "shop", "cafe", "church", "hospital", "university", "industrial_zone", "bus_stop",
   ]
 
   const jsonLd = {
@@ -150,7 +150,14 @@ export default async function VnCommunityDetailPage(
                     <p className="text-xs text-gray-400">{p.name_zh}</p>
                   )}
                   {p.address && (
-                    <p className="text-xs text-gray-500 mt-1">📍 {p.address}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      📍 {p.address}{" "}
+                      <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.name_zh} ${p.address}`)}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline whitespace-nowrap">
+                        · Google Maps
+                      </a>
+                    </p>
                   )}
                   {p.phone && (
                     <p className="text-xs text-gray-500">☎️ {p.phone}</p>

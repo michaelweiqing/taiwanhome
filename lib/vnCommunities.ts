@@ -24,7 +24,7 @@ export interface VnCommunity {
 }
 
 export type VnPlaceCategory =
-  | "market" | "restaurant" | "shop" | "church"
+  | "market" | "restaurant" | "shop" | "cafe" | "church"
   | "hospital" | "university" | "industrial_zone" | "bus_stop"
 
 export interface VnCommunityPlace {
@@ -48,6 +48,7 @@ export const CATEGORY_META: Record<VnPlaceCategory, { icon: string; zh: string; 
   market:          { icon: "🛒", zh: "市場/超市",   vi: "Chợ / Siêu thị" },
   restaurant:      { icon: "🍜", zh: "越南料理",     vi: "Quán ăn Việt" },
   shop:            { icon: "🏪", zh: "越南商店",     vi: "Cửa hàng Việt" },
+  cafe:            { icon: "☕", zh: "咖啡/飲料",    vi: "Quán nước / Cà phê" },
   church:          { icon: "⛪", zh: "教堂",         vi: "Nhà thờ" },
   hospital:        { icon: "🏥", zh: "醫院",         vi: "Bệnh viện" },
   university:      { icon: "🎓", zh: "大學",         vi: "Trường đại học" },
