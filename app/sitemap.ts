@@ -41,6 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/blog`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${baseUrl}/submit`, changeFrequency: "weekly", priority: 0.5 },
     { url: `${baseUrl}/khu-vuc-nguoi-viet`, changeFrequency: "weekly", priority: 0.75 },
+    { url: `${baseUrl}/gia-thi-truong`, changeFrequency: "daily", priority: 0.8 },
   ]
 
   const vnCommunities = await getVnCommunities()

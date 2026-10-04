@@ -12,7 +12,7 @@ import ReelsSection from "@/components/ReelsSection"
 import type { PropertyReel } from "@/lib/data"
 import type { VnCommunity } from "@/lib/vnCommunities"
 import { SEO_LANDING_PAGES } from "@/lib/seoLandingPages"
-import { Search, MessageCircle, Building2, Moon, Plane, Microscope, Building, Wheat, Landmark, Waves, Eye, MapPinned, ShoppingBasket, UtensilsCrossed, Church, HeartPulse, GraduationCap, Factory, ArrowRight } from "lucide-react"
+import { Search, MessageCircle, Building2, Moon, Plane, Microscope, Building, Wheat, Landmark, Waves, Eye, MapPinned, ShoppingBasket, UtensilsCrossed, Church, HeartPulse, GraduationCap, Factory, ArrowRight, BarChart3 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 interface Props { featured: Property[]; newest: Property[]; reels: PropertyReel[]; vnCommunities: VnCommunity[] }
@@ -401,6 +401,16 @@ export default function HomeClient({ featured, newest, reels, vnCommunities }: P
             )}
           </div>
 
+          {/* Lối tắt tra cứu giá thực tế 實價登錄 */}
+          <div className="text-center mt-4">
+            <Link href="/gia-thi-truong"
+              className="inline-flex items-center gap-1.5 bg-white/15 hover:bg-white/25 text-white text-sm font-semibold px-4 py-2 rounded-full transition">
+              <BarChart3 size={15} strokeWidth={2.4} />
+              {lang==="zh" ? "查詢實價登錄成交行情" : "Tra cứu giá nhà thực tế (實價登錄)"}
+              <ArrowRight size={14} strokeWidth={2.5} />
+            </Link>
+          </div>
+
           {/* ── 8386 AI: Trợ lý tìm nhà bằng tiếng Việt — Tạm thời gỡ bỏ ── */}
           {/* <AiSearchBox /> */}
         </div>
@@ -408,6 +418,55 @@ export default function HomeClient({ featured, newest, reels, vnCommunities }: P
 
       {/* ── Reels: Video ngắn nhà đất ── */}
       <ReelsSection reels={reels} />
+
+      {/* ── Tra cứu giá thị trường 實價登錄 ── */}
+      <div className="max-w-6xl mx-auto px-4 pt-8">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-700 via-blue-600 to-sky-500 shadow-xl">
+          <div className="absolute -top-10 -right-10 w-52 h-52 rounded-full bg-white/10" />
+          <div className="absolute -bottom-16 -left-10 w-48 h-48 rounded-full bg-white/10" />
+          <div className="relative px-5 py-6 sm:px-8 sm:py-7">
+            <div className="flex items-start justify-between gap-4 flex-wrap">
+              <div className="max-w-xl">
+                <span className="inline-flex items-center gap-1.5 bg-white/20 text-white text-[11px] font-bold px-2.5 py-1 rounded-full mb-3">
+                  <BarChart3 size={12} strokeWidth={2.5} /> {lang==="zh" ? "每日更新" : "Cập nhật mỗi ngày"}
+                </span>
+                <h2 className="text-white font-extrabold text-xl sm:text-2xl mb-1.5">
+                  📊 {lang==="zh" ? "實價登錄 成交行情查詢" : "Tra cứu giá thị trường (實價登錄)"}
+                </h2>
+                <p className="text-blue-50 text-sm leading-relaxed">
+                  {lang==="zh"
+                    ? "內政部實際成交資料：買賣、預售屋、租金行情，各行政區單價一次看懂。"
+                    : "Giá mua bán, giá nhà mới và giá thuê đã giao dịch thật — số liệu từ Bộ Nội chính Đài Loan, giải thích bằng tiếng Việt. Biết giá trước khi thuê hay mua."}
+                </p>
+              </div>
+              <Link href="/gia-thi-truong"
+                className="hidden sm:inline-flex shrink-0 items-center gap-1.5 bg-white text-blue-700 font-bold text-sm px-4 py-2.5 rounded-xl hover:bg-blue-50 transition shadow-md">
+                {lang==="zh" ? "立即查詢" : "Tra cứu ngay"} <ArrowRight size={15} strokeWidth={2.5} />
+              </Link>
+            </div>
+            <div className="grid grid-cols-3 gap-2 mt-5">
+              {[
+                { kind: "sale",    vi: "Giá mua bán",  zh: "買賣行情" },
+                { kind: "presale", vi: "Giá nhà mới",  zh: "預售屋" },
+                { kind: "rent",    vi: "Giá thuê nhà", zh: "租金行情" },
+              ].map(k => (
+                <Link key={k.kind} href={`/gia-thi-truong?kind=${k.kind}`}
+                  className="bg-white/15 hover:bg-white/25 text-white text-xs sm:text-sm font-semibold text-center px-2 py-2.5 rounded-xl transition">
+                  {lang==="zh" ? k.zh : k.vi}
+                </Link>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-3 overflow-x-auto pb-1 -mx-1 px-1">
+              {CITIES.map(c => (
+                <Link key={c.zh} href={`/gia-thi-truong?city=${encodeURIComponent(c.zh)}`}
+                  className="shrink-0 bg-white/95 text-gray-800 hover:text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
+                  📍 {lang==="zh" ? c.zh : c.vi}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* ── Bản đồ cuộc sống người Việt ── */}
       <div className="max-w-6xl mx-auto px-4 pt-8">

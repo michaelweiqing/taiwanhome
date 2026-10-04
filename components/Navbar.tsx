@@ -2,7 +2,7 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useLang } from "@/context/LangContext"
-import { Plus, Heart, User, MessageCircle } from "lucide-react"
+import { Plus, Heart, User, MessageCircle, BarChart3 } from "lucide-react"
 import ShareButton from "@/components/ShareButton"
 
 export default function Navbar() {
@@ -47,6 +47,7 @@ export default function Navbar() {
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1 text-sm flex-1">
           {/* Tạm thời gỡ: Mua nhà, Thuê nhà, Bản đồ cuộc sống người Việt */}
+          <Link href="/gia-thi-truong" className="px-3 py-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition">{lang==="zh" ? "實價登錄" : "Giá thị trường"}</Link>
           <Link href="/blog" className="px-3 py-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition">{lang==="zh" ? "文章" : "Blog"}</Link>
         </nav>
 
@@ -90,6 +91,10 @@ export default function Navbar() {
       {open && (
         <div className="md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-1">
           {/* Tạm thời gỡ: Mua nhà, Thuê nhà, Bản đồ cuộc sống người Việt */}
+          <Link href="/gia-thi-truong" onClick={()=>setOpen(false)}
+            className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
+            <BarChart3 size={18} strokeWidth={2.2} /> {lang==="zh" ? "實價登錄查詢" : "Tra cứu giá thị trường"}
+          </Link>
           <Link href="/blog" onClick={()=>setOpen(false)}
             className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 text-gray-700 hover:text-red-600 transition">
             <MessageCircle size={18} strokeWidth={2.2} /> {lang==="zh" ? "文章" : "Blog"}
