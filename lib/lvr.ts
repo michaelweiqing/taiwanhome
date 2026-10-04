@@ -67,7 +67,10 @@ export function rocDate(s?: string): string | null {
   if (!m) return null
   const y = Number(m[1]) + 1911, mo = Number(m[2]), d = Number(m[3])
   if (mo < 1 || mo > 12 || d < 1 || d > 31 || y < 1990) return null
-  return `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`
+  const iso = `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`
+  // Bỏ ngày giao dịch ở tương lai (lỗi nhập liệu trong dữ liệu gốc)
+  if (iso > new Date(Date.now() + 86400000).toISOString().slice(0, 10)) return null
+  return iso
 }
 const rocYear = (s?: string) => {
   const m = s?.trim().match(/^(\d{2,3})\d{4}$/)

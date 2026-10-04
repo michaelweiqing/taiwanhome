@@ -29,6 +29,7 @@ const sinceDate = (months: number) => {
 export async function fetchLvrTransactions(sb: SupabaseClient, f: LvrFilters) {
   let q = sb.from("lvr_transactions").select(TX_COLS, { count: "exact" })
     .eq("city", f.city).eq("kind", f.kind).gte("deal_date", sinceDate(f.months))
+    .lte("deal_date", new Date().toISOString().slice(0, 10))
   if (f.district) q = q.eq("district", f.district)
   if (f.buildingType) q = q.eq("building_type", f.buildingType)
   if (f.rooms === "0") q = q.eq("rooms", 0)
