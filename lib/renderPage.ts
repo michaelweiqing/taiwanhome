@@ -34,13 +34,17 @@ export async function collectListingImages(url: string, max = 12): Promise<strin
   try {
     const page = await browser.newPage()
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36")
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 })
-    const isYC = /yungching\.com\.tw/.test(page.url())
+    const isYC = /yungching\.com\.tw/.test(url)
     if (isYC) {
-      await page.waitForSelector(".yc-ng-album-v2-carousel__thumb img, .yc-ng-album-v2-carousel__main-img img", { timeout: 10000 }).catch(() => {})
-      const srcs: string[] = await page.$$eval(
-        ".yc-ng-album-v2-carousel__thumb img, .yc-ng-album-v2-carousel__main-img img",
-        els => els.map(e => (e as HTMLImageElement).currentSrc || (e as HTMLImageElement).src))
+      const SEL = ".yc-ng-album-v2-carousel__thumb img, .yc-ng-album-v2-carousel__main-img img"
+      let srcs: string[] = []
+      // Thử tối đa 2 lần (đôi khi album tải chậm trên máy chủ)
+      for (let attempt = 0; attempt < 2 && srcs.length < 2; attempt++) {
+        await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 }).catch(() => {})
+        await page.waitForSelector(SEL, { timeout: 20000 }).catch(() => {})
+        await new Promise(r => setTimeout(r, 1500))
+        srcs = await page.$$eval(SEL, els => els.map(e => (e as HTMLImageElement).currentSrc || (e as HTMLImageElement).src)).catch(() => [])
+      }
       const seen = new Set<string>(), out: string[] = []
       for (const s of srcs) {
         if (!/yccdn\.yungching\.com\.tw\/v1\/image\//.test(s)) continue
@@ -52,6 +56,7 @@ export async function collectListingImages(url: string, max = 12): Promise<strin
       return out.slice(0, max)
     }
     // Trang khác: lấy các ảnh lớn đang hiển thị
+    await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 }).catch(() => {})
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight)).catch(() => {})
     await new Promise(r => setTimeout(r, 1500))
     const big: string[] = await page.$$eval("img", els => els
