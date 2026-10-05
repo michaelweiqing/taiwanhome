@@ -171,10 +171,29 @@ Trả về DUY NHẤT JSON:
  "title_vi": "tiêu đề tiếng Việt tự nhiên",
  "address_vi": "địa chỉ tiếng Việt (vd: Đường Quân Công đoạn 2, Quận Bắc Đồn, Đài Trung)",
  "features_vi": [bản dịch tiếng Việt tương ứng từng ý features_zh]}
-Không bịa thêm thông tin không có trong dữ liệu.`))
+Yêu cầu:
+- Phần tiếng Việt phải 100% tiếng Việt, KHÔNG để sót chữ Hán. Tên đường/quận phiên âm Hán-Việt (vd 軍功路 = Đường Quân Công, 北屯區 = Quận Bắc Đồn).
+- Văn phong quảng cáo bất động sản tự nhiên, dễ hiểu với người Việt ở Đài Loan.
+- Thuật ngữ: 透天/透天厝 = nhà phố nguyên căn; 別墅 = biệt thự; 孝親房 = phòng cho ông bà/bố mẹ; 稀有釋出 = hiếm có, mới rao bán;
+  車位 = chỗ đậu xe; 坪 = bình (坪); 套房 = phòng khép kín; 重劃區 = khu quy hoạch mới; 商圈 = khu thương mại; 捷運 = MRT; 國小/國中 = trường tiểu học/THCS; 臨路 = mặt đường; 面寬 = mặt tiền.
+- Không bịa thêm thông tin không có trong dữ liệu.`))
   const fz = Array.isArray(out.features_zh) && out.features_zh.length ? out.features_zh.map(String) : d.features
-  const fv = Array.isArray(out.features_vi) ? out.features_vi.map(String) : []
-  return { title_vi: String(out.title_vi || ""), address_vi: String(out.address_vi || ""), features: fz, features_vi: fv }
+  let fv: string[] = Array.isArray(out.features_vi) ? out.features_vi.map(String) : []
+  let title_vi = String(out.title_vi || ""), address_vi = String(out.address_vi || "")
+  // Kiểm tra lại: nếu phần tiếng Việt còn sót chữ Hán thì nhờ AI sửa thêm 1 lần
+  const CJK = /[㐀-鿿]/
+  if ([title_vi, address_vi, ...fv].some(s => CJK.test(s))) {
+    try {
+      const fix = parseJson(await askClaude(
+`Các câu tiếng Việt sau (tin bất động sản ở Đài Loan) còn sót chữ Hán. Hãy dịch nốt phần chữ Hán sang tiếng Việt tự nhiên
+(孝親房 = phòng cho ông bà/bố mẹ, 預留 = đã chừa sẵn, tên riêng thì phiên âm Hán-Việt), giữ nguyên phần còn lại.
+Trả về DUY NHẤT JSON cùng cấu trúc: ${JSON.stringify({ title_vi, address_vi, features_vi: fv })}`))
+      if (fix.title_vi) title_vi = String(fix.title_vi)
+      if (fix.address_vi) address_vi = String(fix.address_vi)
+      if (Array.isArray(fix.features_vi) && fix.features_vi.length === fv.length) fv = fix.features_vi.map(String)
+    } catch {}
+  }
+  return { title_vi, address_vi, features: fz, features_vi: fv }
 }
 
 // Trang không phải 永慶: dùng AI đọc nội dung trang và trích thông tin
