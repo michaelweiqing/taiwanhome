@@ -35,7 +35,8 @@ export async function GET(req: NextRequest) {
           row = await retranslateQueueRow(row, token)
           if (!row.draft?.translated) { problems.push(`#${row.id} chưa dịch được`); continue }
         }
-        if (!row.images?.length) { problems.push(`#${row.id} chưa có ảnh`); continue }
+        // Chỉ đăng tin đủ ảnh (≥3) hoặc đã được admin bấm "cho vào lịch đăng"
+        if (row.status !== "ready") continue
         const pid = await sbRpc<string>("import_publish", { p_password: token, p_id: row.id })
         published.push(`• ${row.draft.title_vi || row.draft.title_zh}\n  https://8386.tw/listings/${pid}`)
       } catch (e: any) {
