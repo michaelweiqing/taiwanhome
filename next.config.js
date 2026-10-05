@@ -3,6 +3,11 @@ const nextConfig = {
   reactStrictMode: true,
   // Trình duyệt headless dùng để đọc ảnh từ link tin nhà (lib/renderPage.ts) — không đóng gói qua bundler
   serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
+  // Bắt buộc kèm file nén Chromium vào hàm serverless (Vercel không tự dò được thư mục bin)
+  outputFileTracingIncludes: {
+    "/api/admin/import-link": ["./node_modules/@sparticuz/chromium/bin/**"],
+    "/api/cron/publish-listings": ["./node_modules/@sparticuz/chromium/bin/**"],
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "wesvqztwssvbrvugvrcu.supabase.co", pathname: "/storage/v1/object/public/**" },
