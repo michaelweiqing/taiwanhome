@@ -301,13 +301,30 @@ export async function importFromUrl(url: string, opts: { agentCompany?: string }
     source_url: url, cover_image_url: base.cover_image_url ?? null, translated,
   }
 
-  const images: string[] = []
-  if (draft.cover_image_url) {
-    const u = await copyImageToStorage(draft.cover_image_url, draft.id, `${Date.now()}-0`)
-    if (u) images.push(u)
-  }
+  const { images, warning: imgWarn } = await copyListingImages(url, draft.id, draft.cover_image_url)
+  if (imgWarn) warning = warning ? `${warning}; ${imgWarn}` : imgWarn
   const status = !translated ? "needs_translation" : images.length < 3 ? "needs_photos" : "ready"
   return { draft, images, status, warning }
+}
+
+// Mở trang bằng trình duyệt để lấy ảnh album (tối đa 12), lưu vào Supabase Storage.
+// Nếu không mở được trình duyệt thì vẫn giữ ảnh bìa.
+export async function copyListingImages(url: string, folder: string, coverUrl?: string | null, max = 12) {
+  let srcs: string[] = [], warning: string | undefined
+  try {
+    const { collectListingImages } = await import("./renderPage")
+    srcs = await collectListingImages(url, max)
+  } catch (e: any) {
+    warning = `Không lấy được album ảnh: ${e.message}`
+  }
+  if (!srcs.length && coverUrl) srcs = [coverUrl]
+  const stamp = Date.now(), images: (string | null)[] = new Array(srcs.length).fill(null)
+  for (let i = 0; i < srcs.length; i += 4) {   // tải song song 4 ảnh một lượt
+    await Promise.all(srcs.slice(i, i + 4).map(async (s, j) => {
+      images[i + j] = await copyImageToStorage(s, folder, `${stamp}-${i + j}`)
+    }))
+  }
+  return { images: images.filter((x): x is string => !!x), warning }
 }
 
 // ── Gọi RPC Supabase phía server (anon key + mật khẩu/ token kiểm tra trong hàm SQL) ──

@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Trình duyệt headless dùng để đọc ảnh từ link tin nhà (lib/renderPage.ts) — không đóng gói qua bundler
+  serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "wesvqztwssvbrvugvrcu.supabase.co", pathname: "/storage/v1/object/public/**" },
