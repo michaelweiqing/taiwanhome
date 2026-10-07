@@ -16,5 +16,5 @@ export default async function HomePage() {
   console.log("NEWEST COUNT:", newest.length)
   console.log("FEATURED DATA:", JSON.stringify(featured[0]?.title_vi))
 
-  return <HomeClient featured={featured} newest={newest.slice(0, 4)} reels={reels} vnCommunities={vnCommunities} />
+  return <HomeClient featured={featured} newest={newest.slice(0, 8)} reels={reels} vnCommunities={vnCommunities} />
 }
