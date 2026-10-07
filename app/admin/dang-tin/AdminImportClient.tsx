@@ -15,7 +15,7 @@ const STATUS: Record<string, { label: string; cls: string }> = {
   needs_photos:      { label: "Cần thêm ảnh",     cls: "bg-amber-50 text-amber-700" },
   needs_translation: { label: "Chưa dịch tiếng Việt", cls: "bg-orange-50 text-orange-700" },
   published:         { label: "Đã đăng",          cls: "bg-blue-50 text-blue-700" },
-  duplicate:         { label: "Đã có trên web",    cls: "bg-gray-100 text-gray-600" },
+  duplicate:         { label: "⚠️ Trùng lặp – nhà đã đăng trước đó", cls: "bg-red-100 text-red-700" },
   error:             { label: "Lỗi",              cls: "bg-red-50 text-red-700" },
   removed:           { label: "Đã bỏ",            cls: "bg-gray-100 text-gray-500" },
 }
@@ -133,9 +133,10 @@ export default function AdminImportClient() {
   async function publishNow(row: QueueRow) {
     if (!confirm(`Đăng ngay "${row.draft.title_zh}" lên web?`)) return
     setBusyId(row.id)
-    const { error } = await supabase.rpc("import_publish", { p_password: password, p_id: row.id })
+    const { data, error } = await supabase.rpc("import_publish", { p_password: password, p_id: row.id })
     setBusyId(null)
     if (error) alert(error.message === "no_images" ? "Cần ít nhất 1 ảnh" : error.message)
+    else if (!data) alert("⚠️ Không đăng: nhà này trùng với tin đã đăng trước đó (xem cảnh báo trên tin).")
     load(password, tab)
   }
 
@@ -256,6 +257,8 @@ export default function AdminImportClient() {
           onPhotos={() => fetchPhotos(r)} onRetry={() => retryLink(r)}
           onTop={() => update(r, { priority: (r.priority || 0) + 10 })}
           onReady={() => update(r, { status: "ready" })}
+          onNotDup={() => confirm("Xác nhận đây KHÔNG phải nhà đã đăng (chỉ giống thông tin)?") &&
+            update(r, { draft: { dup_ok: true }, status: nextStatus(r.draft.translated, r.images) })}
           onRemove={() => confirm("Bỏ tin này khỏi hàng đợi?") && update(r, { status: "removed" })} />)}
       </div>
     </div>
@@ -267,16 +270,18 @@ interface CardProps {
   onUpload: (f: FileList | null) => void; onRemovePhoto: (u: string) => void
   onSave: (draft: Record<string, unknown>) => void; onPublish: () => void; onTranslate: () => void
   onPhotos: () => void; onRetry: () => void; onTop: () => void; onReady: () => void; onRemove: () => void
+  onNotDup: () => void
 }
 
-function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTranslate, onPhotos, onRetry, onTop, onReady, onRemove }: CardProps) {
+function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTranslate, onPhotos, onRetry, onTop, onReady, onRemove, onNotDup }: CardProps) {
   const d = row.draft || ({} as QueueRow["draft"])
   const st = STATUS[row.status] || { label: row.status, cls: "bg-gray-100 text-gray-600" }
   const [edit, setEdit] = useState(false)
   const [titleVi, setTitleVi] = useState(d.title_vi || "")
   const [price, setPrice] = useState(String(d.price ?? ""))
   const [company, setCompany] = useState(d.agent_company || "")
-  const done = row.status === "published" || row.status === "duplicate"
+  const done = row.status === "published"
+  const dup = row.status === "duplicate"
 
   return (
     <article className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
@@ -333,7 +338,11 @@ function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTr
 
       {!done && (
         <div className="flex flex-wrap gap-2 mt-3 text-xs">
-          <button disabled={busy || !row.images.length} onClick={onPublish} className="inline-flex items-center gap-1 bg-red-600 text-white rounded-lg px-3 py-1.5 disabled:opacity-40"><Send size={13} /> Đăng ngay</button>
+          {dup ? (
+            <button disabled={busy} onClick={onNotDup} className="inline-flex items-center gap-1 border border-gray-300 text-gray-700 rounded-lg px-3 py-1.5"><CheckCircle2 size={13} /> Không trùng, vẫn cho đăng</button>
+          ) : (
+            <button disabled={busy || !row.images.length} onClick={onPublish} className="inline-flex items-center gap-1 bg-red-600 text-white rounded-lg px-3 py-1.5 disabled:opacity-40"><Send size={13} /> Đăng ngay</button>
+          )}
           {row.status === "needs_photos" && row.images.length > 0 && (
             <button disabled={busy} onClick={onReady} className="inline-flex items-center gap-1 border border-green-200 text-green-700 rounded-lg px-3 py-1.5"><CheckCircle2 size={13} /> Đủ ảnh, cho vào lịch đăng</button>
           )}

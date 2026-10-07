@@ -42,10 +42,19 @@ export async function POST(req: NextRequest) {
 
     try {
       const r = await importFromUrl(clean)
+      // Kiểm tra trùng: cùng đường + diện tích + tầng + số phòng + giá với tin đã đăng hoặc tin đang chờ
+      const dups = await sbRpc<{ kind: string; ref_id: string; title: string; price: number; link: string }[]>(
+        "import_dup_candidates", { p_password: password, p_draft: r.draft, p_queue_id: null })
+      let status: string = r.status, warning = r.warning
+      if (dups.length) {
+        status = "duplicate"
+        const desc = dups.map(d => d.kind === "property" ? `tin đã đăng 編號 ${d.ref_id} (${d.title})` : `tin đang chờ #${d.ref_id} (${d.title})`).join("; ")
+        warning = `⚠️ Nhà này đã có: ${desc}`
+      }
       const row = await sbRpc<QueueRow>("import_queue_add", {
-        p_password: password, p_url: clean, p_draft: r.draft, p_images: r.images, p_status: r.status, p_error: r.warning || null,
+        p_password: password, p_url: clean, p_draft: r.draft, p_images: r.images, p_status: status, p_error: warning || null,
       })
-      return NextResponse.json({ row, warning: r.warning })
+      return NextResponse.json({ row, warning, duplicate: dups.length > 0 })
     } catch (e: any) {
       const row = await sbRpc<QueueRow>("import_queue_add", {
         p_password: password, p_url: clean, p_draft: {}, p_images: [], p_status: "error", p_error: e.message || "unknown_error",

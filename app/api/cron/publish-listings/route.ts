@@ -37,7 +37,8 @@ export async function GET(req: NextRequest) {
         }
         // Chỉ đăng tin đủ ảnh (≥3) hoặc đã được admin bấm "cho vào lịch đăng"
         if (row.status !== "ready") continue
-        const pid = await sbRpc<string>("import_publish", { p_password: token, p_id: row.id })
+        const pid = await sbRpc<string | null>("import_publish", { p_password: token, p_id: row.id })
+        if (!pid) { problems.push(`#${row.id} ${row.draft.title_zh}: trùng với tin đã đăng, không đăng`); continue }
         published.push(`• ${row.draft.title_vi || row.draft.title_zh}\n  https://8386.tw/listings/${pid}`)
       } catch (e: any) {
         problems.push(`#${row.id} ${row.draft?.title_zh || row.source_url}: ${e.message}`)
