@@ -9,6 +9,9 @@ const nextConfig = {
     "/api/cron/publish-listings": ["./node_modules/@sparticuz/chromium/bin/**"],
   },
   images: {
+    // Gói Vercel Hobby đã hết hạn mức "Image Optimization" (lỗi 402 cho ảnh mới) ->
+    // phục vụ ảnh trực tiếp từ Supabase/Bunny, không qua bộ tối ưu ảnh của Vercel.
+    unoptimized: true,
     remotePatterns: [
       { protocol: "https", hostname: "wesvqztwssvbrvugvrcu.supabase.co", pathname: "/storage/v1/object/public/**" },
       { protocol: "https", hostname: "taiwanhome.b-cdn.net" },
