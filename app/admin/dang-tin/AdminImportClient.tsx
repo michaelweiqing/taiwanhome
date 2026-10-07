@@ -114,7 +114,8 @@ export default function AdminImportClient() {
     const added: string[] = []
     for (const [i, f] of Array.from(files).entries()) {
       const ext = (f.name.split(".").pop() || "jpg").toLowerCase()
-      const path = `import/${row.draft.id || row.id}/${Date.now()}-${i + 1}.${ext}`
+      // tiền tố "user-" để phân biệt ảnh admin tự tải lên với ảnh lấy tự động từ link
+      const path = `import/${row.draft.id || row.id}/user-${Date.now()}-${i + 1}.${ext}`
       const { error } = await supabase.storage.from("properties").upload(path, f, { contentType: f.type || "image/jpeg" })
       if (error) { alert(`Lỗi tải ảnh ${f.name}: ${error.message}`); continue }
       added.push(supabase.storage.from("properties").getPublicUrl(path).data.publicUrl)

@@ -23,7 +23,8 @@ export async function POST(req: NextRequest) {
 
       // Lấy album ảnh từ link gốc (giữ lại ảnh admin đã tự tải lên, bỏ ảnh bìa tự động cũ)
       const { images: album, warning } = await copyListingImages(row.source_url, row.draft?.id || String(row.id), row.draft?.cover_image_url)
-      const own = row.images.filter(u => !/\/import\/[^/]+\/\d+-0\.\w+$/.test(u))
+      // Giữ ảnh admin tự tải lên (tên "user-...") và ảnh ngoài thư mục import; thay toàn bộ ảnh tự động cũ bằng album mới
+      const own = album.length ? row.images.filter(u => /\/user-/.test(u) || !/\/import\//.test(u)) : row.images
       const images = [...album, ...own.filter(u => !album.includes(u))]
       const updated = await sbRpc<QueueRow>("import_queue_update", {
         p_password: password, p_id: row.id, p_images: images,
