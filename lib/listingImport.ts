@@ -97,8 +97,9 @@ export function parseYungching(html: string, url: string): Partial<ImportDraft> 
   const district = addr?.[2] || ""
   const address = addr ? `${city}${district}${addr[3] || ""}` : ""
 
-  const priceM = head.match(/([\d,]+(?:\.\d+)?)\s*萬\s*單價([\d.]+)萬\/坪/)
-  const typeM = head.match(/萬\/坪\s*(?:尚未分算車位單價\s*)?(\S+?)\s+屋齡/)
+  // Giá sau cùng đứng ngay trước "單價" (nhà giảm giá: "1,680萬 82萬 1,598 萬 單價請洽業務")
+  const priceM = head.match(/([\d,]+(?:\.\d+)?)\s*萬\s*單價\s*(?:([\d.]+)\s*萬\/坪)?/)
+  const typeM = head.match(/單價\S*\s*(?:尚未分算車位單價\s*)?(\S+?)\s+屋齡/)
   const ageM = head.match(/屋齡([\d.]+)\s*年/)
   const floorM = head.match(/年\s*(\S+?)\/(\d+)樓/)
   const layout = t.match(/建物格局 (\d+|--)房\(室\)(\d+|--)廳(\d+|--)衛/)
@@ -113,7 +114,7 @@ export function parseYungching(html: string, url: string): Partial<ImportDraft> 
     listing_type: "buy",
     property_type: mapPropertyType(typeM?.[1] || ""),
     price: Math.round(n(priceM?.[1]) || 0),
-    price_per_ping: priceM ? Number(n(priceM[2]).toFixed(2)) : null,
+    price_per_ping: priceM?.[2] ? Number(n(priceM[2]).toFixed(2)) : null,
     area_ping: num1(/建物坪數 ([\d.,]+)坪/) || 0,
     area_main_ping: num1(/主建物 ([\d.,]+)坪/),
     area_balcony_ping: num1(/陽台([\d.,]+)坪/),
