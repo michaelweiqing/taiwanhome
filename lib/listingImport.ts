@@ -323,9 +323,9 @@ export async function importFromUrl(url: string, opts: { agentCompany?: string }
   return { draft, images, status, warning }
 }
 
-// Mở trang bằng trình duyệt để lấy ảnh album (tối đa 12), lưu vào Supabase Storage.
+// Mở trang bằng trình duyệt để lấy ảnh album (tối đa 30), lưu vào Supabase Storage.
 // Nếu không mở được trình duyệt thì vẫn giữ ảnh bìa.
-export async function copyListingImages(url: string, folder: string, coverUrl?: string | null, max = 12) {
+export async function copyListingImages(url: string, folder: string, coverUrl?: string | null, max = 30) {
   let srcs: string[] = [], warning: string | undefined
   try {
     const { collectListingImages } = await import("./renderPage")

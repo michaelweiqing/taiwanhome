@@ -31,7 +31,7 @@ export default function AdminImportClient() {
   const [tab, setTab] = useState<Tab>("active")
   const [rows, setRows] = useState<QueueRow[]>([])
   const [loading, setLoading] = useState(false)
-  const [perDay, setPerDay] = useState(2)
+  const [perDay, setPerDay] = useState(10)
   const [links, setLinks] = useState("")
   const [confirmOk, setConfirmOk] = useState(false)
   const [progress, setProgress] = useState<string[]>([])
@@ -96,7 +96,13 @@ export default function AdminImportClient() {
         setProgress(p => [...p.slice(0, -1), `❌ ${url} — ${e.message}`])
       }
       // Nghỉ giữa các link để không gửi quá nhiều yêu cầu dồn dập tới trang nguồn (tránh bị chặn 403)
-      if (i < urls.length - 1) await new Promise(r => setTimeout(r, 8000))
+      if (i < urls.length - 1) {
+        for (let s = 60; s > 0; s--) {   // nghỉ 60 giây, hiện đếm ngược
+          setProgress(p => [...p.filter(x => !x.startsWith("⏸")), `⏸ Nghỉ ${s} giây trước link tiếp theo...`])
+          await new Promise(r => setTimeout(r, 1000))
+        }
+        setProgress(p => p.filter(x => !x.startsWith("⏸")))
+      }
     }
     setImporting(false); setLinks("")
     load(password, tab)
@@ -221,7 +227,7 @@ export default function AdminImportClient() {
             Tự đăng mỗi ngày:
             <select value={perDay} onChange={e => savePerDay(Number(e.target.value))}
               className="border border-gray-200 rounded-lg px-2 py-1 text-xs">
-              {[0, 1, 2, 3, 4, 5].map(v => <option key={v} value={v}>{v === 0 ? "Tạm dừng" : `${v} căn`}</option>)}
+              {[0, 1, 2, 3, 5, 8, 10, 15, 20].map(v => <option key={v} value={v}>{v === 0 ? "Tạm dừng" : `${v} căn`}</option>)}
             </select>
           </label>
         </div>
@@ -336,7 +342,7 @@ function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTr
           {row.status === "error" && (
             <button disabled={busy} onClick={onRetry} className="inline-flex items-center gap-1 border border-red-200 text-red-700 rounded-lg px-3 py-1.5"><RefreshCw size={13} /> Thử lại</button>
           )}
-          {row.status !== "error" && row.images.length < 5 && (
+          {row.status !== "error" && row.images.length < 30 && (
             <button disabled={busy} onClick={onPhotos} className="inline-flex items-center gap-1 border border-blue-200 text-blue-700 rounded-lg px-3 py-1.5"><RefreshCw size={13} /> Lấy ảnh từ link</button>
           )}
           {row.status !== "error" && <button onClick={() => setEdit(e => !e)} className="border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700">Sửa nhanh</button>}

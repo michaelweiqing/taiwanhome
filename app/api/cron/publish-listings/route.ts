@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath } from "next/cache"
 import { sbRpc, retranslateQueueRow, type QueueRow } from "@/lib/listingImport"
 
-export const maxDuration = 120
+export const maxDuration = 300
 export const dynamic = "force-dynamic"
 
 async function notifyAdmin(text: string) {

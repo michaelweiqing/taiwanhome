@@ -32,7 +32,7 @@ const yccdnKey = (u: string) => u.match(/[?&]key=([^&]+)/)?.[1] || u
 export let lastLayoutCount = 0
 
 // Trả về tối đa `max` URL ảnh lớn của tin nhà (ảnh đầu tiên là ảnh bìa)
-export async function collectListingImages(url: string, max = 12): Promise<string[]> {
+export async function collectListingImages(url: string, max = 30): Promise<string[]> {
   const browser = await launch()
   try {
     const page = await browser.newPage()
