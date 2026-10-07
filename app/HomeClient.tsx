@@ -15,7 +15,7 @@ import { SEO_LANDING_PAGES } from "@/lib/seoLandingPages"
 import { Search, MessageCircle, Building2, Moon, Plane, Microscope, Building, Wheat, Landmark, Waves, Eye, MapPinned, ShoppingBasket, UtensilsCrossed, Church, HeartPulse, GraduationCap, Factory, ArrowRight, BarChart3 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
-interface Props { featured: Property[]; newest: Property[]; reels: PropertyReel[]; vnCommunities: VnCommunity[] }
+interface Props { featured: Property[]; newest: Property[]; reels: PropertyReel[]; vnCommunities: VnCommunity[]; cityCounts: Record<string, number> }
 
 const CITIES: { zh: string; vi: string; Icon: LucideIcon; n: number; slug: string }[] = [
   { zh:"台北市", vi:"Đài Bắc",   Icon:Building2,   n:5234, slug:"台北市" },
@@ -108,7 +108,7 @@ const DISTRICTS: Record<string, { zh: string; vi: string }[]> = {
   ],
 }
 
-export default function HomeClient({ featured, newest, reels, vnCommunities }: Props) {
+export default function HomeClient({ featured, newest, reels, vnCommunities, cityCounts }: Props) {
   const { lang, t } = useLang()
   const router = useRouter()
   const [tab, setTab] = useState<"rent"|"buy">("rent")
@@ -563,7 +563,7 @@ export default function HomeClient({ featured, newest, reels, vnCommunities }: P
                 <c.Icon size={28} strokeWidth={1.8} className="mx-auto mb-2 text-red-500 group-hover:scale-110 transition" />
                 <div className="font-bold text-gray-900 text-sm">{lang==="zh" ? c.zh : c.vi}</div>
                 <div className="text-xs text-red-500 mt-1">
-                  {c.n.toLocaleString()} {lang==="zh" ? "件" : "căn"}
+                  {(cityCounts[c.zh] ?? 0).toLocaleString()} {lang==="zh" ? "件" : "căn"}
                 </div>
               </Link>
             ))}

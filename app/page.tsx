@@ -16,5 +16,12 @@ export default async function HomePage() {
   console.log("NEWEST COUNT:", newest.length)
   console.log("FEATURED DATA:", JSON.stringify(featured[0]?.title_vi))
 
-  return <HomeClient featured={featured} newest={newest.slice(0, 8)} reels={reels} vnCommunities={vnCommunities} />
+  // Đếm số tin thực tế đang đăng theo từng thành phố (properties + tin khách đang hiển thị)
+  const cityCounts: Record<string, number> = {}
+  for (const p of newest) {
+    const c = (p.city || "").replace("臺", "台")
+    if (c) cityCounts[c] = (cityCounts[c] || 0) + 1
+  }
+
+  return <HomeClient featured={featured} newest={newest.slice(0, 8)} reels={reels} vnCommunities={vnCommunities} cityCounts={cityCounts} />
 }
