@@ -95,6 +95,8 @@ export default function AdminImportClient() {
       } catch (e: any) {
         setProgress(p => [...p.slice(0, -1), `❌ ${url} — ${e.message}`])
       }
+      // Nghỉ giữa các link để không gửi quá nhiều yêu cầu dồn dập tới trang nguồn (tránh bị chặn 403)
+      if (i < urls.length - 1) await new Promise(r => setTimeout(r, 8000))
     }
     setImporting(false); setLinks("")
     load(password, tab)
@@ -139,6 +141,18 @@ export default function AdminImportClient() {
     const j = await res.json()
     setBusyId(null)
     if (j.error) alert(j.error); else if (j.row) replaceRow(j.row)
+  }
+
+  async function retryLink(row: QueueRow) {
+    setBusyId(row.id)
+    const res = await fetch("/api/admin/import-link", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password, url: row.source_url }),
+    })
+    const j = await res.json()
+    setBusyId(null)
+    if (j.row) replaceRow(j.row)
+    if (j.error) alert(j.error)
   }
 
   async function fetchPhotos(row: QueueRow) {
@@ -232,7 +246,7 @@ export default function AdminImportClient() {
         {rows.map(r => <QueueCard key={r.id} row={r} busy={busyId === r.id}
           onUpload={f => uploadPhotos(r, f)} onRemovePhoto={u => removePhoto(r, u)}
           onSave={draft => update(r, { draft })} onPublish={() => publishNow(r)} onTranslate={() => retranslate(r)}
-          onPhotos={() => fetchPhotos(r)}
+          onPhotos={() => fetchPhotos(r)} onRetry={() => retryLink(r)}
           onTop={() => update(r, { priority: (r.priority || 0) + 10 })}
           onReady={() => update(r, { status: "ready" })}
           onRemove={() => confirm("Bỏ tin này khỏi hàng đợi?") && update(r, { status: "removed" })} />)}
@@ -245,10 +259,10 @@ interface CardProps {
   row: QueueRow; busy: boolean
   onUpload: (f: FileList | null) => void; onRemovePhoto: (u: string) => void
   onSave: (draft: Record<string, unknown>) => void; onPublish: () => void; onTranslate: () => void
-  onPhotos: () => void; onTop: () => void; onReady: () => void; onRemove: () => void
+  onPhotos: () => void; onRetry: () => void; onTop: () => void; onReady: () => void; onRemove: () => void
 }
 
-function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTranslate, onPhotos, onTop, onReady, onRemove }: CardProps) {
+function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTranslate, onPhotos, onRetry, onTop, onReady, onRemove }: CardProps) {
   const d = row.draft || ({} as QueueRow["draft"])
   const st = STATUS[row.status] || { label: row.status, cls: "bg-gray-100 text-gray-600" }
   const [edit, setEdit] = useState(false)
@@ -319,7 +333,10 @@ function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTr
           {row.status === "needs_translation" && (
             <button disabled={busy} onClick={onTranslate} className="inline-flex items-center gap-1 border border-orange-200 text-orange-700 rounded-lg px-3 py-1.5"><Languages size={13} /> Dịch lại</button>
           )}
-          {row.images.length < 5 && (
+          {row.status === "error" && (
+            <button disabled={busy} onClick={onRetry} className="inline-flex items-center gap-1 border border-red-200 text-red-700 rounded-lg px-3 py-1.5"><RefreshCw size={13} /> Thử lại</button>
+          )}
+          {row.status !== "error" && row.images.length < 5 && (
             <button disabled={busy} onClick={onPhotos} className="inline-flex items-center gap-1 border border-blue-200 text-blue-700 rounded-lg px-3 py-1.5"><RefreshCw size={13} /> Lấy ảnh từ link</button>
           )}
           {row.status !== "error" && <button onClick={() => setEdit(e => !e)} className="border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700">Sửa nhanh</button>}

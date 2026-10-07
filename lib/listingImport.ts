@@ -239,6 +239,19 @@ async function geocode(address: string, city: string): Promise<[number, number] 
 // ── Ảnh: tải ảnh từ link về rồi lưu vào Supabase Storage (bucket "properties") ──
 const sbBase = () => (process.env.NEXT_PUBLIC_SUPABASE_URL || "").trim().replace(/\/+$/, "").replace(/\/rest\/v1$/, "")
 
+// Nhận diện bản vẽ bố cục: nền trắng chiếm phần lớn ảnh (ảnh chụp thật gần như không có pixel trắng tinh)
+export async function isFloorPlan(buf: ArrayBuffer): Promise<boolean> {
+  try {
+    const sharp = (await import("sharp")).default
+    const { data } = await sharp(Buffer.from(buf)).resize(96, 72, { fit: "fill" }).removeAlpha().raw().toBuffer({ resolveWithObject: true })
+    let white = 0
+    for (let i = 0; i < data.length; i += 3) if (Math.min(data[i], data[i + 1], data[i + 2]) > 235) white++
+    return white / (data.length / 3) > 0.35
+  } catch { return false }
+}
+
+const planFlags = new Map<string, boolean>()   // url đã lưu -> có phải bản vẽ bố cục
+
 export async function copyImageToStorage(srcUrl: string, folder: string, name: string): Promise<string | null> {
   try {
     const r = await fetch(srcUrl, { headers: UA })
@@ -247,6 +260,7 @@ export async function copyImageToStorage(srcUrl: string, folder: string, name: s
     if (!type.startsWith("image/")) return null
     const buf = await r.arrayBuffer()
     if (buf.byteLength < 5000) return null
+    const plan = await isFloorPlan(buf)
     const ext = type.includes("png") ? "png" : type.includes("webp") ? "webp" : "jpg"
     const path = `import/${folder}/${name}.${ext}`
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -254,7 +268,9 @@ export async function copyImageToStorage(srcUrl: string, folder: string, name: s
       method: "POST", headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": type }, body: buf,
     })
     if (!up.ok) return null
-    return `${sbBase()}/storage/v1/object/public/properties/${path}`
+    const pub = `${sbBase()}/storage/v1/object/public/properties/${path}`
+    planFlags.set(pub, plan)
+    return pub
   } catch { return null }
 }
 
@@ -324,7 +340,10 @@ export async function copyListingImages(url: string, folder: string, coverUrl?: 
       images[i + j] = await copyImageToStorage(s, folder, `${stamp}-${i + j}`)
     }))
   }
-  return { images: images.filter((x): x is string => !!x), warning }
+  // Bản vẽ bố cục luôn xếp cuối album (kể cả khi không đọc được tab 格局 trên trang)
+  const ok = images.filter((x): x is string => !!x)
+  const ordered = [...ok.filter(u => !planFlags.get(u)), ...ok.filter(u => planFlags.get(u))]
+  return { images: ordered.length > 1 || !ok.length ? ordered : ok, warning }
 }
 
 // ── Gọi RPC Supabase phía server (anon key + mật khẩu/ token kiểm tra trong hàm SQL) ──
