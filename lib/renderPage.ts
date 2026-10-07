@@ -28,6 +28,9 @@ async function launch(): Promise<Browser> {
 
 const yccdnKey = (u: string) => u.match(/[?&]key=([^&]+)/)?.[1] || u
 
+// Số bản vẽ bố cục (格局) ở đầu album của lần đọc gần nhất — dùng cho script sắp xếp lại ảnh cũ
+export let lastLayoutCount = 0
+
 // Trả về tối đa `max` URL ảnh lớn của tin nhà (ảnh đầu tiên là ảnh bìa)
 export async function collectListingImages(url: string, max = 12): Promise<string[]> {
   const browser = await launch()
@@ -36,24 +39,38 @@ export async function collectListingImages(url: string, max = 12): Promise<strin
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36")
     const isYC = /yungching\.com\.tw/.test(url)
     if (isYC) {
-      const SEL = ".yc-ng-album-v2-carousel__thumb img, .yc-ng-album-v2-carousel__main-img img"
-      let srcs: string[] = []
+      // Chỉ đọc dãy ảnh thu nhỏ (đúng thứ tự album). Album 永慶: các ảnh đầu thuộc tab 格局 (bản vẽ bố cục),
+      // trang mở sẵn ở ảnh đầu tiên của tab 照片 -> số thứ tự hiện tại (vd "2/15") cho biết có bao nhiêu bản vẽ.
+      const SEL = ".yc-ng-album-v2-carousel__thumb img"
+      let srcs: string[] = [], layoutCount = 0
       // Thử tối đa 2 lần (đôi khi album tải chậm trên máy chủ)
       for (let attempt = 0; attempt < 2 && srcs.length < 2; attempt++) {
         await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 }).catch(() => {})
         await page.waitForSelector(SEL, { timeout: 20000 }).catch(() => {})
         await new Promise(r => setTimeout(r, 1500))
         srcs = await page.$$eval(SEL, els => els.map(e => (e as HTMLImageElement).currentSrc || (e as HTMLImageElement).src)).catch(() => [])
+        layoutCount = await page.evaluate(() => {
+          const tabs = Array.from(document.querySelectorAll(".yc-ng-album-v2-switch-bar__switch-item"))
+          const hasLayout = tabs.some(t => (t.textContent || "").includes("格局"))
+          const photoTab = tabs.find(t => (t.textContent || "").includes("照片"))
+          const cur = Number((document.querySelector(".yc-ng-album-v2-switch-bar__page")?.textContent || "").split("/")[0])
+          return hasLayout && photoTab?.getAttribute("aria-selected") === "true" && cur > 1 ? cur - 1 : 0
+        }).catch(() => 0)
       }
-      const seen = new Set<string>(), out: string[] = []
-      for (const s of srcs) {
-        if (!/yccdn\.yungching\.com\.tw\/v1\/image\//.test(s)) continue
+      const seen = new Set<string>(), ordered: { src: string; layout: boolean }[] = []
+      srcs.forEach((s, i) => {
+        if (!/yccdn\.yungching\.com\.tw\/v1\/image\//.test(s)) return
         const k = yccdnKey(s)
-        if (seen.has(k)) continue
+        if (seen.has(k)) return
         seen.add(k)
-        out.push(s.replace(/&width=\d+/, "&width=1024").replace(/&height=\d+/, "&height=768"))
-      }
-      return out.slice(0, max)
+        const src = (s.startsWith("//") ? "https:" + s : s).replace(/&width=\d+/, "&width=1024").replace(/&height=\d+/, "&height=768")
+        ordered.push({ src, layout: i < layoutCount })
+      })
+      lastLayoutCount = layoutCount
+      // Ảnh thật lên trước, bản vẽ bố cục xếp cuối album
+      const photos = ordered.filter(o => !o.layout).map(o => o.src)
+      const layouts = ordered.filter(o => o.layout).map(o => o.src)
+      return [...photos.slice(0, Math.max(1, max - layouts.length)), ...layouts].slice(0, max)
     }
     // Trang khác: lấy các ảnh lớn đang hiển thị
     await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 }).catch(() => {})
