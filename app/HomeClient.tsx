@@ -28,7 +28,28 @@ const CITIES: { zh: string; vi: string; Icon: LucideIcon; n: number; slug: strin
   { zh:"高雄市", vi:"Cao Hùng",  Icon:Waves,       n:2710, slug:"高雄市" },
 ]
 
+// Danh sách thành phố trong thanh tìm kiếm (không có Đài Bắc; có thêm Tân Trúc huyện)
+const SEARCH_CITIES: { zh: string; vi: string }[] = [
+  { zh:"新北市", vi:"Tân Bắc" },
+  { zh:"桃園市", vi:"Đào Viên" },
+  { zh:"新竹市", vi:"Tân Trúc" },
+  { zh:"新竹縣", vi:"Huyện Tân Trúc" },
+  { zh:"台中市", vi:"Đài Trung" },
+  { zh:"彰化縣", vi:"Chương Hóa" },
+  { zh:"台南市", vi:"Đài Nam" },
+  { zh:"高雄市", vi:"Cao Hùng" },
+]
+
 const DISTRICTS: Record<string, { zh: string; vi: string }[]> = {
+  "新竹縣": [
+    { zh:"竹北市", vi:"Trúc Bắc" },   { zh:"竹東鎮", vi:"Trúc Đông" },
+    { zh:"新埔鎮", vi:"Tân Phố" },    { zh:"關西鎮", vi:"Quan Tây" },
+    { zh:"湖口鄉", vi:"Hồ Khẩu" },    { zh:"新豐鄉", vi:"Tân Phong" },
+    { zh:"芎林鄉", vi:"Cung Lâm" },   { zh:"橫山鄉", vi:"Hoành Sơn" },
+    { zh:"北埔鄉", vi:"Bắc Phố" },    { zh:"寶山鄉", vi:"Bảo Sơn" },
+    { zh:"峨眉鄉", vi:"Nga Mi" },     { zh:"尖石鄉", vi:"Tiêm Thạch" },
+    { zh:"五峰鄉", vi:"Ngũ Phong" },
+  ],
   "台北市": [
     { zh:"中正區", vi:"Trung Chính" }, { zh:"大安區", vi:"Đại An" },
     { zh:"信義區", vi:"Tín Nghĩa" },   { zh:"松山區", vi:"Tùng Sơn" },
@@ -285,7 +306,7 @@ export default function HomeClient({ featured, newest, reels, vnCommunities, cit
                   className="w-full appearance-none bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none focus:border-red-400 cursor-pointer pr-8"
                 >
                   <option value="">{lang==="zh" ? "選擇城市" : "Chọn thành phố"}</option>
-                  {CITIES.map(c => (
+                  {SEARCH_CITIES.map(c => (
                     <option key={c.zh} value={c.zh}>
                       {lang==="zh" ? c.zh : `${c.vi} (${c.zh})`}
                     </option>

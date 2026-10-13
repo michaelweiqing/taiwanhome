@@ -6,10 +6,10 @@ import { Search } from "lucide-react"
 import DistrictMultiSelect from "@/components/DistrictMultiSelect"
 
 const CITIES = [
-  { zh:"台北市", vi:"Đài Bắc",    slug:"台北市" },
   { zh:"新北市", vi:"Tân Bắc",    slug:"新北市" },
   { zh:"桃園市", vi:"Đào Viên",   slug:"桃園市" },
   { zh:"新竹市", vi:"Tân Trúc",   slug:"新竹市" },
+  { zh:"新竹縣", vi:"Huyện Tân Trúc", slug:"新竹縣" },
   { zh:"台中市", vi:"Đài Trung",  slug:"台中市" },
   { zh:"彰化縣", vi:"Chương Hóa", slug:"彰化縣" },
   { zh:"台南市", vi:"Đài Nam",    slug:"台南市" },
@@ -17,6 +17,13 @@ const CITIES = [
 ]
 
 const DISTRICTS: Record<string, { zh: string; vi: string }[]> = {
+  "新竹縣": [
+    {zh:"竹北市",vi:"Trúc Bắc"},{zh:"竹東鎮",vi:"Trúc Đông"},{zh:"新埔鎮",vi:"Tân Phố"},
+    {zh:"關西鎮",vi:"Quan Tây"},{zh:"湖口鄉",vi:"Hồ Khẩu"},{zh:"新豐鄉",vi:"Tân Phong"},
+    {zh:"芎林鄉",vi:"Cung Lâm"},{zh:"橫山鄉",vi:"Hoành Sơn"},{zh:"北埔鄉",vi:"Bắc Phố"},
+    {zh:"寶山鄉",vi:"Bảo Sơn"},{zh:"峨眉鄉",vi:"Nga Mi"},{zh:"尖石鄉",vi:"Tiêm Thạch"},
+    {zh:"五峰鄉",vi:"Ngũ Phong"},
+  ],
   "台北市": [
     {zh:"中正區",vi:"Trung Chính"},{zh:"大安區",vi:"Đại An"},{zh:"信義區",vi:"Tín Nghĩa"},
     {zh:"松山區",vi:"Tùng Sơn"},{zh:"內湖區",vi:"Nội Hồ"},{zh:"士林區",vi:"Sĩ Lâm"},
