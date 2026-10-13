@@ -14,7 +14,6 @@ import {
 const DISTRICTS_ZH = ["北區","南區","西區","東區","北屯區","南屯區","西屯區","太平區","大里區","霧峰區","烏日區","大肚區","龍井區","梧棲區","清水區","沙鹿區","神岡區","大雅區","潭子區","豐原區","石岡區","東勢區","新社區","和平區","后里區"]
 
 const CITIES = [
-  { zh:"台北市", vi:"Đài Bắc" },
   { zh:"新北市", vi:"Tân Bắc" },
   { zh:"桃園市", vi:"Đào Viên" },
   { zh:"台中市", vi:"Đài Trung" },
@@ -22,6 +21,7 @@ const CITIES = [
   { zh:"台南市", vi:"Đài Nam" },
   { zh:"高雄市", vi:"Cao Hùng" },
   { zh:"新竹市", vi:"Tân Trúc" },
+  { zh:"新竹縣", vi:"Huyện Tân Trúc" },
 ]
 
 const DISTRICTS: Record<string, { zh: string; vi: string }[]> = {
@@ -72,6 +72,13 @@ const DISTRICTS: Record<string, { zh: string; vi: string }[]> = {
     {zh:"鼓山區",vi:"Cổ Sơn"},{zh:"左營區",vi:"Tả Doanh"},{zh:"鳳山區",vi:"Phụng Sơn"},
   ],
   "新竹市": [{zh:"東區",vi:"Khu Đông"},{zh:"北區",vi:"Khu Bắc"},{zh:"香山區",vi:"Hương Sơn"}],
+  "新竹縣": [
+    {zh:"竹北市",vi:"Trúc Bắc"},{zh:"竹東鎮",vi:"Trúc Đông"},{zh:"新埔鎮",vi:"Tân Phố"},
+    {zh:"關西鎮",vi:"Quan Tây"},{zh:"湖口鄉",vi:"Hồ Khẩu"},{zh:"新豐鄉",vi:"Tân Phong"},
+    {zh:"芎林鄉",vi:"Cung Lâm"},{zh:"橫山鄉",vi:"Hoành Sơn"},{zh:"北埔鄉",vi:"Bắc Phố"},
+    {zh:"寶山鄉",vi:"Bảo Sơn"},{zh:"峨眉鄉",vi:"Nga Mi"},{zh:"尖石鄉",vi:"Tiêm Thạch"},
+    {zh:"五峰鄉",vi:"Ngũ Phong"},
+  ],
 }
 
 // Toạ độ trung tâm 26 đơn vị hành chính 彰化縣 — mặc định khi đăng tin
@@ -95,6 +102,7 @@ const CHANGHUA_COORDS: Record<string, { lat: number; lng: number }> = {
 const CITY_CENTER: Record<string, { lat: number; lng: number }> = {
   "台北市": { lat: 25.0330, lng: 121.5654 }, "新北市": { lat: 25.0169, lng: 121.4628 },
   "桃園市": { lat: 24.9936, lng: 121.3010 }, "新竹市": { lat: 24.8138, lng: 120.9675 },
+  "新竹縣": { lat: 24.8387, lng: 121.0178 },
   "台中市": { lat: 24.1477, lng: 120.6736 }, "彰化縣": { lat: 24.0810, lng: 120.5388 },
   "台南市": { lat: 22.9999, lng: 120.2270 }, "高雄市": { lat: 22.6273, lng: 120.3014 },
 }
