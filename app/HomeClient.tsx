@@ -578,13 +578,13 @@ export default function HomeClient({ featured, newest, reels, vnCommunities, cit
             {lang==="zh" ? "熱門城市" : "Thành phố phổ biến"}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {CITIES.map(c => (
-              <Link key={c.zh} href={`/listings?city=${encodeURIComponent(c.slug)}`}
+            {CITIES.filter(c => c.zh !== "台北市").map(c => (
+              <Link key={c.zh} href={`/listings?city=${encodeURIComponent(c.zh === "新竹市" ? "新竹市,新竹縣" : c.slug)}`}
                 className="bg-white rounded-2xl p-4 text-center border border-gray-100 hover:border-red-200 hover:shadow-md transition group">
                 <c.Icon size={28} strokeWidth={1.8} className="mx-auto mb-2 text-red-500 group-hover:scale-110 transition" />
                 <div className="font-bold text-gray-900 text-sm">{lang==="zh" ? c.zh : c.vi}</div>
                 <div className="text-xs text-red-500 mt-1">
-                  {(cityCounts[c.zh] ?? 0).toLocaleString()} {lang==="zh" ? "件" : "căn"}
+                  {((cityCounts[c.zh] ?? 0) + (c.zh === "新竹市" ? (cityCounts["新竹縣"] ?? 0) : 0)).toLocaleString()} {lang==="zh" ? "件" : "căn"}
                 </div>
               </Link>
             ))}

@@ -213,7 +213,11 @@ export async function searchProperties(filters: FilterOptions): Promise<Property
     if (table === "user_listings") query = query.eq("is_active", true)
     if (table === "properties")    query = query.eq("status", "active")
     if (filters.listingType)  query = query.eq("listing_type",  filters.listingType)
-    if (filters.city)         query = query.eq("city",          filters.city)
+    if (filters.city) {
+      // Cho phép nhiều thành phố/huyện, phân tách bằng dấu phẩy (vd "新竹市,新竹縣")
+      const cities = filters.city.split(",").map(c => c.trim()).filter(Boolean)
+      query = cities.length > 1 ? query.in("city", cities) : query.eq("city", cities[0] ?? filters.city)
+    }
     if (filters.district) {
       const districtList = Array.isArray(filters.district) ? filters.district : [filters.district]
       if (districtList.length === 1) query = query.eq("district", districtList[0])
