@@ -59,6 +59,15 @@ export default function ProfileClient() {
     setTogglingId(null)
   }
 
+  async function handleMarkSold(id: string) {
+    if (!user) return
+    if (!window.confirm(lang === "zh" ? "確定此物件已售出並下架？" : "Xác nhận căn này đã bán và gỡ tin?")) return
+    setTogglingId(id)
+    const { error } = await supabase.rpc("set_own_user_listing_status", { p_id: id, p_phone: user.phone, p_status: "sold" })
+    if (!error) setListings(ls => ls.map(l => l.id === id ? { ...l, is_active: false } : l))
+    setTogglingId(null)
+  }
+
   function handleLogout() {
     localStorage.removeItem("taiwanhome_user")
     router.push("/login")
@@ -142,6 +151,10 @@ export default function ProfileClient() {
                     <div className="mt-auto flex items-center justify-between pt-1">
                       <span className="text-[11px] text-gray-400 flex items-center gap-0.5"><Eye size={12} strokeWidth={2.2} /> {p.views || 0} {lang==="zh"?"次瀏覽":"lượt xem"}</span>
                       <div className="flex items-center gap-3">
+                        <button onClick={() => handleMarkSold(p.id)} disabled={togglingId === p.id}
+                          className="text-[11px] text-gray-400 hover:text-green-600 disabled:opacity-40 transition flex items-center gap-0.5">
+                          {lang==="zh" ? "已售出" : "Đã bán"}
+                        </button>
                         <button onClick={() => handleToggleActive(p.id, false)} disabled={togglingId === p.id}
                           className="text-[11px] text-gray-400 hover:text-amber-600 disabled:opacity-40 transition flex items-center gap-0.5">
                           <EyeOff size={11} strokeWidth={2.2} /> {lang==="zh" ? "下架" : "Gỡ tin"}

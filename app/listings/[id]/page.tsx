@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { getPropertyById, getSimilarProperties, formatPrice } from "@/lib/data"
 import ListingDetailClient from "./ListingDetailClient"
+import ListingUnavailable from "./ListingUnavailable"
 import { ListingJsonLd } from "@/components/ListingJsonLd"
 
 // Cache trang 60s (ISR) — giảm tải Supabase và giúp các lượt xem sau gần như tức thì.
@@ -18,6 +19,9 @@ export async function generateMetadata({
   const { id } = await params
   const property = await getPropertyById(id)
   if (!property) return {}
+  if (property.status && property.status !== "active") {
+    return { title: "8386找房網", robots: { index: false, follow: true } }
+  }
 
   const titleZh = property.title_zh || property.title_vi
   const titleVi = property.title_vi || property.title_zh
@@ -72,6 +76,12 @@ export default async function ListingDetailPage({
       city:         property.city,
       price:        Number(property.price),
     })
+
+    if (property.status && property.status !== "active") {
+      // Tin khách tự gỡ → 404; tin admin đã bán/gỡ → trang thông báo + gợi ý nhà tương tự
+      if (property.source === "user" && property.status === "removed") notFound()
+      return <ListingUnavailable property={property} similar={similar} />
+    }
 
     return (
       <>

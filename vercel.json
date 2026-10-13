@@ -3,7 +3,8 @@
     { "path": "/api/cron/match-subscriptions", "schedule": "0 22 * * *" },
     { "path": "/api/cron/lvr-sync", "schedule": "30 19 * * *" },
     { "path": "/api/cron/lvr-sync?mode=season", "schedule": "30 20 * * *" },
-    { "path": "/api/cron/publish-listings", "schedule": "47 0 * * *" }
+    { "path": "/api/cron/publish-listings", "schedule": "47 0 * * *" },
+    { "path": "/api/cron/sync-yungching", "schedule": "23 1 * * *" }
   ],
   "regions": ["sin1"]
 }

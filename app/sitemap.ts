@@ -8,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://8386.tw"
 
   const [{ data: adminProps }, { data: userProps }] = await Promise.all([
-    supabase.from("properties").select("id, posted_at"),
+    supabase.from("properties").select("id, posted_at").eq("status", "active"),
     supabase.from("user_listings").select("id, posted_at").eq("is_active", true),
   ])
 

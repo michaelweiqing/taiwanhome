@@ -62,6 +62,8 @@ export interface Property {
   units_per_floor?: number | null     // 同層戶數
   elevator_count?: number | null      // 電梯數
   source?: "admin" | "user"           // Nguồn tin: admin đăng hay khách tự đăng
+  status?: "active" | "sold" | "removed"  // Trạng thái tin: đang bán / đã bán / đã gỡ (tin khách: suy ra từ is_active + status)
+  status_changed_at?: string | null
   is_active?: boolean                 // Chỉ áp dụng cho tin khách đăng — false = đã gỡ/tắt quảng cáo
 }
 
@@ -92,12 +94,24 @@ export async function getApprovedReels(): Promise<PropertyReel[]> {
     .order("created_at", { ascending: false })
     .limit(30)
   if (error) { console.error("Supabase reels:", error.message); return [] }
-  return data as PropertyReel[]
+  const reels = data as PropertyReel[]
+  if (reels.length === 0) return reels
+
+  // Ẩn reel của nhà đã bán / đã gỡ (cùng quy tắc với danh sách tin)
+  const adminIds = reels.filter(r => r.property_source === "admin").map(r => r.property_id)
+  const userIds  = reels.filter(r => r.property_source === "user").map(r => r.property_id)
+  const none = Promise.resolve({ data: [] as { id: string }[] })
+  const [a, u] = await Promise.all([
+    adminIds.length ? supabase.from("properties").select("id").in("id", adminIds).neq("status", "active") : none,
+    userIds.length  ? supabase.from("user_listings").select("id").in("id", userIds).eq("is_active", false) : none,
+  ])
+  const hidden = new Set([...(a.data || []), ...(u.data || [])].map(x => x.id))
+  return reels.filter(r => !hidden.has(r.property_id))
 }
 
 export async function getAllProperties(): Promise<Property[]> {
   const [r1, r2] = await Promise.all([
-    supabase.from("properties").select("*").order("posted_at", { ascending: false }),
+    supabase.from("properties").select("*").eq("status", "active").order("posted_at", { ascending: false }),
     supabase.from("user_listings").select("*").eq("is_active", true).order("posted_at", { ascending: false }),
   ])
   const admin = (r1.data || []).map(p => ({ ...p, source: "admin" as const }))
@@ -111,6 +125,7 @@ export async function getFeaturedProperties(): Promise<Property[]> {
   const { data, error } = await supabase
     .from("properties")
     .select("*")
+    .eq("status", "active")
     .eq("is_featured", true)
     .order("posted_at", { ascending: false })
     .limit(8)
@@ -121,12 +136,20 @@ export async function getFeaturedProperties(): Promise<Property[]> {
 export const getPropertyById = cache(async (id: string): Promise<Property | null> => {
   // Tìm song song trong cả 2 bảng thay vì tuần tự (giảm round-trip)
   // cache() giúp generateMetadata() và trang component dùng chung 1 lần gọi
+  // Trả về cả tin đã bán / đã gỡ (không lọc status) để trang chi tiết hiện thông báo "đã bán"
+  // thay vì 404 — link đã chia sẻ trên Facebook/TikTok vẫn mở được. Trang chi tiết tự kiểm tra status.
   const [r1, r2] = await Promise.all([
     supabase.from("properties").select("*").eq("id", id).maybeSingle(),
-    supabase.from("user_listings").select("*").eq("id", id).eq("is_active", true).maybeSingle(),
+    supabase.from("user_listings").select("*").eq("id", id).maybeSingle(),
   ])
   if (r1.data) return { ...r1.data, source: "admin" } as Property
-  if (r2.data) return { ...r2.data, source: "user" } as Property
+  if (r2.data) {
+    // Tin khách: đang bật quảng cáo = active; tắt + chủ tin báo "đã bán" = sold; còn lại = removed (chủ tin tự gỡ, không công khai)
+    const u = r2.data as any
+    const status: "active" | "sold" | "removed" =
+      u.is_active !== false ? "active" : u.status === "sold" ? "sold" : "removed"
+    return { ...u, source: "user", status } as Property
+  }
   return null
 })
 
@@ -140,7 +163,7 @@ export const getSimilarProperties = cache(async (
   // lấy toàn bộ tin cùng listing_type ở cả 2 bảng, rồi xếp hạng độ liên quan bằng JS.
   // Dữ liệu hiện tại nhỏ (~80 tin) nên cách này nhanh hơn nhiều so với nhiều round-trip DB.
   const [r1, r2] = await Promise.all([
-    supabase.from("properties").select("*").eq("listing_type", listingType).neq("id", currentId),
+    supabase.from("properties").select("*").eq("status", "active").eq("listing_type", listingType).neq("id", currentId),
     supabase.from("user_listings").select("*").eq("listing_type", listingType).eq("is_active", true).neq("id", currentId),
   ])
   const admin = (r1.data || []).map((p: any) => ({ ...p, source: "admin" as const }))
@@ -188,6 +211,7 @@ export async function searchProperties(filters: FilterOptions): Promise<Property
   function buildQuery(table: string) {
     let query = supabase.from(table).select("*")
     if (table === "user_listings") query = query.eq("is_active", true)
+    if (table === "properties")    query = query.eq("status", "active")
     if (filters.listingType)  query = query.eq("listing_type",  filters.listingType)
     if (filters.city)         query = query.eq("city",          filters.city)
     if (filters.district) {
