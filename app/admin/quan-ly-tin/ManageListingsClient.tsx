@@ -56,6 +56,19 @@ export default function ManageListingsClient() {
     setRows(rs => rs.map(x => x.listing_id === r.listing_id ? { ...x, status, status_reason: status === "active" ? "manual_restore" : "manual" } : x))
   }
 
+  const [poiMsg, setPoiMsg] = useState("")
+  async function refreshPois() {
+    setPoiMsg("Đang lấy tiện ích xung quanh từ 永慶...")
+    try {
+      const res = await fetch("/api/admin/refresh-pois", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pw }),
+      })
+      const j = await res.json()
+      if (!res.ok) { setPoiMsg("Lỗi: " + (j.error || res.status)); return }
+      setPoiMsg(`Đã cập nhật ${j.done} tin${j.failed ? `, lỗi ${j.failed}` : ""}.${j.remaining ? " Còn tin chưa có — bấm thêm lần nữa." : " Hoàn tất."}`)
+    } catch { setPoiMsg("Lỗi kết nối") }
+  }
+
   const counts = useMemo(() => ({
     all: rows.length,
     active: rows.filter(r => r.status === "active").length,
@@ -102,6 +115,12 @@ export default function ManageListingsClient() {
       <p className="text-xs text-gray-500 mb-3">
         Tin có nguồn 永慶 được kiểm tra tự động mỗi ngày; nếu 永慶 gỡ thì tin ở đây tự chuyển sang "Đã gỡ". Có thể bấm "Đăng lại" nếu cần.
       </p>
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <button onClick={refreshPois} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+          Cập nhật tiện ích xung quanh (永慶)
+        </button>
+        {poiMsg && <span className="text-xs text-gray-500">{poiMsg}</span>}
+      </div>
       <div className="space-y-2">
         {shown.map(r => (
           <div key={r.listing_id} className="bg-white border rounded-xl p-3 flex flex-col sm:flex-row sm:items-center gap-2">

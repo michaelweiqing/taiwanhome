@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath } from "next/cache"
 import { sbRpc, retranslateQueueRow, type QueueRow } from "@/lib/listingImport"
+import { refreshPoisFor } from "@/lib/poiSync"
 
 export const maxDuration = 300
 export const dynamic = "force-dynamic"
@@ -40,6 +41,8 @@ export async function GET(req: NextRequest) {
         const pid = await sbRpc<string | null>("import_publish", { p_password: token, p_id: row.id })
         if (!pid) { problems.push(`#${row.id} ${row.draft.title_zh}: trùng với tin đã đăng, không đăng`); continue }
         published.push(`• ${row.draft.title_vi || row.draft.title_zh}\n  https://8386.tw/listings/${pid}`)
+        // Lấy luôn tiện ích xung quanh (生活機能) từ 永慶 cho tin vừa đăng (lỗi thì bỏ qua, cron sync sẽ bù sau)
+        if (row.source_url) await refreshPoisFor(token, pid, row.source_url)
       } catch (e: any) {
         problems.push(`#${row.id} ${row.draft?.title_zh || row.source_url}: ${e.message}`)
       }

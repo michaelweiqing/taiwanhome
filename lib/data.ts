@@ -133,6 +133,22 @@ export async function getFeaturedProperties(): Promise<Property[]> {
   return data as Property[]
 }
 
+// Tiện ích xung quanh lấy từ 永慶 (bảng property_pois). Trả null nếu chưa có / bảng chưa tạo.
+export interface PropertyPois {
+  center: { lat: number; lng: number } | null
+  categories: { k: string; items: { n: string; s: string; la: number; ln: number; d: number }[] }[]
+}
+export const getPropertyPois = cache(async (id: string): Promise<PropertyPois | null> => {
+  const { data, error } = await supabase
+    .from("property_pois").select("center_lat,center_lng,categories").eq("property_id", id).maybeSingle()
+  if (error || !data || !Array.isArray(data.categories) || !data.categories.length) return null
+  const lat = Number(data.center_lat), lng = Number(data.center_lng)
+  return {
+    center: Number.isFinite(lat) && Number.isFinite(lng) && lat && lng ? { lat, lng } : null,
+    categories: data.categories,
+  }
+})
+
 export const getPropertyById = cache(async (id: string): Promise<Property | null> => {
   // Tìm song song trong cả 2 bảng thay vì tuần tự (giảm round-trip)
   // cache() giúp generateMetadata() và trang component dùng chung 1 lần gọi

@@ -2,7 +2,7 @@
 
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import { getPropertyById, getSimilarProperties, formatPrice } from "@/lib/data"
+import { getPropertyById, getSimilarProperties, getPropertyPois, formatPrice } from "@/lib/data"
 import ListingDetailClient from "./ListingDetailClient"
 import ListingUnavailable from "./ListingUnavailable"
 import { ListingJsonLd } from "@/components/ListingJsonLd"
@@ -70,12 +70,15 @@ export default async function ListingDetailPage({
     const property = await getPropertyById(id)
     if (!property) notFound()
 
-    const similar = await getSimilarProperties(id, (property.listing_type as "rent" | "buy") || "buy", 6, {
-      propertyType: property.property_type,
-      district:     property.district,
-      city:         property.city,
-      price:        Number(property.price),
-    })
+    const [similar, pois] = await Promise.all([
+      getSimilarProperties(id, (property.listing_type as "rent" | "buy") || "buy", 6, {
+        propertyType: property.property_type,
+        district:     property.district,
+        city:         property.city,
+        price:        Number(property.price),
+      }),
+      property.listing_type === "buy" && property.source !== "user" ? getPropertyPois(id) : Promise.resolve(null),
+    ])
 
     if (property.status && property.status !== "active") {
       // Tin khách tự gỡ → 404; tin admin đã bán/gỡ → trang thông báo + gợi ý nhà tương tự
@@ -86,7 +89,7 @@ export default async function ListingDetailPage({
     return (
       <>
         <ListingJsonLd property={property} />
-        <ListingDetailClient property={property} similar={similar} />
+        <ListingDetailClient property={property} similar={similar} pois={pois} />
       </>
     )
   } catch (err) {

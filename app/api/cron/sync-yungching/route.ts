@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath } from "next/cache"
 import { sbRpc } from "@/lib/listingImport"
 import { checkYungchingUrl, sleep, mapLimit, type YcResult } from "@/lib/yungchingCheck"
+import { backfillPois } from "@/lib/poiSync"
 
 export const maxDuration = 300
 export const dynamic = "force-dynamic"
@@ -89,6 +90,14 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // Bù dữ liệu "tiện ích xung quanh" cho các tin 永慶 chưa có (mỗi lần tối đa 30 tin)
+    let poiDone = 0
+    if (!dry) {
+      const r = await backfillPois(token, 30)
+      poiDone = r.ids.length
+      for (const id of r.ids) revalidatePath(`/listings/${id}`)
+    }
+
     const removedSet = new Set(removed)
     const removedItems = gone.filter(c => removedSet.has(c.property_id))
     if (removedItems.length || aborted) {
@@ -104,7 +113,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       ok: true, dry, checked: cands.length, live: live.length, gone: gone.length,
-      unknown: unknown.length, removed: removed.length, aborted,
+      unknown: unknown.length, removed: removed.length, aborted, pois: poiDone,
     })
   } catch (err: any) {
     console.error("cron sync-yungching error:", err)

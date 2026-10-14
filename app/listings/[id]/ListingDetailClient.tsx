@@ -11,6 +11,8 @@ import ImageGallery from "@/components/ImageGallery"
 import ContactForm from "@/components/ContactForm"
 import MortgageCalculator from "@/components/MortgageCalculator"
 import PropertyCard from "@/components/PropertyCard"
+import AmenityMap from "@/components/AmenityMap"
+import type { PropertyPois } from "@/lib/data"
 import type { LucideIcon } from "lucide-react"
 import {
   ArrowUpDown, Car, ShieldCheck, Leaf, Snowflake, Dumbbell, Waves, PawPrint, Wifi, Droplets,
@@ -98,9 +100,9 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   )
 }
 
-interface Props { property: Property; similar: Property[] }
+interface Props { property: Property; similar: Property[]; pois?: PropertyPois | null }
 
-export default function ListingDetailClient({ property: p, similar }: Props) {
+export default function ListingDetailClient({ property: p, similar, pois }: Props) {
   const { lang, t } = useLang()
   const router = useRouter()
   const { toggle: toggleFav, isFavorite } = useFavorites()
@@ -419,6 +421,12 @@ export default function ListingDetailClient({ property: p, similar }: Props) {
                     src={`https://www.google.com/maps?q=${p.lat},${p.lng}&z=15&output=embed`} />
                 </div>
               </div>
+            )}
+
+            {/* Tiện ích xung quanh lấy từ 永慶 (nhóm + bản đồ) */}
+            {pois && pois.categories.length > 0 && (
+              <AmenityMap pois={pois} fallback={{ lat: Number(p.lat), lng: Number(p.lng) }}
+                title={lang === "zh" ? (p.title_zh || p.title_vi) : (p.title_vi || p.title_zh)} />
             )}
 
             {/* Ngày đăng */}
