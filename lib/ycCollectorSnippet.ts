@@ -13,6 +13,9 @@ export const YC_COLLECTOR_SNIPPET = String.raw`(function(){
     document.querySelectorAll('li.search-result-list-item a.link[href*="house/"]').forEach(function(a){
       var m=(a.getAttribute('href')||'').match(/house\/(\d+)/); if(!m) return;
       var id=m[1]; if(seenId[id]) return; seenId[id]=1;
+      var ct=t(a,'.caseType');
+      // Chỉ lấy 住宅 / 店面 / 廠房 / 土地: bỏ văn phòng, chỗ đậu xe, nhà nông...
+      if(/辦公|商辦|廠辦|車位|停車|農舍|其他/.test(ct)){s.skip=(s.skip||0)+1; return}
       var key=[t(a,'.address'),t(a,'.caseType'),t(a,'.regArea'),t(a,'.mainArea'),t(a,'.floor'),t(a,'.room')].join('|');
       if(s.items[key]){s.dup++} else {s.items[key]={id:id,title:t(a,'.caseName')}}
     });
@@ -27,7 +30,7 @@ export const YC_COLLECTOR_SNIPPET = String.raw`(function(){
     (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){info.textContent='Đã copy '+Object.keys(s.items).length+' link. Dán vào trang 8386.tw.'}).catch(function(){window.prompt('Copy (Ctrl+C):',txt)});
   }).style.background='#fbbf24';
   btn('Xoá hết',function(){if(confirm('Xoá danh sách đã thu?')){save({items:{},dup:0});scan()}});
-  function draw(s){info.textContent='Đã thu '+Object.keys(s.items).length+' căn (bỏ '+s.dup+' tin trùng). Hãy tự lật trang/cuộn xuống để thu thêm.'}
+  function draw(s){info.textContent='Đã thu '+Object.keys(s.items).length+' căn (bỏ '+s.dup+' tin trùng, '+(s.skip||0)+' tin sai loại). Hãy tự lật trang/cuộn xuống để thu thêm.'}
   document.body.appendChild(box);
   var tm; new MutationObserver(function(){clearTimeout(tm);tm=setTimeout(scan,600)}).observe(document.body,{childList:true,subtree:true});
   scan();

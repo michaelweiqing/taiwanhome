@@ -222,6 +222,7 @@ export default function AdminImportClient() {
           <li>Mở trang danh sách 永慶 (vd. 台中市買房) trong trình duyệt, tự cuộn / lật trang như bình thường.</li>
           <li>Nhấn F12 → tab Console → dán đoạn mã bên dưới → Enter. Góc phải dưới sẽ hiện bảng đếm.</li>
           <li>Mỗi trang bạn xem, công cụ chỉ đọc các thẻ nhà đang hiện trên màn hình (không gửi thêm yêu cầu nào), gộp các tin cùng 1 căn (cùng địa chỉ, loại, diện tích, tầng, số phòng).</li>
+          <li>Chỉ thu loại 住宅 / 店面 / 廠房 / 土地 (tự bỏ văn phòng, chỗ đậu xe, 農舍). Nên chọn thêm bộ lọc 型態/用途 trên trang 永慶 để danh sách gọn hơn.</li>
           <li>Bấm <b>Copy link</b> rồi dán vào ô bên dưới. Hệ thống sẽ nghỉ 60 giây giữa mỗi link khi thêm vào hàng đợi.</li>
         </ol>
         <div className="flex gap-2 mt-3">
