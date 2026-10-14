@@ -206,8 +206,12 @@ export default function AdminImportClient() {
           <h1 className="text-xl font-bold text-gray-900">🏠 Đăng tin từ link</h1>
           <p className="text-xs text-gray-500">Dán link tin nhà → hệ thống tự đọc thông tin, dịch Việt, xếp hàng và tự đăng mỗi sáng (khoảng 8:47).</p>
         </div>
-        <button onClick={() => { sessionStorage.removeItem(PW_KEY); setAuthed(false); setPassword("") }}
-          className="text-xs text-gray-500 hover:text-red-600 inline-flex items-center gap-1"><LogOut size={14} /> Thoát</button>
+        <div className="flex items-center gap-3 shrink-0">
+          <a href="/admin/quan-ly-tin"
+            className="text-xs font-semibold text-blue-600 hover:underline">Quản lý tin đăng (đã bán / gỡ / tiện ích)</a>
+          <button onClick={() => { sessionStorage.removeItem(PW_KEY); setAuthed(false); setPassword("") }}
+            className="text-xs text-gray-500 hover:text-red-600 inline-flex items-center gap-1"><LogOut size={14} /> Thoát</button>
+        </div>
       </div>
 
       {/* Dán link */}
