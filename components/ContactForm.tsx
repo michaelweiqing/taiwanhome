@@ -27,6 +27,13 @@ export default function ContactForm({ agentName, agentPhone, agentLine, property
     : null
   const telUrl  = `tel:${agentPhone}`
 
+  // agent_company từ 永慶 có dạng "永慶不動產 北屯太原車站加盟店 橡樹地產有限公司":
+  // phần cuối kết thúc bằng 有限公司 là công ty, phần trước là cửa hàng.
+  const dev = (agentCompany || "").replace(/\s+/g, " ").trim()
+  const companyM = dev.match(/(\S+(?:股份)?有限公司)$/)
+  const devCompany = companyM ? companyM[1] : ""
+  const devStore = (companyM ? dev.slice(0, dev.length - devCompany.length) : dev).trim()
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }))
   }
@@ -88,26 +95,28 @@ export default function ContactForm({ agentName, agentPhone, agentLine, property
 
       {/* Thông tin công ty — chỉ hiện nếu là môi giới chuyên nghiệp */}
       {agentIsProfessional && (
-        <div className="bg-gray-50 rounded-xl px-4 py-3 space-y-1 text-xs text-gray-600 border border-gray-100">
-          <p className="font-bold text-gray-800 text-sm">
-            {lang === "zh" ? "永慶不動產" : "Công ty môi giới Vĩnh Khánh (永慶不動產)"}
-          </p>
-          <p>好市多德聚仁加盟店</p>
-          <p className="pt-1">
-            {lang === "zh"
-              ? "營業員證號：(113)登字第456212號"
-              : "Giấy phép hành nghề số (113) 登字第456212號"}
-          </p>
-          <p>經紀人證號：陳秀貞（104）中市經紀字第01633號</p>
-          {agentDeveloper && (
-            <p className="border-t border-gray-200 mt-2 pt-2">
-              {lang === "zh" ? "開發承辦人：" : "Người phụ trách: "}{agentDeveloper}
+        <div className="bg-gray-50 rounded-xl px-4 py-3 space-y-3 text-xs text-gray-600 border border-gray-100">
+          {/* Mục 1: công ty bán hàng (cửa hàng của Michael) */}
+          <div className="space-y-1">
+            <p className="font-bold text-gray-800 text-sm">
+              {lang === "zh" ? "銷售公司：" : "Công ty bán hàng (銷售公司):"}
             </p>
-          )}
-          {agentCompany && (
-            <p>
-              {lang === "zh" ? "公司名稱：" : "Công ty: "}{agentCompany}
-            </p>
+            <p className="font-semibold text-gray-800">永慶不動產 好市多德聚仁加盟店</p>
+            <p>營業員證號：(113)登字第456212號</p>
+            <p>經紀人證號：陳秀貞（104）中市經紀字第01633號</p>
+          </div>
+          {/* Mục 2: công ty khai thác nhà — lấy từ 永慶 (cửa hàng + công ty đăng tin) */}
+          {(devStore || devCompany || agentDeveloper) && (
+            <div className="space-y-1 border-t border-gray-200 pt-3">
+              <p className="font-bold text-gray-800 text-sm">
+                {lang === "zh" ? "開發公司：" : "Công ty khai thác nhà (開發公司):"}
+              </p>
+              {devStore && <p className="font-semibold text-gray-800">{devStore}</p>}
+              {devCompany && <p>{devCompany}</p>}
+              {agentDeveloper && (
+                <p>{lang === "zh" ? "開發承辦人：" : "Người phụ trách: "}{agentDeveloper}</p>
+              )}
+            </div>
           )}
         </div>
       )}
