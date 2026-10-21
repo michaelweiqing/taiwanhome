@@ -279,13 +279,39 @@ export interface ImportResult { draft: ImportDraft; images: string[]; status: "r
 
 // ── Hàm chính: link -> bản nháp đầy đủ ──
 export async function importFromUrl(url: string, opts: { agentCompany?: string } = {}): Promise<ImportResult> {
-  const res = await fetch(url, { headers: UA, redirect: "follow" })
-  if (!res.ok) throw new Error(`Không mở được trang (HTTP ${res.status})`)
-  const html = await res.text()
-
-  const isYC = /yungching\.com\.tw\/house\//.test(res.url || url)
-  const base = isYC ? parseYungching(html, url) : await aiExtractGeneric(htmlToText(html), url)
-  if (!base.title_zh || !base.price || !base.city) throw new Error("Không đọc được tiêu đề / giá / địa chỉ từ trang này")
+  // 永慶 đôi khi trả trang 404 / trang rỗng / trang chặn bot cho máy chủ (lúc được lúc không,
+  // dù nhà vẫn còn) → thử lại tối đa 4 lần với khoảng nghỉ tăng dần, rồi mới báo lỗi.
+  const isYCUrl = /yungching\.com\.tw\/house\//.test(url)
+  const attempts = isYCUrl ? 4 : 1
+  let base: Partial<ImportDraft> & { rawFeatures?: string } = {}
+  let lastErr = ""
+  for (let i = 0; i < attempts; i++) {
+    if (i > 0) await new Promise(r => setTimeout(r, 3000 * i))
+    try {
+      const res = await fetch(url, {
+        headers: {
+          ...UA,
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+          "Upgrade-Insecure-Requests": "1",
+          "Sec-Fetch-Dest": "document", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-Site": "none", "Sec-Fetch-User": "?1",
+          "Cache-Control": "no-cache",
+        },
+        redirect: "follow", cache: "no-store",
+      })
+      const html = await res.text()
+      if (!res.ok) { lastErr = `HTTP ${res.status}`; continue }
+      const isYC = /yungching\.com\.tw\/house\//.test(res.url || url)
+      base = isYC ? parseYungching(html, url) : await aiExtractGeneric(htmlToText(html), url)
+      if (base.title_zh && base.price && base.city) { lastErr = ""; break }
+      const ttl = (html.match(/<title>([^<]*)<\/title>/i)?.[1] || "").slice(0, 60)
+      lastErr = `trang ${html.length} byte${ttl ? `, tiêu đề "${ttl}"` : ""}`
+    } catch (e: any) { lastErr = e?.message || "fetch_error" }
+  }
+  if (lastErr || !base.title_zh || !base.price || !base.city) {
+    throw new Error(/^HTTP/.test(lastErr)
+      ? `Không mở được trang (${lastErr}) — 永慶 có thể tạm chặn máy chủ, hãy bấm "Thử lại" sau ít phút`
+      : `Không đọc được tiêu đề / giá / địa chỉ từ trang này (${lastErr || "thiếu dữ liệu"}) — bấm "Thử lại" sau ít phút`)
+  }
   if (!base.id) base.id = "L" + Date.now().toString().slice(-8)
 
   const city = base.city!, district = base.district || ""
