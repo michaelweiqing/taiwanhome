@@ -82,6 +82,7 @@ export default function AdminImportClient() {
     const urls = [...new Set(links.split(/\s+/).map(s => s.trim()).filter(s => /^https?:\/\//.test(s)))]
     if (!urls.length) { alert("Chưa có link hợp lệ"); return }
     setImporting(true); setProgress([])
+    let failStreak = 0   // số link lỗi liên tiếp → tự kéo dài thời gian nghỉ / dừng hẳn
     for (const [i, url] of urls.entries()) {
       setProgress(p => [...p, `⏳ (${i + 1}/${urls.length}) ${url}`])
       try {
@@ -93,12 +94,22 @@ export default function AdminImportClient() {
           ? `❌ ${url} — ${j.error}`
           : `✅ ${j.row?.draft?.title_zh || url}${j.warning ? ` (⚠️ ${j.warning})` : ""}`
         setProgress(p => [...p.slice(0, -1), msg])
+        failStreak = j.error ? failStreak + 1 : 0
       } catch (e: any) {
         setProgress(p => [...p.slice(0, -1), `❌ ${url} — ${e.message}`])
+        failStreak++
       }
-      // Nghỉ giữa các link để không gửi quá nhiều yêu cầu dồn dập tới trang nguồn (tránh bị chặn 403)
+      // Gặp lỗi liên tiếp (nhiều khả năng 永慶 đang giới hạn truy cập) → dừng, không cố nữa
+      if (failStreak >= 3) {
+        setProgress(p => [...p, "🛑 Lỗi 3 link liên tiếp — đã dừng để tránh gửi thêm yêu cầu tới 永慶. Hãy đợi 10–15 phút rồi bấm 'Thử lại' ở các dòng lỗi."])
+        setImporting(false); setLinks(urls.slice(i + 1).join("\n"))   // giữ lại các link chưa xử lý
+        load(password, tab)
+        return
+      }
+      // Nghỉ giữa các link: 30–40 giây (ngẫu nhiên). Lỗi thì nghỉ gấp đôi (1 lỗi) hoặc gấp 3 (2 lỗi liên tiếp).
       if (i < urls.length - 1) {
-        for (let s = 60; s > 0; s--) {   // nghỉ 60 giây, hiện đếm ngược
+        const wait = Math.round((30 + Math.random() * 10) * (failStreak === 0 ? 1 : failStreak + 1))
+        for (let s = wait; s > 0; s--) {
           setProgress(p => [...p.filter(x => !x.startsWith("⏸")), `⏸ Nghỉ ${s} giây trước link tiếp theo...`])
           await new Promise(r => setTimeout(r, 1000))
         }
