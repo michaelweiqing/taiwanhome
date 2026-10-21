@@ -82,7 +82,8 @@ export default function AdminImportClient() {
     const urls = [...new Set(links.split(/\s+/).map(s => s.trim()).filter(s => /^https?:\/\//.test(s)))]
     if (!urls.length) { alert("Chưa có link hợp lệ"); return }
     setImporting(true); setProgress([])
-    let failStreak = 0   // số link lỗi liên tiếp → tự kéo dài thời gian nghỉ / dừng hẳn
+    let failStreak = 0   // số link lỗi liên tiếp → tự kéo dài thời gian nghỉ / tạm dừng
+    let pauses = 0       // số lần đã tạm dừng 15 phút (reset khi có link thành công)
     for (const [i, url] of urls.entries()) {
       setProgress(p => [...p, `⏳ (${i + 1}/${urls.length}) ${url}`])
       try {
@@ -95,16 +96,29 @@ export default function AdminImportClient() {
           : `✅ ${j.row?.draft?.title_zh || url}${j.warning ? ` (⚠️ ${j.warning})` : ""}`
         setProgress(p => [...p.slice(0, -1), msg])
         failStreak = j.error ? failStreak + 1 : 0
+        if (!j.error) pauses = 0
       } catch (e: any) {
         setProgress(p => [...p.slice(0, -1), `❌ ${url} — ${e.message}`])
         failStreak++
       }
-      // Gặp lỗi liên tiếp (nhiều khả năng 永慶 đang giới hạn truy cập) → dừng, không cố nữa
-      if (failStreak >= 3) {
-        setProgress(p => [...p, "🛑 Lỗi 3 link liên tiếp — đã dừng để tránh gửi thêm yêu cầu tới 永慶. Hãy đợi 10–15 phút rồi bấm 'Thử lại' ở các dòng lỗi."])
-        setImporting(false); setLinks(urls.slice(i + 1).join("\n"))   // giữ lại các link chưa xử lý
-        load(password, tab)
-        return
+      // Lỗi liên tiếp 5 link (nhiều khả năng 永慶 đang giới hạn truy cập) → tạm dừng 15 phút rồi chạy tiếp.
+      // Nếu sau 3 lần tạm dừng vẫn không thành công link nào thì dừng hẳn.
+      if (failStreak >= 5 && i < urls.length - 1) {
+        pauses++
+        if (pauses > 3) {
+          setProgress(p => [...p, "🛑 Đã tạm dừng 3 lần mà vẫn lỗi — dừng hẳn. Hãy thử lại sau vài giờ."])
+          setImporting(false); setLinks(urls.slice(i + 1).join("\n"))   // giữ lại các link chưa xử lý
+          load(password, tab)
+          return
+        }
+        for (let s = 15 * 60; s > 0; s--) {
+          const mm = Math.floor(s / 60), ss = String(s % 60).padStart(2, "0")
+          setProgress(p => [...p.filter(x => !x.startsWith("⏸")), `⏸ Lỗi liên tiếp 5 link — tạm dừng 15 phút (lần ${pauses}/3), còn ${mm}:${ss}...`])
+          await new Promise(r => setTimeout(r, 1000))
+        }
+        setProgress(p => p.filter(x => !x.startsWith("⏸")))
+        failStreak = 0
+        continue
       }
       // Nghỉ giữa các link: 30–40 giây (ngẫu nhiên). Lỗi thì nghỉ gấp đôi (1 lỗi) hoặc gấp 3 (2 lỗi liên tiếp).
       if (i < urls.length - 1) {
