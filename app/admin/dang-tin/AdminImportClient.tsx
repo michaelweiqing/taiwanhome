@@ -77,10 +77,37 @@ export default function AdminImportClient() {
     return r
   }
 
+  // ── Lọc link: bỏ những link nhà đã từng lấy vào hệ thống (mọi trạng thái trong hàng đợi) ──
+  const houseId = (u: string) => u.match(/yungching\.com\.tw\/house\/(\d+)/)?.[1] || null
+  async function splitKnown(urls: string[]): Promise<{ fresh: string[]; known: string[] }> {
+    const { data, error } = await supabase.rpc("import_queue_list", { p_password: password, p_status: "all" })
+    if (error) { alert(error.message); return { fresh: urls, known: [] } }
+    const have = new Set(((data || []) as QueueRow[]).map(r => houseId(r.source_url)).filter(Boolean) as string[])
+    const fresh: string[] = [], known: string[] = []
+    for (const u of urls) { const id = houseId(u); (id && have.has(id) ? known : fresh).push(u) }
+    return { fresh, known }
+  }
+  const parseLinks = () => [...new Set(links.split(/\s+/).map(s => s.trim()).filter(s => /^https?:\/\//.test(s)))]
+  const [filterMsg, setFilterMsg] = useState("")
+  async function filterNew() {
+    const urls = parseLinks()
+    if (!urls.length) { setFilterMsg("Chưa có link để lọc."); return }
+    setFilterMsg("Đang lọc…")
+    const { fresh, known } = await splitKnown(urls)
+    setLinks(fresh.join("\n"))
+    setFilterMsg(`Đã bỏ ${known.length} link từng lấy trước đó, còn ${fresh.length} link mới.`)
+  }
+
   // ── Dán link -> xử lý lần lượt từng link ──
   async function importLinks() {
-    const urls = [...new Set(links.split(/\s+/).map(s => s.trim()).filter(s => /^https?:\/\//.test(s)))]
+    let urls = parseLinks()
     if (!urls.length) { alert("Chưa có link hợp lệ"); return }
+    { // tự bỏ link đã lấy rồi trước khi chạy
+      const { fresh, known } = await splitKnown(urls)
+      if (known.length) setFilterMsg(`Đã tự bỏ ${known.length} link từng lấy trước đó.`)
+      urls = fresh
+      if (!urls.length) { setLinks(""); alert("Tất cả link này đã được lấy trước đó, không có link mới."); return }
+    }
     setImporting(true); setProgress([])
     let failStreak = 0   // số link lỗi liên tiếp → tự kéo dài thời gian nghỉ / tạm dừng
     let pauses = 0       // số lần đã tạm dừng 15 phút (reset khi có link thành công)
@@ -303,6 +330,11 @@ export default function AdminImportClient() {
             className="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white rounded-xl px-4 py-2 text-sm font-semibold">
             {importing ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />} Thêm vào hàng đợi
           </button>
+          <button type="button" disabled={importing || !links.trim()} onClick={filterNew}
+            className="inline-flex items-center gap-1.5 border border-gray-300 text-gray-700 disabled:opacity-40 rounded-xl px-3 py-2 text-sm">
+            Lọc link mới (bỏ link đã lấy)
+          </button>
+          {filterMsg && <span className="text-xs text-gray-600">{filterMsg}</span>}
           <label className="text-xs text-gray-600 flex items-center gap-2">
             Tự đăng mỗi ngày:
             <select value={perDay} onChange={e => savePerDay(Number(e.target.value))}
