@@ -227,25 +227,32 @@ export default function AdminImportClient() {
 
   // Gom các tin trùng NHAU trong hàng đợi (lỗi dạng "tin đang chờ #123") thành từng cặp để so sánh cạnh nhau
   const groups: QueueRow[][] = (() => {
+    // Union-find: tin A báo trùng "tin đang chờ #B, #C" → A, B, C cùng 1 nhóm (nhóm có thể >2 tin)
     const byId = new Map(rows.map(r => [r.id, r]))
-    const used = new Set<number>()
-    const out: QueueRow[][] = []
+    const parent = new Map<number, number>(rows.map(r => [r.id, r.id]))
+    const find = (x: number): number => { while (parent.get(x) !== x) { parent.set(x, parent.get(parent.get(x)!)!); x = parent.get(x)! } return x }
     for (const r of rows) {
-      if (used.has(r.id)) continue
-      const pid = r.status === "duplicate" ? Number(r.error?.match(/tin đang chờ #(\d+)/)?.[1]) : NaN
-      const partner = Number.isFinite(pid) ? byId.get(pid) : undefined
-      if (partner && !used.has(partner.id) && partner.id !== r.id) {
-        used.add(r.id); used.add(partner.id)
-        out.push(partner.id < r.id ? [partner, r] : [r, partner])
-      } else { used.add(r.id); out.push([r]) }
+      if (r.status !== "duplicate" || !r.error || !/tin đang chờ/.test(r.error)) continue
+      for (const m of r.error.slice(r.error.indexOf("tin đang chờ")).matchAll(/#(\d+)/g)) {
+        const other = Number(m[1])
+        if (byId.has(other) && other !== r.id) parent.set(find(other), find(r.id))
+      }
     }
-    return out
+    const buckets = new Map<number, QueueRow[]>()
+    const order: number[] = []
+    for (const r of rows) {
+      const k = find(r.id)
+      if (!buckets.has(k)) { buckets.set(k, []); order.push(k) }
+      buckets.get(k)!.push(r)
+    }
+    return order.map(k => buckets.get(k)!.sort((a, b) => a.id - b.id))
   })()
 
-  // Chọn 1 trong 2 tin trùng: bỏ tin kia, tin được chọn cho đăng bình thường
-  async function choose(keep: QueueRow, drop: QueueRow) {
-    if (!confirm(`Giữ tin #${keep.id} và BỎ tin #${drop.id} khỏi hàng đợi?`)) return
-    await update(drop, { status: "removed" })
+  // Chọn 1 tin trong nhóm trùng: bỏ các tin còn lại, tin được chọn cho đăng bình thường
+  async function choose(keep: QueueRow, group: QueueRow[]) {
+    const drops = group.filter(x => x.id !== keep.id)
+    if (!confirm(`Giữ tin #${keep.id} và BỎ ${drops.length} tin còn lại (${drops.map(d => "#" + d.id).join(", ")}) khỏi hàng đợi?`)) return
+    for (const d of drops) await update(d, { status: "removed" })
     if (keep.status === "duplicate") await update(keep, { draft: { dup_ok: true }, status: nextStatus(keep.draft.translated, keep.images) })
     load(password, tab)
   }
@@ -324,7 +331,7 @@ export default function AdminImportClient() {
       <div className="space-y-3">
         {groups.map(g => {
           const cards = g.map(r => <QueueCard key={r.id} row={r} busy={busyId === r.id}
-          onChoose={g.length === 2 ? () => choose(r, g[0] === r ? g[1] : g[0]) : undefined}
+          onChoose={g.length >= 2 ? () => choose(r, g) : undefined}
           onUpload={f => uploadPhotos(r, f)} onRemovePhoto={u => removePhoto(r, u)}
           onSave={draft => update(r, { draft })} onPublish={() => publishNow(r)} onTranslate={() => retranslate(r)}
           onPhotos={() => fetchPhotos(r)} onRetry={() => retryLink(r)}
@@ -342,9 +349,9 @@ export default function AdminImportClient() {
           onNotDup={() => confirm("Xác nhận đây KHÔNG phải nhà đã đăng (chỉ giống thông tin)?") &&
             update(r, { draft: { dup_ok: true }, status: nextStatus(r.draft.translated, r.images) })}
           onRemove={() => confirm("Bỏ tin này khỏi hàng đợi?") && update(r, { status: "removed" })} />)
-          return g.length === 2 ? (
-            <div key={`${g[0].id}-${g[1].id}`} className="border-2 border-amber-300 bg-amber-50/50 rounded-2xl p-3">
-              <p className="text-sm font-semibold text-amber-800 mb-2">⚖️ 2 tin cùng 1 căn nhà — chọn 1 tin tốt nhất để đăng</p>
+          return g.length >= 2 ? (
+            <div key={g.map(x => x.id).join("-")} className="border-2 border-amber-300 bg-amber-50/50 rounded-2xl p-3">
+              <p className="text-sm font-semibold text-amber-800 mb-2">⚖️ {g.length} tin cùng 1 căn nhà — chọn 1 tin tốt nhất để đăng</p>
               <div className="grid lg:grid-cols-2 gap-3 items-start">{cards}</div>
             </div>
           ) : cards[0]
@@ -428,7 +435,7 @@ function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTr
       {!done && (
         <div className="flex flex-wrap gap-2 mt-3 text-xs">
           {onChoose && (
-            <button disabled={busy} onClick={onChoose} className="inline-flex items-center gap-1 bg-green-600 text-white rounded-lg px-3 py-1.5 disabled:opacity-40"><CheckCircle2 size={13} /> Chọn tin này (bỏ tin kia)</button>
+            <button disabled={busy} onClick={onChoose} className="inline-flex items-center gap-1 bg-green-600 text-white rounded-lg px-3 py-1.5 disabled:opacity-40"><CheckCircle2 size={13} /> Chọn tin này (bỏ các tin còn lại)</button>
           )}
           {onChoose ? null : dup && /Trùng nhà đã có trên web/.test(row.error || "") ? (
             <button disabled={busy} onClick={onReplace} className="inline-flex items-center gap-1 bg-red-600 text-white rounded-lg px-3 py-1.5 disabled:opacity-40"><RefreshCw size={13} /> Thay thế tin cũ</button>
