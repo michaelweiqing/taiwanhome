@@ -303,6 +303,15 @@ export default function AdminImportClient() {
           onPhotos={() => fetchPhotos(r)} onRetry={() => retryLink(r)}
           onTop={() => update(r, { priority: (r.priority || 0) + 10 })}
           onReady={() => update(r, { status: "ready" })}
+          onReplace={async () => {
+            const old = r.error?.match(/:\s*(\S+)\s*\((\w+)\)\s*$/)?.[1] || "tin cũ"
+            if (!confirm(`Đăng tin mới này THAY THẾ tin cũ ${old}?\nTin cũ sẽ bị gỡ khỏi web (không xoá dữ liệu), tin mới được đăng ngay.`)) return
+            setBusyId(r.id)
+            const { error } = await supabase.rpc("import_replace", { p_password: password, p_id: r.id })
+            setBusyId(null)
+            if (error) alert(error.message === "function public.import_replace(p_password, p_id) does not exist" || /import_replace/.test(error.message) ? "Chưa cài hàm import_replace trong Supabase (chạy file scripts/sql/import_replace.sql)." : error.message)
+            load(password, tab)
+          }}
           onNotDup={() => confirm("Xác nhận đây KHÔNG phải nhà đã đăng (chỉ giống thông tin)?") &&
             update(r, { draft: { dup_ok: true }, status: nextStatus(r.draft.translated, r.images) })}
           onRemove={() => confirm("Bỏ tin này khỏi hàng đợi?") && update(r, { status: "removed" })} />)}
@@ -316,10 +325,10 @@ interface CardProps {
   onUpload: (f: FileList | null) => void; onRemovePhoto: (u: string) => void
   onSave: (draft: Record<string, unknown>) => void; onPublish: () => void; onTranslate: () => void
   onPhotos: () => void; onRetry: () => void; onTop: () => void; onReady: () => void; onRemove: () => void
-  onNotDup: () => void
+  onNotDup: () => void; onReplace: () => void
 }
 
-function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTranslate, onPhotos, onRetry, onTop, onReady, onRemove, onNotDup }: CardProps) {
+function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTranslate, onPhotos, onRetry, onTop, onReady, onRemove, onNotDup, onReplace }: CardProps) {
   const d = row.draft || ({} as QueueRow["draft"])
   const st = STATUS[row.status] || { label: row.status, cls: "bg-gray-100 text-gray-600" }
   const [edit, setEdit] = useState(false)
@@ -384,7 +393,9 @@ function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTr
 
       {!done && (
         <div className="flex flex-wrap gap-2 mt-3 text-xs">
-          {dup ? (
+          {dup && /Trùng nhà đã có trên web/.test(row.error || "") ? (
+            <button disabled={busy} onClick={onReplace} className="inline-flex items-center gap-1 bg-red-600 text-white rounded-lg px-3 py-1.5 disabled:opacity-40"><RefreshCw size={13} /> Thay thế tin cũ</button>
+          ) : dup ? (
             <button disabled={busy} onClick={onNotDup} className="inline-flex items-center gap-1 border border-gray-300 text-gray-700 rounded-lg px-3 py-1.5"><CheckCircle2 size={13} /> Không trùng, vẫn cho đăng</button>
           ) : (
             <button disabled={busy || !row.images.length} onClick={onPublish} className="inline-flex items-center gap-1 bg-red-600 text-white rounded-lg px-3 py-1.5 disabled:opacity-40"><Send size={13} /> Đăng ngay</button>
