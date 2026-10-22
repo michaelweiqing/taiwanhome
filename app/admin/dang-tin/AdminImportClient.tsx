@@ -225,6 +225,31 @@ export default function AdminImportClient() {
     )
   }
 
+  // Gom các tin trùng NHAU trong hàng đợi (lỗi dạng "tin đang chờ #123") thành từng cặp để so sánh cạnh nhau
+  const groups: QueueRow[][] = (() => {
+    const byId = new Map(rows.map(r => [r.id, r]))
+    const used = new Set<number>()
+    const out: QueueRow[][] = []
+    for (const r of rows) {
+      if (used.has(r.id)) continue
+      const pid = r.status === "duplicate" ? Number(r.error?.match(/tin đang chờ #(\d+)/)?.[1]) : NaN
+      const partner = Number.isFinite(pid) ? byId.get(pid) : undefined
+      if (partner && !used.has(partner.id) && partner.id !== r.id) {
+        used.add(r.id); used.add(partner.id)
+        out.push(partner.id < r.id ? [partner, r] : [r, partner])
+      } else { used.add(r.id); out.push([r]) }
+    }
+    return out
+  })()
+
+  // Chọn 1 trong 2 tin trùng: bỏ tin kia, tin được chọn cho đăng bình thường
+  async function choose(keep: QueueRow, drop: QueueRow) {
+    if (!confirm(`Giữ tin #${keep.id} và BỎ tin #${drop.id} khỏi hàng đợi?`)) return
+    await update(drop, { status: "removed" })
+    if (keep.status === "duplicate") await update(keep, { draft: { dup_ok: true }, status: nextStatus(keep.draft.translated, keep.images) })
+    load(password, tab)
+  }
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-6 space-y-5">
       <div className="flex items-center justify-between gap-3">
@@ -297,7 +322,9 @@ export default function AdminImportClient() {
 
       {rows.length === 0 && !loading && <p className="text-sm text-gray-500 text-center py-10">Chưa có tin nào.</p>}
       <div className="space-y-3">
-        {rows.map(r => <QueueCard key={r.id} row={r} busy={busyId === r.id}
+        {groups.map(g => {
+          const cards = g.map(r => <QueueCard key={r.id} row={r} busy={busyId === r.id}
+          onChoose={g.length === 2 ? () => choose(r, g[0] === r ? g[1] : g[0]) : undefined}
           onUpload={f => uploadPhotos(r, f)} onRemovePhoto={u => removePhoto(r, u)}
           onSave={draft => update(r, { draft })} onPublish={() => publishNow(r)} onTranslate={() => retranslate(r)}
           onPhotos={() => fetchPhotos(r)} onRetry={() => retryLink(r)}
@@ -314,7 +341,14 @@ export default function AdminImportClient() {
           }}
           onNotDup={() => confirm("Xác nhận đây KHÔNG phải nhà đã đăng (chỉ giống thông tin)?") &&
             update(r, { draft: { dup_ok: true }, status: nextStatus(r.draft.translated, r.images) })}
-          onRemove={() => confirm("Bỏ tin này khỏi hàng đợi?") && update(r, { status: "removed" })} />)}
+          onRemove={() => confirm("Bỏ tin này khỏi hàng đợi?") && update(r, { status: "removed" })} />)
+          return g.length === 2 ? (
+            <div key={`${g[0].id}-${g[1].id}`} className="border-2 border-amber-300 bg-amber-50/50 rounded-2xl p-3">
+              <p className="text-sm font-semibold text-amber-800 mb-2">⚖️ 2 tin cùng 1 căn nhà — chọn 1 tin tốt nhất để đăng</p>
+              <div className="grid lg:grid-cols-2 gap-3 items-start">{cards}</div>
+            </div>
+          ) : cards[0]
+        })}
       </div>
     </div>
   )
@@ -325,10 +359,10 @@ interface CardProps {
   onUpload: (f: FileList | null) => void; onRemovePhoto: (u: string) => void
   onSave: (draft: Record<string, unknown>) => void; onPublish: () => void; onTranslate: () => void
   onPhotos: () => void; onRetry: () => void; onTop: () => void; onReady: () => void; onRemove: () => void
-  onNotDup: () => void; onReplace: () => void
+  onNotDup: () => void; onReplace: () => void; onChoose?: () => void
 }
 
-function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTranslate, onPhotos, onRetry, onTop, onReady, onRemove, onNotDup, onReplace }: CardProps) {
+function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTranslate, onPhotos, onRetry, onTop, onReady, onRemove, onNotDup, onReplace, onChoose }: CardProps) {
   const d = row.draft || ({} as QueueRow["draft"])
   const st = STATUS[row.status] || { label: row.status, cls: "bg-gray-100 text-gray-600" }
   const [edit, setEdit] = useState(false)
@@ -393,7 +427,10 @@ function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTr
 
       {!done && (
         <div className="flex flex-wrap gap-2 mt-3 text-xs">
-          {dup && /Trùng nhà đã có trên web/.test(row.error || "") ? (
+          {onChoose && (
+            <button disabled={busy} onClick={onChoose} className="inline-flex items-center gap-1 bg-green-600 text-white rounded-lg px-3 py-1.5 disabled:opacity-40"><CheckCircle2 size={13} /> Chọn tin này (bỏ tin kia)</button>
+          )}
+          {onChoose ? null : dup && /Trùng nhà đã có trên web/.test(row.error || "") ? (
             <button disabled={busy} onClick={onReplace} className="inline-flex items-center gap-1 bg-red-600 text-white rounded-lg px-3 py-1.5 disabled:opacity-40"><RefreshCw size={13} /> Thay thế tin cũ</button>
           ) : dup ? (
             <button disabled={busy} onClick={onNotDup} className="inline-flex items-center gap-1 border border-gray-300 text-gray-700 rounded-lg px-3 py-1.5"><CheckCircle2 size={13} /> Không trùng, vẫn cho đăng</button>
