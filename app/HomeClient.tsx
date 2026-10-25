@@ -656,7 +656,7 @@ export default function HomeClient({ featured, newest, rentals = [], reels, vnCo
             {lang==="zh" ? "依地區找房" : "Tìm nhà theo khu vực"}
           </h2>
           <div className="flex flex-wrap gap-2">
-            {SEO_LANDING_PAGES.map(p => (
+            {SEO_LANDING_PAGES.filter(p => !p.city || SEARCH_CITIES.some(c => c.zh === p.city)).map(p => (
               <Link key={p.slug} href={`/${p.slug}`}
                 className="bg-white hover:bg-red-50 hover:text-red-600 text-gray-600 text-xs px-3 py-1.5 rounded-full border border-gray-100 transition">
                 {lang==="zh" ? p.title_zh.split(" - ")[0].split(" | ")[0] : p.h1_vi}

@@ -28,9 +28,9 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
     h1_vi: "Thuê nhà tại Đài Loan cho người Việt",
     h1_zh: "台灣租屋資訊",
     metaDescription_vi:
-      "Tìm nhà cho thuê tại Đài Loan song ngữ Trung-Việt: phòng trọ, chung cư, nhà nguyên căn tại Đài Bắc, Tân Bắc, Đào Viên, Tân Trúc, Đài Trung, Chương Hóa, Đài Nam, Cao Hùng. Liên hệ trực tiếp chủ nhà qua LINE, không qua môi giới.",
+      "Tìm nhà cho thuê tại Đài Loan song ngữ Trung-Việt: phòng trọ, chung cư, nhà nguyên căn tại Đào Viên, Tân Trúc, Miêu Lật, Đài Trung, Chương Hóa, Nam Đầu, Đài Nam, Cao Hùng. Liên hệ trực tiếp chủ nhà qua LINE, không qua môi giới.",
     intro_vi:
-      "8386找房網 là kênh tìm nhà cho thuê song ngữ Trung-Việt dành riêng cho cộng đồng người Việt đang sinh sống, lao động và học tập tại Đài Loan. Chúng tôi tổng hợp tin cho thuê từ 8 thành phố lớn: Đài Bắc, Tân Bắc, Đào Viên, Tân Trúc, Đài Trung, Chương Hóa, Đài Nam và Cao Hùng — bao gồm phòng trọ đơn, chung cư có thang máy, nhà nguyên căn gần khu công nghiệp. Mỗi tin đăng đều có mô tả song ngữ, giá thuê rõ ràng theo tháng, và số điện thoại/LINE liên hệ trực tiếp chủ nhà hoặc người đăng — không phát sinh phí môi giới ẩn.",
+      "8386找房網 là kênh tìm nhà cho thuê song ngữ Trung-Việt dành riêng cho cộng đồng người Việt đang sinh sống, lao động và học tập tại Đài Loan. Chúng tôi tổng hợp tin cho thuê từ các khu vực: Đào Viên, Tân Trúc, Miêu Lật, Đài Trung, Chương Hóa, Nam Đầu, Đài Nam và Cao Hùng — bao gồm phòng trọ đơn, chung cư có thang máy, nhà nguyên căn gần khu công nghiệp. Mỗi tin đăng đều có mô tả song ngữ, giá thuê rõ ràng theo tháng, và số điện thoại/LINE liên hệ trực tiếp chủ nhà hoặc người đăng — không phát sinh phí môi giới ẩn.",
     intro_zh:
       "8386找房網提供全台租屋資訊，包含台北、新北、桃園、新竹、台中、彰化、台南、高雄等地區的套房、電梯大樓、透天厝出租物件，中越雙語呈現，方便在台工作生活的越南朋友快速找到合適的住處。",
   },
@@ -260,6 +260,111 @@ export const SEO_LANDING_PAGES: SeoLandingPage[] = [
       "Tân Trúc có mức thu nhập bình quân cao nhờ ngành công nghệ bán dẫn phát triển, kéo theo giá nhà cũng ở mức cao trong khu vực miền Trung-Bắc Đài Loan. Phù hợp với kỹ sư, chuyên gia người Việt có thu nhập ổn định muốn an cư lâu dài. 8386找房網 cập nhật tin bán nhà tại Tân Trúc.",
     intro_zh:
       "新竹市因半導體產業發達，居民所得較高，房價亦相對偏高，適合科技業從業人員長期安家置產。",
+  },
+
+  {
+    slug: "thue-nha-huyen-tan-truc",
+    type: "rent",
+    city: "新竹縣",
+    cityViLabel: "Huyện Tân Trúc",
+    cityZhLabel: "新竹縣",
+    title_vi: "Thuê Nhà Huyện Tân Trúc - Trúc Bắc, Trúc Đông | 8386找房網",
+    title_zh: "新竹縣租屋 - 竹北、竹東出租物件 | 8386找房網",
+    h1_vi: "Thuê nhà tại Huyện Tân Trúc cho người Việt",
+    h1_zh: "新竹縣租屋資訊",
+    metaDescription_vi:
+      "Thuê nhà tại Huyện Tân Trúc (新竹縣): phòng trọ, chung cư tại Trúc Bắc, Trúc Đông, Tân Phong, Hồ Khẩu, gần khu công nghệ cao và khu công nghiệp.",
+    intro_vi:
+      "Huyện Tân Trúc (新竹縣) bao quanh thành phố Tân Trúc, với Trúc Bắc và Trúc Đông là hai khu sôi động nhất, gần khu công nghệ cao và nhiều nhà máy nên có đông kỹ sư, công nhân người Việt sinh sống. Hồ Khẩu, Tân Phong có khu công nghiệp lớn với giá thuê mềm hơn. 8386找房網 tổng hợp tin cho thuê tại Huyện Tân Trúc với mô tả song ngữ Trung-Việt.",
+    intro_zh:
+      "新竹縣環繞新竹市，竹北、竹東為主要生活圈，鄰近科學園區與工業區，湖口、新豐亦有大型工業區，租金相對親民。",
+  },
+  {
+    slug: "mua-nha-huyen-tan-truc",
+    type: "buy",
+    city: "新竹縣",
+    cityViLabel: "Huyện Tân Trúc",
+    cityZhLabel: "新竹縣",
+    title_vi: "Mua Nhà Huyện Tân Trúc - Trúc Bắc, Trúc Đông | 8386找房網",
+    title_zh: "新竹縣買房 - 竹北、竹東售屋物件 | 8386找房網",
+    h1_vi: "Mua nhà tại Huyện Tân Trúc",
+    h1_zh: "新竹縣售屋資訊",
+    metaDescription_vi:
+      "Mua nhà tại Huyện Tân Trúc (新竹縣): chung cư, nhà phố tại Trúc Bắc, Trúc Đông, Tân Phong. Giá theo 萬/坪, thông tin song ngữ Trung-Việt.",
+    intro_vi:
+      "Trúc Bắc là khu đô thị phát triển nhanh nhất Huyện Tân Trúc nhờ gần khu công nghệ cao và ga cao tốc, thu hút nhiều gia đình trẻ và kỹ sư đến an cư. Các khu vực như Trúc Đông, Tân Phong, Hồ Khẩu có giá dễ tiếp cận hơn. 8386找房網 cập nhật tin bán nhà tại Huyện Tân Trúc với thông tin diện tích và giá mỗi bình.",
+    intro_zh:
+      "新竹縣以竹北發展最為快速，高鐵與科技產業帶動居住需求，竹東、新豐、湖口等區房價相對親民，8386找房網提供中越雙語售屋資訊。",
+  },
+
+  {
+    slug: "thue-nha-mieu-lat",
+    type: "rent",
+    city: "苗栗縣",
+    cityViLabel: "Miêu Lật",
+    cityZhLabel: "苗栗縣",
+    title_vi: "Thuê Nhà Miêu Lật - Đầu Phần, Trúc Nam, Miêu Lật | 8386找房網",
+    title_zh: "苗栗租屋 - 頭份、竹南出租物件 | 8386找房網",
+    h1_vi: "Thuê nhà tại Miêu Lật cho người Việt",
+    h1_zh: "苗栗租屋資訊",
+    metaDescription_vi:
+      "Thuê nhà tại Miêu Lật (苗栗縣): phòng trọ, chung cư, nhà nguyên căn tại Đầu Phần, Trúc Nam, Miêu Lật, gần khu công nghiệp. Giá thuê mềm.",
+    intro_vi:
+      "Miêu Lật (苗栗縣) giáp Tân Trúc và Đài Trung, giá thuê nhà thấp hơn đáng kể so với các thành phố lớn. Đầu Phần và Trúc Nam có nhiều nhà máy và khu công nghiệp nên đông công nhân người Việt, còn thành phố Miêu Lật là trung tâm hành chính của huyện. 8386找房網 tổng hợp tin cho thuê tại Miêu Lật với mô tả song ngữ Trung-Việt.",
+    intro_zh:
+      "苗栗縣位於新竹與台中之間，頭份、竹南工業區林立，租金親民，是在地工廠上班的越南朋友熱門的承租區域。",
+  },
+  {
+    slug: "mua-nha-mieu-lat",
+    type: "buy",
+    city: "苗栗縣",
+    cityViLabel: "Miêu Lật",
+    cityZhLabel: "苗栗縣",
+    title_vi: "Mua Nhà Miêu Lật - Nhà Phố, Chung Cư, Đất | 8386找房網",
+    title_zh: "苗栗買房 - 售屋物件 | 8386找房網",
+    h1_vi: "Mua nhà tại Miêu Lật",
+    h1_zh: "苗栗售屋資訊",
+    metaDescription_vi:
+      "Mua nhà tại Miêu Lật (苗栗縣): nhà phố, chung cư, đất tại Đầu Phần, Trúc Nam, Miêu Lật. Tổng giá thấp, phù hợp mua nhà lần đầu.",
+    intro_vi:
+      "Miêu Lật có mặt bằng giá nhà đất thấp, đặc biệt ở Đầu Phần và Trúc Nam — hai nơi phát triển nhờ gần Tân Trúc và các khu công nghiệp. Đây là lựa chọn phù hợp với người mua nhà lần đầu hoặc gia đình cần nhà phố rộng với ngân sách vừa phải. 8386找房網 cập nhật tin bán nhà tại Miêu Lật.",
+    intro_zh:
+      "苗栗縣房價親民，頭份、竹南因鄰近新竹科學園區與工業區，購屋需求穩定，適合首購族與預算有限的家庭。",
+  },
+
+  {
+    slug: "thue-nha-nam-dau",
+    type: "rent",
+    city: "南投縣",
+    cityViLabel: "Nam Đầu",
+    cityZhLabel: "南投縣",
+    title_vi: "Thuê Nhà Nam Đầu - Thảo Đồn, Nam Đầu, Bộ Lý | 8386找房網",
+    title_zh: "南投租屋 - 草屯、南投市出租物件 | 8386找房網",
+    h1_vi: "Thuê nhà tại Nam Đầu cho người Việt",
+    h1_zh: "南投租屋資訊",
+    metaDescription_vi:
+      "Thuê nhà tại Nam Đầu (南投縣): phòng trọ, nhà nguyên căn tại Thảo Đồn, Nam Đầu, Bộ Lý, Trúc Sơn. Giá thuê thấp, môi trường sống yên tĩnh.",
+    intro_vi:
+      "Nam Đầu (南投縣) là huyện duy nhất của Đài Loan không giáp biển, giá thuê nhà thuộc nhóm thấp nhất, môi trường sống yên tĩnh. Thảo Đồn và thành phố Nam Đầu giáp Đài Trung nên thuận tiện đi làm, còn Bộ Lý, Trúc Sơn có cộng đồng người Việt làm nông nghiệp, nhà máy và dịch vụ du lịch. 8386找房網 tổng hợp tin cho thuê tại Nam Đầu với mô tả song ngữ.",
+    intro_zh:
+      "南投縣為台灣唯一不靠海的縣，草屯、南投市鄰近台中生活圈，租金低廉，埔里、竹山亦有越南朋友工作與居住。",
+  },
+  {
+    slug: "mua-nha-nam-dau",
+    type: "buy",
+    city: "南投縣",
+    cityViLabel: "Nam Đầu",
+    cityZhLabel: "南投縣",
+    title_vi: "Mua Nhà Nam Đầu - Nhà Phố, Đất, Nhà Vườn | 8386找房網",
+    title_zh: "南投買房 - 售屋物件 | 8386找房網",
+    h1_vi: "Mua nhà tại Nam Đầu",
+    h1_zh: "南投售屋資訊",
+    metaDescription_vi:
+      "Mua nhà tại Nam Đầu (南投縣): nhà phố, đất, nhà vườn tại Thảo Đồn, Nam Đầu, Bộ Lý. Giá thấp, không gian sống rộng rãi.",
+    intro_vi:
+      "Nam Đầu có giá nhà đất thấp, không gian rộng và cảnh quan núi non, phù hợp với gia đình muốn an cư yên tĩnh hoặc mua đất, nhà vườn với ngân sách vừa phải. Thảo Đồn và Nam Đầu gần Đài Trung nên vẫn đi lại thuận tiện. 8386找房網 cập nhật tin bán nhà tại Nam Đầu với thông tin diện tích và giá chi tiết.",
+    intro_zh:
+      "南投縣房價低、居住空間寬敞，草屯、南投市鄰近台中，適合追求寧靜生活或預算有限的購屋族群。",
   },
 
   {
