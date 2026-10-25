@@ -6,17 +6,33 @@ import { Search } from "lucide-react"
 import DistrictMultiSelect from "@/components/DistrictMultiSelect"
 
 const CITIES = [
-  { zh:"新北市", vi:"Tân Bắc",    slug:"新北市" },
   { zh:"桃園市", vi:"Đào Viên",   slug:"桃園市" },
   { zh:"新竹市", vi:"Tân Trúc",   slug:"新竹市" },
   { zh:"新竹縣", vi:"Huyện Tân Trúc", slug:"新竹縣" },
+  { zh:"苗栗縣", vi:"Miêu Lật",   slug:"苗栗縣" },
   { zh:"台中市", vi:"Đài Trung",  slug:"台中市" },
   { zh:"彰化縣", vi:"Chương Hóa", slug:"彰化縣" },
+  { zh:"南投縣", vi:"Nam Đầu",    slug:"南投縣" },
   { zh:"台南市", vi:"Đài Nam",    slug:"台南市" },
   { zh:"高雄市", vi:"Cao Hùng",   slug:"高雄市" },
 ]
 
 const DISTRICTS: Record<string, { zh: string; vi: string }[]> = {
+  "苗栗縣": [
+    {zh:"苗栗市",vi:"Miêu Lật"},{zh:"頭份市",vi:"Đầu Phần"},{zh:"竹南鎮",vi:"Trúc Nam"},
+    {zh:"後龍鎮",vi:"Hậu Long"},{zh:"通霄鎮",vi:"Thông Tiêu"},{zh:"苑裡鎮",vi:"Uyển Lý"},
+    {zh:"卓蘭鎮",vi:"Trác Lan"},{zh:"造橋鄉",vi:"Tạo Kiều"},{zh:"西湖鄉",vi:"Tây Hồ"},
+    {zh:"頭屋鄉",vi:"Đầu Ốc"},{zh:"公館鄉",vi:"Công Quán"},{zh:"銅鑼鄉",vi:"Đồng La"},
+    {zh:"三義鄉",vi:"Tam Nghĩa"},{zh:"大湖鄉",vi:"Đại Hồ"},{zh:"獅潭鄉",vi:"Sư Đàm"},
+    {zh:"三灣鄉",vi:"Tam Loan"},{zh:"南庄鄉",vi:"Nam Trang"},{zh:"泰安鄉",vi:"Thái An"},
+  ],
+  "南投縣": [
+    {zh:"南投市",vi:"Nam Đầu"},{zh:"埔里鎮",vi:"Bộ Lý"},{zh:"草屯鎮",vi:"Thảo Đồn"},
+    {zh:"竹山鎮",vi:"Trúc Sơn"},{zh:"集集鎮",vi:"Tập Tập"},{zh:"名間鄉",vi:"Danh Gian"},
+    {zh:"鹿谷鄉",vi:"Lộc Cốc"},{zh:"中寮鄉",vi:"Trung Liêu"},{zh:"魚池鄉",vi:"Ngư Trì"},
+    {zh:"國姓鄉",vi:"Quốc Tính"},{zh:"水里鄉",vi:"Thủy Lý"},{zh:"信義鄉",vi:"Tín Nghĩa"},
+    {zh:"仁愛鄉",vi:"Nhân Ái"},
+  ],
   "新竹縣": [
     {zh:"竹北市",vi:"Trúc Bắc"},{zh:"竹東鎮",vi:"Trúc Đông"},{zh:"新埔鎮",vi:"Tân Phố"},
     {zh:"關西鎮",vi:"Quan Tây"},{zh:"湖口鄉",vi:"Hồ Khẩu"},{zh:"新豐鄉",vi:"Tân Phong"},

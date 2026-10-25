@@ -12,35 +12,57 @@ import ReelsSection from "@/components/ReelsSection"
 import type { PropertyReel } from "@/lib/data"
 import type { VnCommunity } from "@/lib/vnCommunities"
 import { SEO_LANDING_PAGES } from "@/lib/seoLandingPages"
-import { Search, MessageCircle, Building2, Moon, Plane, Microscope, Building, Wheat, Landmark, Waves, Eye, MapPinned, ShoppingBasket, UtensilsCrossed, Church, HeartPulse, GraduationCap, Factory, ArrowRight, BarChart3 } from "lucide-react"
+import { Search, MessageCircle, Building2, Moon, Plane, Microscope, Building, Wheat, Landmark, Waves, Trees, Mountain, Eye, MapPinned, ShoppingBasket, UtensilsCrossed, Church, HeartPulse, GraduationCap, Factory, ArrowRight, BarChart3 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 interface Props { featured: Property[]; newest: Property[]; rentals?: Property[]; reels: PropertyReel[]; vnCommunities: VnCommunity[]; cityCounts: Record<string, number> }
 
 const CITIES: { zh: string; vi: string; Icon: LucideIcon; n: number; slug: string }[] = [
   { zh:"台北市", vi:"Đài Bắc",   Icon:Building2,   n:5234, slug:"台北市" },
-  { zh:"新北市", vi:"Tân Bắc",   Icon:Moon,        n:6102, slug:"新北市" },
   { zh:"桃園市", vi:"Đào Viên",  Icon:Plane,       n:3540, slug:"桃園市" },
   { zh:"新竹市", vi:"Tân Trúc",  Icon:Microscope,  n:1230, slug:"新竹市" },
   { zh:"台中市", vi:"Đài Trung", Icon:Building,    n:3891, slug:"台中市" },
+  { zh:"苗栗縣", vi:"Miêu Lật",  Icon:Trees,       n:0,    slug:"苗栗縣" },
   { zh:"彰化縣", vi:"Chương Hóa",Icon:Wheat,       n:980,  slug:"彰化縣" },
+  { zh:"南投縣", vi:"Nam Đầu",   Icon:Mountain,    n:0,    slug:"南投縣" },
   { zh:"台南市", vi:"Đài Nam",   Icon:Landmark,    n:1482, slug:"台南市" },
   { zh:"高雄市", vi:"Cao Hùng",  Icon:Waves,       n:2710, slug:"高雄市" },
 ]
 
 // Danh sách thành phố trong thanh tìm kiếm (không có Đài Bắc; có thêm Tân Trúc huyện)
 const SEARCH_CITIES: { zh: string; vi: string }[] = [
-  { zh:"新北市", vi:"Tân Bắc" },
   { zh:"桃園市", vi:"Đào Viên" },
   { zh:"新竹市", vi:"Tân Trúc" },
   { zh:"新竹縣", vi:"Huyện Tân Trúc" },
+  { zh:"苗栗縣", vi:"Miêu Lật" },
   { zh:"台中市", vi:"Đài Trung" },
   { zh:"彰化縣", vi:"Chương Hóa" },
+  { zh:"南投縣", vi:"Nam Đầu" },
   { zh:"台南市", vi:"Đài Nam" },
   { zh:"高雄市", vi:"Cao Hùng" },
 ]
 
 const DISTRICTS: Record<string, { zh: string; vi: string }[]> = {
+  "苗栗縣": [
+    { zh:"苗栗市", vi:"Miêu Lật" },   { zh:"頭份市", vi:"Đầu Phần" },
+    { zh:"竹南鎮", vi:"Trúc Nam" },   { zh:"後龍鎮", vi:"Hậu Long" },
+    { zh:"通霄鎮", vi:"Thông Tiêu" }, { zh:"苑裡鎮", vi:"Uyển Lý" },
+    { zh:"卓蘭鎮", vi:"Trác Lan" },   { zh:"造橋鄉", vi:"Tạo Kiều" },
+    { zh:"西湖鄉", vi:"Tây Hồ" },     { zh:"頭屋鄉", vi:"Đầu Ốc" },
+    { zh:"公館鄉", vi:"Công Quán" },  { zh:"銅鑼鄉", vi:"Đồng La" },
+    { zh:"三義鄉", vi:"Tam Nghĩa" },  { zh:"大湖鄉", vi:"Đại Hồ" },
+    { zh:"獅潭鄉", vi:"Sư Đàm" },     { zh:"三灣鄉", vi:"Tam Loan" },
+    { zh:"南庄鄉", vi:"Nam Trang" },  { zh:"泰安鄉", vi:"Thái An" },
+  ],
+  "南投縣": [
+    { zh:"南投市", vi:"Nam Đầu" },    { zh:"埔里鎮", vi:"Bộ Lý" },
+    { zh:"草屯鎮", vi:"Thảo Đồn" },   { zh:"竹山鎮", vi:"Trúc Sơn" },
+    { zh:"集集鎮", vi:"Tập Tập" },    { zh:"名間鄉", vi:"Danh Gian" },
+    { zh:"鹿谷鄉", vi:"Lộc Cốc" },    { zh:"中寮鄉", vi:"Trung Liêu" },
+    { zh:"魚池鄉", vi:"Ngư Trì" },    { zh:"國姓鄉", vi:"Quốc Tính" },
+    { zh:"水里鄉", vi:"Thủy Lý" },    { zh:"信義鄉", vi:"Tín Nghĩa" },
+    { zh:"仁愛鄉", vi:"Nhân Ái" },
+  ],
   "新竹縣": [
     { zh:"竹北市", vi:"Trúc Bắc" },   { zh:"竹東鎮", vi:"Trúc Đông" },
     { zh:"新埔鎮", vi:"Tân Phố" },    { zh:"關西鎮", vi:"Quan Tây" },
