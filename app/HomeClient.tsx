@@ -15,7 +15,7 @@ import { SEO_LANDING_PAGES } from "@/lib/seoLandingPages"
 import { Search, MessageCircle, Building2, Moon, Plane, Microscope, Building, Wheat, Landmark, Waves, Eye, MapPinned, ShoppingBasket, UtensilsCrossed, Church, HeartPulse, GraduationCap, Factory, ArrowRight, BarChart3 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
-interface Props { featured: Property[]; newest: Property[]; reels: PropertyReel[]; vnCommunities: VnCommunity[]; cityCounts: Record<string, number> }
+interface Props { featured: Property[]; newest: Property[]; rentals?: Property[]; reels: PropertyReel[]; vnCommunities: VnCommunity[]; cityCounts: Record<string, number> }
 
 const CITIES: { zh: string; vi: string; Icon: LucideIcon; n: number; slug: string }[] = [
   { zh:"台北市", vi:"Đài Bắc",   Icon:Building2,   n:5234, slug:"台北市" },
@@ -129,7 +129,7 @@ const DISTRICTS: Record<string, { zh: string; vi: string }[]> = {
   ],
 }
 
-export default function HomeClient({ featured, newest, reels, vnCommunities, cityCounts }: Props) {
+export default function HomeClient({ featured, newest, rentals = [], reels, vnCommunities, cityCounts }: Props) {
   const { lang, t } = useLang()
   const router = useRouter()
   const [tab, setTab] = useState<"rent"|"buy">("rent")
@@ -605,6 +605,24 @@ export default function HomeClient({ featured, newest, reels, vnCommunities, cit
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {newest.map(p => <PropertyCard key={p.id} property={p} />)}
+            </div>
+          </section>
+        )}
+
+        {/* ── Nhà cho thuê (8 tin mới nhất, tin mới đăng lên đầu) ── */}
+        {rentals.length > 0 && (
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-bold text-gray-900 flex items-center gap-2">
+                <span className="w-1 h-5 bg-red-500 rounded-full inline-block" />
+                {lang==="zh" ? "出租房源" : "Nhà cho thuê"}
+              </h2>
+              <Link href="/listings?type=rent&sort=newest" className="text-sm text-red-600 hover:underline">
+                {lang==="zh" ? "查看全部 →" : "Xem tất cả →"}
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {rentals.map(p => <PropertyCard key={p.id} property={p} />)}
             </div>
           </section>
         )}

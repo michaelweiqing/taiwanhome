@@ -23,5 +23,5 @@ export default async function HomePage() {
     if (c) cityCounts[c] = (cityCounts[c] || 0) + 1
   }
 
-  return <HomeClient featured={featured} newest={newest.slice(0, 8)} reels={reels} vnCommunities={vnCommunities} cityCounts={cityCounts} />
+  return <HomeClient featured={featured} newest={newest.slice(0, 8)} rentals={newest.filter(p => p.listing_type === "rent").slice(0, 8)} reels={reels} vnCommunities={vnCommunities} cityCounts={cityCounts} />
 }
