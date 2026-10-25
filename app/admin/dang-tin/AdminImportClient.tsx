@@ -49,7 +49,27 @@ export default function AdminImportClient() {
       return
     }
     setAuthed(true); setAuthError(""); sessionStorage.setItem(PW_KEY, pw)
-    setRows((data || []) as QueueRow[])
+    let list = (data || []) as QueueRow[]
+    // Danh sách bị giới hạn 300 dòng (tin trùng xếp trước) → tin "đang chờ" mà tin trùng nhắc tới có thể bị cắt mất.
+    // Tìm bù những tin đó theo từng trạng thái để khung so sánh luôn đủ tin.
+    const have = new Set(list.map(r => r.id))
+    const missing = new Set<number>()
+    for (const r of list) {
+      if (r.status !== "duplicate" || !r.error || !/tin đang chờ/.test(r.error)) continue
+      for (const m of r.error.slice(r.error.indexOf("tin đang chờ")).matchAll(/#(\d+)/g)) {
+        const id = Number(m[1]); if (!have.has(id)) missing.add(id)
+      }
+    }
+    if (missing.size) {
+      for (const st of ["ready", "needs_photos", "needs_translation"]) {
+        if (!missing.size) break
+        const ex = await supabase.rpc("import_queue_list", { p_password: pw, p_status: st })
+        for (const q of ((ex.data || []) as QueueRow[])) {
+          if (missing.has(q.id)) { list = [...list, q]; missing.delete(q.id) }
+        }
+      }
+    }
+    setRows(list)
     const s = await supabase.rpc("import_settings_get", { p_password: pw })
     if (typeof s.data === "number") setPerDay(s.data)
   }
