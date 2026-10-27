@@ -11,10 +11,8 @@ export async function autoClearStandaloneDuplicates(token: string): Promise<numb
   if (!cand.length) return 0
 
   const pending = new Set<number>(dups.map(r => r.id))
-  for (const st of ["ready", "needs_photos", "needs_translation", "error"]) {
-    const rows = await sbRpc<QueueRow[]>("import_queue_list", { p_password: token, p_status: st })
-    rows.forEach(r => pending.add(r.id))
-  }
+  const ids = await sbRpc<{ id: number }[]>("import_queue_pending_ids", { p_password: token })
+  ids.forEach(r => pending.add(Number(r.id)))
 
   let cleared = 0
   for (const r of cand) {

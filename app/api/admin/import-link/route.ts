@@ -16,8 +16,8 @@ export async function POST(req: NextRequest) {
     await sbRpc("import_settings_get", { p_password: password })
 
     if ((action === "translate" || action === "photos") && id) {
-      const rows = await sbRpc<QueueRow[]>("import_queue_list", { p_password: password, p_status: "all" })
-      const row = rows.find(r => r.id === Number(id))
+      const rows = await sbRpc<QueueRow[]>("import_queue_get", { p_password: password, p_id: Number(id) })
+      const row = rows[0]
       if (!row) return NextResponse.json({ error: "not_found" }, { status: 404 })
       if (action === "translate") return NextResponse.json({ row: await retranslateQueueRow(row, password) })
 

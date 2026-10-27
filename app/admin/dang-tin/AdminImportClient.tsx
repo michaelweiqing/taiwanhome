@@ -40,9 +40,22 @@ export default function AdminImportClient() {
   const [busyId, setBusyId] = useState<number | null>(null)
 
   const autoClearedRef = useRef(false)
+  // Lấy toàn bộ danh sách (PostgREST giới hạn ~1000 dòng/lần → tải từng trang rồi ghép lại)
+  async function fetchAll(pw: string, st: string) {
+    const PAGE = 1000
+    const all: QueueRow[] = []
+    for (let from = 0; from < 100000; from += PAGE) {
+      const r = await supabase.rpc("import_queue_list", { p_password: pw, p_status: st }).range(from, from + PAGE - 1)
+      if (r.error) return { data: null as QueueRow[] | null, error: r.error }
+      const chunk = (r.data || []) as QueueRow[]
+      all.push(...chunk)
+      if (chunk.length < PAGE) break
+    }
+    return { data: all, error: null }
+  }
   async function load(pw: string, t: Tab) {
     setLoading(true)
-    const { data, error } = await supabase.rpc("import_queue_list", { p_password: pw, p_status: t })
+    const { data, error } = await fetchAll(pw, t)
     setLoading(false)
     if (error) {
       setAuthed(false); sessionStorage.removeItem(PW_KEY)
@@ -64,7 +77,7 @@ export default function AdminImportClient() {
     if (missing.size) {
       for (const st of ["ready", "needs_photos", "needs_translation"]) {
         if (!missing.size) break
-        const ex = await supabase.rpc("import_queue_list", { p_password: pw, p_status: st })
+        const ex = await fetchAll(pw, st)
         for (const q of ((ex.data || []) as QueueRow[])) {
           if (missing.has(q.id)) { list = [...list, q]; missing.delete(q.id) }
         }
@@ -108,7 +121,7 @@ export default function AdminImportClient() {
   // ── Lọc link: bỏ những link nhà đã từng lấy vào hệ thống (mọi trạng thái trong hàng đợi) ──
   const houseId = (u: string) => u.match(/yungching\.com\.tw\/house\/(\d+)/)?.[1] || null
   async function splitKnown(urls: string[]): Promise<{ fresh: string[]; known: string[] }> {
-    const { data, error } = await supabase.rpc("import_queue_list", { p_password: password, p_status: "all" })
+    const { data, error } = await fetchAll(password, "all")
     if (error) { alert(error.message); return { fresh: urls, known: [] } }
     const have = new Set(((data || []) as QueueRow[]).map(r => houseId(r.source_url)).filter(Boolean) as string[])
     const fresh: string[] = [], known: string[] = []
@@ -440,7 +453,7 @@ function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTr
   const dup = row.status === "duplicate"
 
   return (
-    <article className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+    <article className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm" style={{ contentVisibility: "auto", containIntrinsicSize: "auto 300px" }}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap text-xs">
@@ -470,7 +483,7 @@ function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTr
         {row.images.map(u => (
           <div key={u} className="relative shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={u} alt="" className="w-24 h-18 object-cover rounded-lg border border-gray-100" style={{ height: 72 }} />
+            <img src={u} alt="" loading="lazy" className="w-24 h-18 object-cover rounded-lg border border-gray-100" style={{ height: 72 }} />
             {!done && <button onClick={() => onRemovePhoto(u)} className="absolute -top-1.5 -right-1.5 bg-white rounded-full shadow p-0.5 text-gray-600 hover:text-red-600"><X size={12} /></button>}
           </div>
         ))}

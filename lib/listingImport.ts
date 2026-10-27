@@ -390,6 +390,25 @@ export async function sbRpc<T = unknown>(fn: string, body: Record<string, unknow
   return (text ? JSON.parse(text) : null) as T
 }
 
+// Lấy 1 đoạn kết quả [from..to] của RPC kèm tổng số dòng (Content-Range) — tránh tải cả hàng nghìn dòng
+export async function sbRpcPage<T = unknown>(fn: string, body: Record<string, unknown>, from: number, to: number): Promise<{ rows: T[]; total: number }> {
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  const res = await fetch(`${sbBase()}/rest/v1/rpc/${fn}`, {
+    method: "POST", cache: "no-store",
+    headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json", Range: `${from}-${to}`, "Range-Unit": "items", Prefer: "count=exact" },
+    body: JSON.stringify(body),
+  })
+  const text = await res.text()
+  if (!res.ok) {
+    let msg = text
+    try { msg = JSON.parse(text).message || text } catch {}
+    throw new Error(msg)
+  }
+  const rows = (text ? JSON.parse(text) : []) as T[]
+  const total = Number((res.headers.get("content-range") || "").split("/")[1])
+  return { rows, total: Number.isFinite(total) ? total : rows.length }
+}
+
 export interface QueueRow {
   id: number; source_url: string; status: string; draft: ImportDraft; images: string[]
   priority: number; error: string | null; property_id: string | null; created_at: string; published_at: string | null

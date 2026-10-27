@@ -4,7 +4,7 @@
 // Gửi tóm tắt cho admin qua LINE.
 import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath } from "next/cache"
-import { sbRpc, retranslateQueueRow, type QueueRow } from "@/lib/listingImport"
+import { sbRpc, sbRpcPage, retranslateQueueRow, type QueueRow } from "@/lib/listingImport"
 import { refreshPoisFor } from "@/lib/poiSync"
 import { autoClearStandaloneDuplicates } from "@/lib/listingQueueAuto"
 
@@ -33,19 +33,19 @@ export async function GET(req: NextRequest) {
   if (req.nextUrl.searchParams.get("mode") === "drip") {
     try {
       const cleared = await autoClearStandaloneDuplicates(token).catch(() => 0)
-      const ready = await sbRpc<QueueRow[]>("import_queue_list", { p_password: token, p_status: "ready" })
-      let row = ready[0]
+      const { rows: ready0, total: readyTotal } = await sbRpcPage<QueueRow>("import_queue_list", { p_password: token, p_status: "ready" }, 0, 0)
+      let row = ready0[0]
       if (!row) return NextResponse.json({ ok: true, published: 0, remaining: 0, cleared })
       if (!row.draft?.translated) {
         row = await retranslateQueueRow(row, token)
-        if (!row.draft?.translated) return NextResponse.json({ ok: true, published: 0, remaining: ready.length, cleared, problem: `#${row.id} chưa dịch được` })
+        if (!row.draft?.translated) return NextResponse.json({ ok: true, published: 0, remaining: readyTotal, cleared, problem: `#${row.id} chưa dịch được` })
       }
-      if (row.status !== "ready") return NextResponse.json({ ok: true, published: 0, remaining: ready.length, cleared })
+      if (row.status !== "ready") return NextResponse.json({ ok: true, published: 0, remaining: readyTotal, cleared })
       const pid = await sbRpc<string | null>("import_publish", { p_password: token, p_id: row.id })
-      if (!pid) return NextResponse.json({ ok: true, published: 0, remaining: ready.length - 1, cleared, problem: `#${row.id} trùng tin đã đăng, không đăng` })
+      if (!pid) return NextResponse.json({ ok: true, published: 0, remaining: readyTotal - 1, cleared, problem: `#${row.id} trùng tin đã đăng, không đăng` })
       if (row.source_url) await refreshPoisFor(token, pid, row.source_url)
       revalidatePath("/"); revalidatePath("/listings")
-      return NextResponse.json({ ok: true, published: 1, id: pid, remaining: ready.length - 1, cleared })
+      return NextResponse.json({ ok: true, published: 1, id: pid, remaining: readyTotal - 1, cleared })
     } catch (err: any) {
       console.error("cron publish-listings drip error:", err)
       return NextResponse.json({ error: err.message || "unknown_error" }, { status: 500 })
@@ -75,9 +75,8 @@ export async function GET(req: NextRequest) {
     }
     if (published.length) { revalidatePath("/"); revalidatePath("/listings") }
 
-    const waiting = await sbRpc<QueueRow[]>("import_queue_list", { p_password: token, p_status: "active" })
-    const needPhotos = waiting.filter(r => r.status === "needs_photos").length
-    const ready = waiting.filter(r => r.status === "ready").length
+    const needPhotos = (await sbRpcPage<QueueRow>("import_queue_list", { p_password: token, p_status: "needs_photos" }, 0, 0)).total
+    const ready = (await sbRpcPage<QueueRow>("import_queue_list", { p_password: token, p_status: "ready" }, 0, 0)).total
     if (published.length || problems.length || needPhotos) {
       await notifyAdmin(
         `🏠 8386 tự đăng tin hôm nay: ${published.length} căn\n` +

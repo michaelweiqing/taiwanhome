@@ -1,0 +1,2 @@
+﻿-- Đã chạy trên Supabase: bỏ limit 300 của import_queue_list (thêm id làm khoá phụ), thêm import_queue_get và import_queue_pending_ids.
+-- Xem định nghĩa hiện tại: select pg_get_functiondef('public.import_queue_list(text,text)'::regprocedure);
