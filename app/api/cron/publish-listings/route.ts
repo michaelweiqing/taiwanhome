@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { revalidatePath } from "next/cache"
 import { sbRpc, retranslateQueueRow, type QueueRow } from "@/lib/listingImport"
 import { refreshPoisFor } from "@/lib/poiSync"
+import { autoClearStandaloneDuplicates } from "@/lib/listingQueueAuto"
 
 export const maxDuration = 300
 export const dynamic = "force-dynamic"
@@ -27,8 +28,32 @@ export async function GET(req: NextRequest) {
   const token = process.env.LVR_INGEST_TOKEN // token máy chủ, được hàm SQL import_auth chấp nhận
   if (!token) return NextResponse.json({ error: "LVR_INGEST_TOKEN missing" }, { status: 500 })
 
+  // ── Chế độ "nhỏ giọt" (GitHub Actions gọi mỗi 15 phút): đăng 1 tin sẵn sàng tiếp theo trong hàng đợi ──
+  if (req.nextUrl.searchParams.get("mode") === "drip") {
+    try {
+      const cleared = await autoClearStandaloneDuplicates(token).catch(() => 0)
+      const ready = await sbRpc<QueueRow[]>("import_queue_list", { p_password: token, p_status: "ready" })
+      let row = ready[0]
+      if (!row) return NextResponse.json({ ok: true, published: 0, remaining: 0, cleared })
+      if (!row.draft?.translated) {
+        row = await retranslateQueueRow(row, token)
+        if (!row.draft?.translated) return NextResponse.json({ ok: true, published: 0, remaining: ready.length, cleared, problem: `#${row.id} chưa dịch được` })
+      }
+      if (row.status !== "ready") return NextResponse.json({ ok: true, published: 0, remaining: ready.length, cleared })
+      const pid = await sbRpc<string | null>("import_publish", { p_password: token, p_id: row.id })
+      if (!pid) return NextResponse.json({ ok: true, published: 0, remaining: ready.length - 1, cleared, problem: `#${row.id} trùng tin đã đăng, không đăng` })
+      if (row.source_url) await refreshPoisFor(token, pid, row.source_url)
+      revalidatePath("/"); revalidatePath("/listings")
+      return NextResponse.json({ ok: true, published: 1, id: pid, remaining: ready.length - 1, cleared })
+    } catch (err: any) {
+      console.error("cron publish-listings drip error:", err)
+      return NextResponse.json({ error: err.message || "unknown_error" }, { status: 500 })
+    }
+  }
+
   const published: string[] = [], problems: string[] = []
   try {
+    await autoClearStandaloneDuplicates(token).catch(() => 0)
     const batch = await sbRpc<QueueRow[]>("import_next_batch", { p_password: token })
     for (let row of batch) {
       try {

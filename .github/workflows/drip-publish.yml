@@ -1,0 +1,16 @@
+# Cứ 15 phút gọi API đăng 1 tin từ hàng đợi (Vercel Hobby không cho cron dày hơn 1 lần/ngày).
+# Cần secret CRON_SECRET (trùng giá trị biến môi trường CRON_SECRET trên Vercel) trong GitHub → Settings → Secrets → Actions.
+name: drip-publish
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+jobs:
+  drip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish next queued listing
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -fsS -m 120 -H "Authorization: Bearer ${CRON_SECRET}" "https://8386.tw/api/cron/publish-listings?mode=drip"

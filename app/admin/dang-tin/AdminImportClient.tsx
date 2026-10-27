@@ -1,6 +1,6 @@
 "use client"
 // /admin/dang-tin — Dán link tin nhà, hệ thống tự đọc thông tin + dịch Việt, xếp hàng và tự đăng mỗi ngày.
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { createClient } from "@/lib/supabase-browser"
 import type { QueueRow } from "@/lib/listingImport"
 import { YC_COLLECTOR_SNIPPET } from "@/lib/ycCollectorSnippet"
@@ -39,6 +39,7 @@ export default function AdminImportClient() {
   const [importing, setImporting] = useState(false)
   const [busyId, setBusyId] = useState<number | null>(null)
 
+  const autoClearedRef = useRef(false)
   async function load(pw: string, t: Tab) {
     setLoading(true)
     const { data, error } = await supabase.rpc("import_queue_list", { p_password: pw, p_status: t })
@@ -70,6 +71,13 @@ export default function AdminImportClient() {
       }
     }
     setRows(list)
+    // Lần đầu vào trang: tự bấm "Không trùng" cho tin trùng đứng riêng lẻ (không nằm trong khung so sánh)
+    if (!autoClearedRef.current && (t === "active" || t === "all")) {
+      autoClearedRef.current = true
+      fetch("/api/admin/auto-clear-dups", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pw }),
+      }).then(r => r.json()).then(j => { if (j.cleared > 0) load(pw, t) }).catch(() => {})
+    }
     const s = await supabase.rpc("import_settings_get", { p_password: pw })
     if (typeof s.data === "number") setPerDay(s.data)
   }
