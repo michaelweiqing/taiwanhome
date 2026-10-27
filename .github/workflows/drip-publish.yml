@@ -2,8 +2,8 @@
 # Cần secret CRON_SECRET (trùng giá trị biến môi trường CRON_SECRET trên Vercel) trong GitHub → Settings → Secrets → Actions.
 name: drip-publish
 on:
-  schedule:
-    - cron: "*/15 * * * *"
+  # Lịch 15 phút đã chuyển sang Supabase pg_cron (job 'drip-publish') vì GitHub hay trễ/bỏ lượt.
+  # Workflow này chỉ còn để chạy thủ công.
   workflow_dispatch:
 jobs:
   drip:
