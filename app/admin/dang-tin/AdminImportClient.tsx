@@ -420,7 +420,7 @@ export default function AdminImportClient() {
             load(password, tab)
           }}
           onNotDup={() => confirm("Xác nhận đây KHÔNG phải nhà đã đăng (chỉ giống thông tin)?") &&
-            update(r, { draft: { dup_ok: true }, status: nextStatus(r.draft.translated, r.images) })}
+            update(r, { draft: { dup_ok: true, ...(/Trùng nhà đã có trên web/.test(r.error || "") ? { dup_forced: true } : {}) }, status: nextStatus(r.draft.translated, r.images) })}
           onRemove={() => confirm("Bỏ tin này khỏi hàng đợi?") && update(r, { status: "removed" })} />)
           return g.length >= 2 ? (
             <div key={g.map(x => x.id).join("-")} className="border-2 border-amber-300 bg-amber-50/50 rounded-2xl p-3">
@@ -511,7 +511,10 @@ function QueueCard({ row, busy, onUpload, onRemovePhoto, onSave, onPublish, onTr
             <button disabled={busy} onClick={onChoose} className="inline-flex items-center gap-1 bg-green-600 text-white rounded-lg px-3 py-1.5 disabled:opacity-40"><CheckCircle2 size={13} /> Chọn tin này (bỏ các tin còn lại)</button>
           )}
           {onChoose ? null : dup && /Trùng nhà đã có trên web/.test(row.error || "") ? (
-            <button disabled={busy} onClick={onReplace} className="inline-flex items-center gap-1 bg-red-600 text-white rounded-lg px-3 py-1.5 disabled:opacity-40"><RefreshCw size={13} /> Thay thế tin cũ</button>
+            <>
+              <button disabled={busy} onClick={onReplace} className="inline-flex items-center gap-1 bg-red-600 text-white rounded-lg px-3 py-1.5 disabled:opacity-40"><RefreshCw size={13} /> Thay thế tin cũ</button>
+              <button disabled={busy} onClick={onNotDup} className="inline-flex items-center gap-1 border border-gray-300 text-gray-700 rounded-lg px-3 py-1.5"><CheckCircle2 size={13} /> Không trùng, vẫn cho đăng</button>
+            </>
           ) : dup ? (
             <button disabled={busy} onClick={onNotDup} className="inline-flex items-center gap-1 border border-gray-300 text-gray-700 rounded-lg px-3 py-1.5"><CheckCircle2 size={13} /> Không trùng, vẫn cho đăng</button>
           ) : (
