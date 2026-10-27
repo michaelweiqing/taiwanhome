@@ -22,7 +22,8 @@ async function notifyAdmin(text: string) {
 }
 
 export async function GET(req: NextRequest) {
-  if (process.env.CRON_SECRET && req.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`) {
+  const cronSecret = (process.env.CRON_SECRET || "").replace(/^["'\s]+|["'\s]+$/g, "")
+  if (cronSecret && (req.headers.get("authorization") || "").trim() !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 })
   }
   const token = process.env.LVR_INGEST_TOKEN // token máy chủ, được hàm SQL import_auth chấp nhận
