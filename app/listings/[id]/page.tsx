@@ -9,7 +9,7 @@ import { ListingJsonLd } from "@/components/ListingJsonLd"
 
 // Cache trang 60s (ISR) — giảm tải Supabase và giúp các lượt xem sau gần như tức thì.
 // Tin mới/sửa sẽ hiện đầy đủ trong tối đa 60s.
-export const revalidate = 60
+export const revalidate = 3600
 
 export async function generateMetadata({
   params,

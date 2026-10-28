@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
       const pid = await sbRpc<string | null>("import_publish", { p_password: token, p_id: row.id })
       if (!pid) return NextResponse.json({ ok: true, published: 0, remaining: readyTotal - 1, cleared, problem: `#${row.id} trùng tin đã đăng, không đăng` })
       if (row.source_url) await refreshPoisFor(token, pid, row.source_url)
-      revalidatePath("/"); revalidatePath("/listings")
+      // Không revalidate mỗi lần đăng (tốn ISR Writes/CPU): trang chủ tự làm mới theo revalidate=600, /listings là trang động
       return NextResponse.json({ ok: true, published: 1, id: pid, remaining: readyTotal - 1, cleared })
     } catch (err: any) {
       console.error("cron publish-listings drip error:", err)

@@ -1,4 +1,4 @@
-export const revalidate = 60
+export const revalidate = 600
 
 import { getFeaturedProperties, getAllProperties, getApprovedReels } from "@/lib/data"
 import { getVnCommunities } from "@/lib/vnCommunities"
